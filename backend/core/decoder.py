@@ -64,14 +64,10 @@ def decode_chunks(
         for d_idx in range(RS_K):
             recovered_buffers[d_idx].append(decoded[d_idx])
 
-    # Build recovered Chunk objects — unpad last chunk
+    # Build recovered Chunk objects
     recovered_chunks: List[Chunk] = []
     for seq in range(RS_K):
         raw = bytes(recovered_buffers[seq])
-
-        # Strip zero-padding from last data chunk only
-        if seq == RS_K - 1:
-            raw = raw.rstrip(b'\x00') or raw  # keep at least 1 byte
 
         # Try to preserve original chunk_id if available
         original = chunk_map.get(seq)

@@ -16,7 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.config import init_node_folders, RS_K
 
 # ── Core Engine (Person 1) ──
-from backend.core.chunker import chunk_file, Chunk
+from backend.core.chunker import chunk_file, Chunk, _compute_hash
 from backend.core.encoder import encode_chunks
 from backend.core.distributor import distribute_chunks
 from backend.core.reassembler import fetch_and_reassemble
@@ -161,7 +161,7 @@ async def upload_file(file: UploadFile = File(...)):
                     chunk_id=str(uuid.uuid4()),
                     sequence_number=i + len(group),  # globally correct sequence
                     size=0,
-                    sha256_hash="",
+                    sha256_hash=_compute_hash(b""),
                     data=b"",
                     is_parity=False,
                 )
@@ -286,6 +286,7 @@ async def download_file(file_id: str):
             chunk_records=chunk_records,
             get_node_status=get_node_status,
             file_hash=record.full_sha256,
+            original_file_size=record.size,
         )
 
         file_bytes = result["data"]
@@ -310,7 +311,10 @@ async def download_file(file_id: str):
         return Response(
             content=file_bytes,
             media_type="application/octet-stream",
-            headers={"Content-Disposition": f'attachment; filename="{record.filename}"'},
+            headers={
+                "Content-Disposition": f'attachment; filename="{record.filename}"',
+                "Access-Control-Expose-Headers": "Content-Disposition"
+            },
         )
 
     except Exception as e:

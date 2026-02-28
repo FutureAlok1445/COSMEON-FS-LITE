@@ -20,6 +20,7 @@ def fetch_and_reassemble(
     chunk_records: List[dict],          # from metadata: [{chunk_id, sequence_number, sha256_hash, node_id, pad_size}, ...]
     get_node_status: Callable,          # Person 2 provides: get_node_status(node_id) -> "ONLINE"|"OFFLINE"|...
     file_hash: str,                     # original full-file SHA-256 from metadata
+    original_file_size: int,
 ) -> dict:
     """
     Main reassembly pipeline:
@@ -165,6 +166,8 @@ def fetch_and_reassemble(
     # Phase 4: Reassemble bytes
     tracker.start_phase("assembly")
     file_bytes = reassemble_chunks(final_chunks)
+    if len(file_bytes) > original_file_size:
+        file_bytes = file_bytes[:original_file_size]
     tracker.end_phase("assembly")
 
     # Phase 5: Full file integrity check

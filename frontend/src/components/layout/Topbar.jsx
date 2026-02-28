@@ -2,7 +2,7 @@ import React from 'react';
 import { Bell, Search, User } from 'lucide-react';
 
 export default function Topbar({ currentTab, setCurrentTab }) {
-    const tabs = ['Orbital Engine', 'Network Map', 'Storage Nodes', 'Ground Links'];
+    const tabs = ['Orbital Engine', 'Network Map', 'Storage Nodes', 'Ground Links', 'Payload Ops'];
 
     return (
         <div className="flex justify-between items-center h-16 bg-[#0a0f1c] border-b border-[#1e293b] px-6">

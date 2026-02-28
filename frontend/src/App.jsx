@@ -12,6 +12,7 @@ import { ChaosPanel } from './components/chaos/ChaosPanel';
 import { MissionLog } from './components/terminal/MissionLog';
 import NetworkMap3D from './components/network/NetworkMap3D';
 import StorageMap from './components/storage/StorageMap';
+import PayloadOps from './components/payload/PayloadOps';
 
 function Dashboard() {
   const { messages, connected } = useWebSocket('ws://localhost:8000/ws');
@@ -32,7 +33,31 @@ function Dashboard() {
   };
 
   const handleDownload = async (uuid) => {
-    window.open(`http://localhost:8000/api/download/${uuid}`, '_blank');
+    try {
+      const res = await fetch(`http://localhost:8000/api/download/${uuid}`);
+      if (!res.ok) throw new Error('Download failed');
+
+      const blob = await res.blob();
+
+      // Try to extract original filename from Content-Disposition header
+      let filename = `download-${uuid}`;
+      const disposition = res.headers.get('content-disposition');
+      if (disposition && disposition.includes('filename=')) {
+        filename = disposition.split('filename=')[1].replace(/["']/g, '');
+      }
+
+      // Trigger actual download in the browser
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('Failed to download file:', err);
+    }
   };
 
   return (
@@ -50,7 +75,7 @@ function Dashboard() {
           <div className="flex-1 flex flex-col min-w-0 h-full">
 
             {/* 3D Map Section / Main Content Area */}
-            <div className={`flex-1 relative mb-6 min-h-0 ${currentTab !== 'Storage Nodes' ? 'cursor-grab active:cursor-grabbing rounded-3xl border border-white/5 bg-gradient-to-b from-white/[0.01] to-transparent shadow-[inset_0_0_100px_rgba(0,0,0,0.5)]' : 'rounded-3xl border border-white/5 overflow-hidden'}`}>
+            <div className={`flex-1 relative mb-6 min-h-0 ${currentTab !== 'Storage Nodes' && currentTab !== 'Payload Ops' ? 'cursor-grab active:cursor-grabbing rounded-3xl border border-white/5 bg-gradient-to-b from-white/[0.01] to-transparent shadow-[inset_0_0_100px_rgba(0,0,0,0.5)]' : 'rounded-3xl border border-white/5 overflow-hidden'}`}>
 
               {currentTab === 'Orbital Engine' ? (
                 <>
@@ -83,18 +108,20 @@ function Dashboard() {
                 </>
               ) : currentTab === 'Storage Nodes' ? (
                 <StorageMap />
+              ) : currentTab === 'Payload Ops' ? (
+                <PayloadOps messages={messages} fileId={fileId} onUpload={handleUpload} onDownload={handleDownload} />
               ) : (
                 <NetworkMap3D />
               )}
 
               {/* Bottom Fade Mask for Map */}
-              {currentTab !== 'Storage Nodes' && (
+              {currentTab !== 'Storage Nodes' && currentTab !== 'Payload Ops' && (
                 <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-[#02040A] to-transparent pointer-events-none z-20"></div>
               )}
             </div>
 
-            {/* Bottom Panels Layout - Hidden on Storage Nodes tab to maximize vertical space */}
-            {currentTab !== 'Storage Nodes' && (
+            {/* Bottom Panels Layout - Hidden on full-height tabs */}
+            {currentTab !== 'Storage Nodes' && currentTab !== 'Payload Ops' && (
               <div className="h-[260px] shrink-0 grid grid-cols-12 gap-6 relative z-10 w-full overflow-x-hidden">
                 <div className="col-span-3 h-full">
                   <ResilienceChart />
@@ -112,8 +139,8 @@ function Dashboard() {
             )}
           </div>
 
-          {/* Right Sidebar - Hidden on Storage Nodes tab */}
-          {currentTab !== 'Storage Nodes' && (
+          {/* Right Sidebar - Hidden on full-height tabs */}
+          {currentTab !== 'Storage Nodes' && currentTab !== 'Payload Ops' && (
             <div className="w-80 shrink-0 h-full overflow-y-auto bg-white/[0.01] backdrop-blur-2xl border border-white/5 rounded-3xl p-2 shadow-2xl">
               <RightSidebar
                 messages={messages}
