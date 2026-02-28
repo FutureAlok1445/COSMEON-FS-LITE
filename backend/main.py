@@ -90,7 +90,13 @@ async def download_file(file_id: str):
             raise Exception("Final File Integrity Verification FAILED.")
             
         await manager.broadcast("DOWNLOAD_COMPLETE", "File reconstructed and verified 100% intact.")
-        return Response(content=file_bytes, media_type="application/octet-stream")
+        
+        # Pass the original filename to the client
+        original_filename = record.get("filename", f"recovered_{file_id[:8]}.dat")
+        headers = {
+            "Content-Disposition": f'attachment; filename="{original_filename}"'
+        }
+        return Response(content=file_bytes, media_type="application/octet-stream", headers=headers)
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Download failed: {str(e)}")
