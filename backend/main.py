@@ -159,7 +159,7 @@ async def upload_file(file: UploadFile = File(...)):
             while len(group) < RS_K:
                 pad_chunk = Chunk(
                     chunk_id=str(uuid.uuid4()),
-                    sequence_number=len(group),
+                    sequence_number=i + len(group),  # globally correct sequence
                     size=0,
                     sha256_hash="",
                     data=b"",
@@ -176,25 +176,37 @@ async def upload_file(file: UploadFile = File(...)):
             "message": f"RS({RS_K},2) encoded → {len(all_encoded)} total shards",
         })
 
-        # Step 3: Distribute with DTN fallback
-        placements = distribute_chunks(all_encoded, dtn_enqueue=add_to_queue)
+        # Step 3: Distribute each segment of 6 chunks (4 data + 2 parity)
+        all_placements = []
+        for seg_idx in range(0, len(all_encoded), RS_K + 2):
+            segment = all_encoded[seg_idx:seg_idx + RS_K + 2]
+            if len(segment) == RS_K + 2:  # full segment of 6
+                placements = distribute_chunks(file_id, segment)
+                all_placements.extend(placements)
+            else:
+                # Partial segment (shouldn't happen with proper padding)
+                placements = distribute_chunks(file_id, segment)
+                all_placements.extend(placements)
 
         # Broadcast per-chunk placement
-        for p in placements:
-            event = "CHUNK_UPLOADED" if p["success"] else ("DTN_QUEUED" if p.get("queued") else "CHUNK_FAILED")
+        for p in all_placements:
+            event = "CHUNK_UPLOADED" if p.get("success") else ("DTN_QUEUED" if p.get("queued") else "CHUNK_FAILED")
             await manager.broadcast(event, {
                 "file_id": file_id,
                 "chunk_id": p["chunk_id"],
                 "node_id": p["node_id"],
-                "plane": p["plane"],
+                "plane": p.get("plane", ""),
                 "is_parity": p["is_parity"],
             })
 
-        # Step 4: Build metadata and register
+        # Step 4: Build metadata and register (pad_size per chunk for multi-segment correctness)
         chunk_records = []
-        pad_size = getattr(all_encoded[0], '_pad_size', len(all_encoded[0].data)) if all_encoded else 0
-        for p in placements:
+        for p in all_placements:
             matching_chunk = next((c for c in all_encoded if c.chunk_id == p["chunk_id"]), None)
+            pad_size = (
+                getattr(matching_chunk, "_pad_size", len(matching_chunk.data) if matching_chunk else 0)
+                if matching_chunk else 512 * 1024
+            )
             chunk_records.append(ChunkRecord(
                 chunk_id=p["chunk_id"],
                 sequence_number=p["sequence_number"],
@@ -270,17 +282,29 @@ async def download_file(file_id: str):
         ]
 
         # Call reassembler with node_status callable
-        file_bytes = fetch_and_reassemble(
+        result = fetch_and_reassemble(
             chunk_records=chunk_records,
             get_node_status=get_node_status,
             file_hash=record.full_sha256,
         )
 
+        file_bytes = result["data"]
+        latency = result["latency"]
+        rs_used = result["rs_recovery"]
+
         await manager.broadcast("DOWNLOAD_COMPLETE", {
             "file_id": file_id,
             "filename": record.filename,
             "size": len(file_bytes),
+            "rs_recovery": rs_used,
+            "latency": latency,
             "message": f"{record.filename} reconstructed and verified intact",
+        })
+
+        # Broadcast latency breakdown for Metric 4 waterfall chart
+        await manager.broadcast("METRIC_UPDATE", {
+            "reconstruction_latency": latency,
+            "rs_recovery": rs_used,
         })
 
         return Response(
@@ -366,16 +390,14 @@ async def toggle_node(node_id: str):
 
 
 # ─────────────────────────────────────────────
-# POST /api/restore — Restore All Nodes
+# POST /api/restore — delegates to chaos restore
 # ─────────────────────────────────────────────
 
 @app.post("/api/restore")
 async def restore():
-    restore_all_nodes()
-    await manager.broadcast("SYSTEM_RESTORED", {
-        "message": "All nodes restored to ONLINE",
-    })
-    return {"status": "All nodes restored to ONLINE"}
+    """Delegates to chaos restore endpoint for consistent behavior."""
+    from backend.intelligence.chaos import restore as chaos_restore
+    return await chaos_restore()
 
 
 # ─────────────────────────────────────────────

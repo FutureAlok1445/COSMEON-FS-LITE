@@ -63,12 +63,25 @@ async def _tick_node(node_id: str) -> None:
             "message": f"{node_id} LOS imminent — {seconds}s remaining",
         })
 
-    # Timer expired → orbit complete → reset
+    # Timer expired → orbit complete → briefly DEGRADED → reset
     if seconds <= 0:
+        # Mark DEGRADED briefly (simulates orbital period completion jitter)
+        update_node_status(node_id, "DEGRADED")
+        await manager.broadcast("NODE_DEGRADED", {
+            "node_id": node_id,
+            "reason": "orbit_completion",
+            "message": f"{node_id} completing orbital cycle — temporarily DEGRADED",
+        })
+        # Brief degraded window (3 seconds)
+        await asyncio.sleep(3)
+
+        # Back to ONLINE
+        update_node_status(node_id, "ONLINE")
         await manager.broadcast("ORBIT_RESET", {
             "node_id": node_id,
-            "message": f"{node_id} completed orbital cycle — resetting timer",
+            "message": f"{node_id} completed orbital cycle — back ONLINE",
         })
+
         _timers[node_id] = ORBIT_PERIOD
         update_orbit_timer(node_id, ORBIT_PERIOD)
 

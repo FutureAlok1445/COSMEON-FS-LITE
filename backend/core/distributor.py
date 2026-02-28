@@ -110,13 +110,28 @@ def distribute_shards(
                 "sha256_hash":     chunk.sha256_hash,
                 "is_parity":       chunk.is_parity,
                 "pad_size":        getattr(chunk, 'pad_size', 0),
+                "plane":           target_plane,
+                "success":         success,
+                "queued":          False,
             })
         else:
-            # All nodes in target plane are OFFLINE → try any online node in other planes
-            fallback_node = _find_any_online_node(exclude_plane=target_plane)
+            # Fallback: exclude target plane AND paired chunk's plane(s) to preserve topology
+            exclude_planes = {target_plane}
+            if chunk.is_parity:
+                # P[i] pairs with D[i], D[i+2]; exclude their planes
+                p_idx = parity_chunks.index(chunk)
+                for d_idx in [p_idx, p_idx + 2]:
+                    if d_idx < len(data_chunks):
+                        exclude_planes.add(data_plane_assignments[data_chunks[d_idx].chunk_id])
+            else:
+                # D[i] pairs with P[i%RS_M]; exclude parity's plane
+                d_idx = data_chunks.index(chunk)
+                p_chunk = parity_chunks[d_idx % len(parity_chunks)]
+                exclude_planes.add(parity_plane_assignments[p_chunk.chunk_id])
+            fallback_node = _find_any_online_node(exclude_planes=list(exclude_planes))
 
             if fallback_node:
-                _write_chunk_to_node(chunk, fallback_node)
+                fb_success = _write_chunk_to_node(chunk, fallback_node)
                 placements.append({
                     "chunk_id":        chunk.chunk_id,
                     "node_id":         fallback_node,
@@ -125,6 +140,9 @@ def distribute_shards(
                     "sha256_hash":     chunk.sha256_hash,
                     "is_parity":       chunk.is_parity,
                     "pad_size":        getattr(chunk, '_pad_size', 0),
+                    "plane":           NODE_TO_PLANE.get(fallback_node, target_plane),
+                    "success":         fb_success,
+                    "queued":          False,
                 })
             else:
                 # All nodes offline → queue via DTN (Person 3)
@@ -138,9 +156,16 @@ def distribute_shards(
                     "sha256_hash":     chunk.sha256_hash,
                     "is_parity":       chunk.is_parity,
                     "pad_size":        getattr(chunk, '_pad_size', 0),
+                    "plane":           target_plane,
+                    "success":         False,
+                    "queued":          True,
                 })
 
     return placements
+
+
+# Backward-compatible alias (main.py imports this name)
+distribute_chunks = distribute_shards
 
 
 # ─────────────────────────────────────────────
@@ -180,22 +205,46 @@ def _write_chunk_to_node(chunk: Chunk, node_id: str) -> bool:
 
 
 def _enqueue_to_dtn(node_id: str, chunk: Chunk):
-    """Save chunk to the DTN queue directory for Person 3's worker."""
+    """
+    Queue chunk via the proper DTN system (Person 3's dtn_queue.py).
+    Stores as JSON bundle with base64, checksums, priority (parity first).
+    Falls back to raw .bin write if DTN module unavailable.
+    """
+    try:
+        import asyncio
+        from backend.intelligence.dtn_queue import add_to_queue
+
+        # Try to get running event loop (we're called from sync context)
+        try:
+            loop = asyncio.get_running_loop()
+            loop.create_task(add_to_queue(node_id, chunk))
+        except RuntimeError:
+            # No event loop running — use sync fallback
+            _enqueue_to_dtn_sync(node_id, chunk)
+    except ImportError:
+        _enqueue_to_dtn_sync(node_id, chunk)
+
+
+def _enqueue_to_dtn_sync(node_id: str, chunk: Chunk):
+    """Sync fallback: write raw .bin to DTN queue directory."""
     queue_dir = DTN_QUEUE_PATH / node_id
     queue_dir.mkdir(parents=True, exist_ok=True)
     chunk_path = queue_dir / f"{chunk.chunk_id}.bin"
     with open(chunk_path, "wb") as f:
         f.write(chunk.data)
-    # Update depth in metadata
     depth = len(list(queue_dir.glob("*.bin")))
     meta.update_dtn_queue_depth(node_id, depth)
 
 
-def _find_any_online_node(exclude_plane: str = None) -> Optional[str]:
-    """Find any online node, optionally excluding a specific plane."""
+def _find_any_online_node(exclude_planes: Optional[List[str]] = None) -> Optional[str]:
+    """
+    Find any online node, excluding the given planes.
+    Topology rule: data and its paired parity must never be on same plane.
+    """
     from backend.utils.node_manager import get_node_status
+    exclude = set(exclude_planes or [])
     for node_id in ALL_NODES:
-        if exclude_plane and NODE_TO_PLANE.get(node_id) == exclude_plane:
+        if NODE_TO_PLANE.get(node_id) in exclude:
             continue
         if get_node_status(node_id) == "ONLINE":
             return node_id

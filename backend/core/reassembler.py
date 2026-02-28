@@ -10,32 +10,46 @@ from typing import List, Callable, Optional
 from backend.core.chunker import Chunk, _compute_hash, reassemble_chunks
 from backend.core.decoder import decode_chunks
 from backend.core.integrity import verify_read, verify_file
-from backend.config import NODES_BASE_PATH, RS_K
-from backend.intelligence.predictor import log_chunk_request
+from backend.config import NODES_BASE_PATH, RS_K, RS_TOTAL
+from backend.intelligence.predictor import record_chunk_access
+from backend.cache.ground_cache import ground_cache
+from backend.metrics.calculator import LatencyTracker
 
 
 def fetch_and_reassemble(
     chunk_records: List[dict],          # from metadata: [{chunk_id, sequence_number, sha256_hash, node_id, pad_size}, ...]
     get_node_status: Callable,          # Person 2 provides: get_node_status(node_id) -> "ONLINE"|"OFFLINE"|...
     file_hash: str,                     # original full-file SHA-256 from metadata
-) -> bytes:
+) -> dict:
     """
     Main reassembly pipeline:
-    1. Try to fetch each chunk from its assigned satellite node
-    2. Verify SHA-256 on every chunk read
-    3. If chunk unavailable/corrupted → collect remaining chunks + call RS decoder
-    4. Reassemble in sequence order
-    5. Verify full-file SHA-256
+    1. Check ground cache before fetching from satellite node
+    2. Try to fetch each chunk from its assigned satellite node
+    3. Verify SHA-256 on every chunk read
+    4. If chunk unavailable/corrupted → collect remaining chunks + call RS decoder
+    5. Reassemble in sequence order
+    6. Verify full-file SHA-256
+    7. Track latency across all phases
 
-    Returns: original file bytes
+    Returns: dict with 'data' (bytes), 'latency' (phase breakdown), 'rs_recovery' (bool)
 
     Raises:
         ValueError if fewer than RS_K=4 chunks available (unrecoverable)
         ValueError if final file hash doesn't match (catastrophic corruption)
     """
+    tracker = LatencyTracker()
+    tracker.start_total()
+    rs_recovery_used = False
+
+    # Phase 1: Metadata lookup (already done by caller, but track timing)
+    tracker.start_phase("metadata")
     available_chunks: List[Chunk] = []
     missing_sequences: List[int] = []
     pad_size: int = chunk_records[0].get("pad_size", 512 * 1024)  # fallback to CHUNK_SIZE
+    tracker.end_phase("metadata")
+
+    # Phase 2: Fetch chunks (cache → satellite node)
+    tracker.start_phase("fetch")
 
     for record in sorted(chunk_records, key=lambda r: r["sequence_number"]):
         seq     = record["sequence_number"]
@@ -47,7 +61,26 @@ def fetch_and_reassemble(
         if record.get("is_parity", False):
             continue
 
-        # Check node status via Person 2's interface
+        # ── Check ground cache FIRST (F13: LRU cache skip node I/O) ──
+        cached_data = ground_cache.get(c_id)
+        if cached_data is not None:
+            # Cache hit — verify integrity and use directly
+            if verify_read(cached_data, c_hash):
+                record_chunk_access(c_id)
+                available_chunks.append(Chunk(
+                    chunk_id        = c_id,
+                    sequence_number = seq,
+                    size            = len(cached_data),
+                    sha256_hash     = c_hash,
+                    data            = cached_data,
+                    is_parity       = False,
+                ))
+                continue
+            else:
+                # Cache data corrupted — evict and fall through to node fetch
+                ground_cache.evict(c_id)
+
+        # ── Fetch from satellite node ──
         status = get_node_status(node_id)
 
         if status == "ONLINE":
@@ -58,7 +91,11 @@ def fetch_and_reassemble(
 
                 # Level 2 integrity check
                 if verify_read(data, c_hash):
-                    log_chunk_request(node_id, c_id)
+                    record_chunk_access(c_id)
+
+                    # Store in ground cache for future downloads
+                    ground_cache.put(c_id, data)
+
                     available_chunks.append(Chunk(
                         chunk_id        = c_id,
                         sequence_number = seq,
@@ -76,32 +113,117 @@ def fetch_and_reassemble(
             # Node OFFLINE or PARTITIONED — chunk unavailable
             missing_sequences.append(seq)
 
-    # If any data chunks missing → attempt RS recovery
+    tracker.end_phase("fetch")
+
+    # Phase 3: RS decode if any data chunks missing
+    tracker.start_phase("decode")
+
     if missing_sequences:
-        if len(available_chunks) < RS_K:
-            raise ValueError(
-                f"Unrecoverable: only {len(available_chunks)} chunks available, "
-                f"need {RS_K}. Missing sequences: {missing_sequences}"
-            )
-
-        # Include parity chunks for RS recovery
-        all_available = _fetch_all_chunks_for_recovery(chunk_records, get_node_status)
-        recovered = decode_chunks(all_available, pad_size)
-        final_chunks = recovered  # decoder always returns full [D0,D1,D2,D3]
+        rs_recovery_used = True
+        # Process segment-by-segment with correct pad_size per segment
+        num_segments = (len(chunk_records) + RS_TOTAL - 1) // RS_TOTAL
+        final_chunks = list(available_chunks)
+        for seg_idx in range(num_segments):
+            seg_start = seg_idx * RS_TOTAL
+            seg_end = min(seg_start + RS_TOTAL, len(chunk_records))
+            seg_records = chunk_records[seg_start:seg_end]
+            seg_data_seqs = {r["sequence_number"] for r in seg_records if not r.get("is_parity", False)}
+            seg_missing = seg_data_seqs & set(missing_sequences)
+            if not seg_missing:
+                continue
+            seg_pad_size = seg_records[0].get("pad_size", 512 * 1024) if seg_records else 512 * 1024
+            seg_available = _fetch_chunks_for_segment(seg_records, get_node_status)
+            if len(seg_available) < RS_K:
+                raise ValueError(
+                    f"Unrecoverable segment {seg_idx}: only {len(seg_available)} chunks, need {RS_K}"
+                )
+            base_seq = seg_idx * RS_TOTAL
+            # Remap to decoder's expected 0-5 by position in segment
+            rec_by_id = {r["chunk_id"]: (i, r) for i, r in enumerate(seg_records)}
+            remapped = [
+                Chunk(
+                    chunk_id=c.chunk_id,
+                    sequence_number=rec_by_id[c.chunk_id][0],
+                    size=c.size,
+                    sha256_hash=c.sha256_hash,
+                    data=c.data,
+                    is_parity=c.is_parity,
+                )
+                for c in seg_available if c.chunk_id in rec_by_id
+            ]
+            recovered = decode_chunks(remapped, seg_pad_size)
+            for r in recovered:
+                r.sequence_number = 4 * seg_idx + r.sequence_number
+            final_chunks = [c for c in final_chunks if c.sequence_number not in seg_data_seqs]
+            final_chunks.extend(recovered)
+        final_chunks = sorted(final_chunks, key=lambda c: c.sequence_number)
     else:
-        final_chunks = available_chunks
+        final_chunks = sorted(available_chunks, key=lambda c: c.sequence_number)
 
-    # Reassemble bytes
+    tracker.end_phase("decode")
+
+    # Phase 4: Reassemble bytes
+    tracker.start_phase("assembly")
     file_bytes = reassemble_chunks(final_chunks)
+    tracker.end_phase("assembly")
 
-    # Level 3 — full file integrity check
+    # Phase 5: Full file integrity check
+    tracker.start_phase("verify")
     if not verify_file(file_bytes, file_hash):
         raise ValueError(
             "CRITICAL: Reassembled file SHA-256 does NOT match original. "
             "Data may be permanently corrupted beyond RS recovery capacity."
         )
+    tracker.end_phase("verify")
 
-    return file_bytes
+    return {
+        "data": file_bytes,
+        "latency": tracker.report(),
+        "rs_recovery": rs_recovery_used,
+    }
+
+
+def _fetch_chunks_for_segment(
+    seg_records: List[dict],
+    get_node_status: Callable,
+) -> List[Chunk]:
+    """Fetch all available chunks (data + parity) for a single RS segment."""
+    available = []
+    for record in seg_records:
+        node_id = record["node_id"]
+        c_id = record["chunk_id"]
+        c_hash = record["sha256_hash"]
+        seq = record["sequence_number"]
+        is_par = record.get("is_parity", False)
+        cached = ground_cache.get(c_id)
+        if cached is not None and verify_read(cached, c_hash):
+            available.append(Chunk(
+                chunk_id=c_id,
+                sequence_number=seq,
+                size=len(cached),
+                sha256_hash=c_hash,
+                data=cached,
+                is_parity=is_par,
+            ))
+            continue
+        if get_node_status(node_id) != "ONLINE":
+            continue
+        chunk_path = Path(NODES_BASE_PATH) / node_id / f"{c_id}.bin"
+        if not chunk_path.exists():
+            continue
+        with open(chunk_path, "rb") as f:
+            data = f.read()
+        if verify_read(data, c_hash):
+            ground_cache.put(c_id, data)
+            available.append(Chunk(
+                chunk_id=c_id,
+                sequence_number=seq,
+                size=len(data),
+                sha256_hash=c_hash,
+                data=data,
+                is_parity=is_par,
+            ))
+    return available
 
 
 def _fetch_all_chunks_for_recovery(
@@ -111,6 +233,7 @@ def _fetch_all_chunks_for_recovery(
     """
     Fetch ALL available chunks (data + parity) for RS recovery.
     Used when some data chunks are missing and we need parity to reconstruct.
+    Also checks ground cache before hitting disk.
     """
     available = []
 
@@ -120,6 +243,19 @@ def _fetch_all_chunks_for_recovery(
         c_hash  = record["sha256_hash"]
         seq     = record["sequence_number"]
         is_par  = record.get("is_parity", False)
+
+        # Check ground cache first
+        cached = ground_cache.get(c_id)
+        if cached is not None and verify_read(cached, c_hash):
+            available.append(Chunk(
+                chunk_id        = c_id,
+                sequence_number = seq,
+                size            = len(cached),
+                sha256_hash     = c_hash,
+                data            = cached,
+                is_parity       = is_par,
+            ))
+            continue
 
         status = get_node_status(node_id)
         if status != "ONLINE":
@@ -133,6 +269,9 @@ def _fetch_all_chunks_for_recovery(
             data = f.read()
 
         if verify_read(data, c_hash):
+            # Cache it for future use
+            ground_cache.put(c_id, data)
+
             available.append(Chunk(
                 chunk_id        = c_id,
                 sequence_number = seq,

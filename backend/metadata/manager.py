@@ -91,6 +91,20 @@ def _replicate_to_nodes(store: StoreModel) -> None:
             shutil.copy2(METADATA_PATH, dest)
 
 
+def replicate_to_node(node_id: str) -> None:
+    """
+    Push current primary store.json to a specific node folder.
+    Call when bringing a node ONLINE so it receives latest metadata.
+    """
+    with _lock:
+        if not Path(METADATA_PATH).exists():
+            return
+        node_folder = Path(NODES_BASE_PATH) / node_id
+        node_folder.mkdir(parents=True, exist_ok=True)
+        dest = node_folder / "store.json"
+        shutil.copy2(METADATA_PATH, dest)
+
+
 # ─────────────────────────────────────────────
 # FILE REGISTRY
 # ─────────────────────────────────────────────

@@ -9,9 +9,12 @@ import json
 import base64
 from pathlib import Path
 from datetime import datetime
-from typing import Optional
+from typing import Dict, Optional
 
 from backend.config import DTN_QUEUE_PATH, NODES_BASE_PATH, ALL_NODES
+
+# Per-node locks to prevent race between add_to_queue and flush_queue
+_node_locks: Dict[str, asyncio.Lock] = {n: asyncio.Lock() for n in ALL_NODES}
 from backend.core.chunker import Chunk
 from backend.core.integrity import verify_write
 from backend.utils.ws_manager import manager
@@ -71,7 +74,6 @@ async def add_to_queue(node_id: str, chunk: Chunk) -> None:
     """
     Queue a chunk for delayed delivery to an offline node.
     Bundle format matches NASA BPv7 structure.
-
     INTERFACE CONTRACT: distributor.py calls this function.
     """
     bundle = {
@@ -86,9 +88,14 @@ async def add_to_queue(node_id: str, chunk: Chunk) -> None:
         "priority": 10 if chunk.is_parity else 5,  # Parity gets higher priority
     }
 
-    bundles = _read_queue(node_id)
-    bundles.append(bundle)
-    _write_queue(node_id, bundles)
+    lock = _node_locks.get(node_id)
+    if lock is None:
+        _node_locks[node_id] = asyncio.Lock()
+        lock = _node_locks[node_id]
+    async with lock:
+        bundles = _read_queue(node_id)
+        bundles.append(bundle)
+        _write_queue(node_id, bundles)
 
     # Update metadata queue depth
     update_dtn_queue_depth(node_id, len(bundles))
@@ -116,55 +123,67 @@ async def flush_queue(node_id: str) -> int:
 
     Returns number of bundles delivered.
     """
-    bundles = _read_queue(node_id)
-    if not bundles:
-        return 0
+    lock = _node_locks.get(node_id)
+    if lock is None:
+        _node_locks[node_id] = asyncio.Lock()
+        lock = _node_locks[node_id]
+    async with lock:
+        bundles = _read_queue(node_id)
+        if not bundles:
+            return 0
 
-    # Sort by priority descending (parity = 10 first, data = 5 after)
-    bundles.sort(key=lambda b: b["priority"], reverse=True)
+        # Sort by priority descending (parity = 10 first, data = 5 after)
+        bundles.sort(key=lambda b: b["priority"], reverse=True)
 
-    await manager.broadcast("DTN_FLUSH_START", {
-        "node_id": node_id,
-        "bundle_count": len(bundles),
-        "message": f"Flushing {len(bundles)} bundles to {node_id}",
-    })
+        await manager.broadcast("DTN_FLUSH_START", {
+            "node_id": node_id,
+            "bundle_count": len(bundles),
+            "message": f"Flushing {len(bundles)} bundles to {node_id}",
+        })
 
-    delivered = 0
-    node_path = Path(NODES_BASE_PATH) / node_id
-    node_path.mkdir(parents=True, exist_ok=True)
+        delivered = 0
+        delivered_chunk_ids = set()
+        node_path = Path(NODES_BASE_PATH) / node_id
+        node_path.mkdir(parents=True, exist_ok=True)
 
-    for bundle in bundles:
-        chunk_path = node_path / f"{bundle['chunk_id']}.bin"
+        for bundle in bundles:
+            chunk_path = node_path / f"{bundle['chunk_id']}.bin"
 
-        try:
-            # Decode base64 data and write
-            chunk_data = base64.b64decode(bundle["data_b64"])
-            with open(chunk_path, "wb") as f:
-                f.write(chunk_data)
+            try:
+                # Decode base64 data and write
+                chunk_data = base64.b64decode(bundle["data_b64"])
+                with open(chunk_path, "wb") as f:
+                    f.write(chunk_data)
 
-            # Verify write integrity
-            if verify_write(str(chunk_path), bundle["sha256_hash"]):
-                delivered += 1
-                update_node_storage(node_id, size_delta=bundle["size"], chunk_delta=1)
+                # Verify write integrity
+                if verify_write(str(chunk_path), bundle["sha256_hash"]):
+                    delivered += 1
+                    delivered_chunk_ids.add(bundle["chunk_id"])
+                    update_node_storage(node_id, size_delta=bundle["size"], chunk_delta=1)
 
-                await manager.broadcast("DTN_BUNDLE_DELIVERED", {
-                    "node_id": node_id,
-                    "chunk_id": bundle["chunk_id"],
-                    "delivered": delivered,
-                    "total": len(bundles),
-                    "message": f"Bundle {delivered}/{len(bundles)} delivered to {node_id}",
-                })
-            else:
-                # Write verification failed
-                chunk_path.unlink(missing_ok=True)
-                print(f"[DTN] ❌ Write verify failed for {bundle['chunk_id'][:8]}...")
+                    await manager.broadcast("DTN_BUNDLE_DELIVERED", {
+                        "node_id": node_id,
+                        "chunk_id": bundle["chunk_id"],
+                        "delivered": delivered,
+                        "total": len(bundles),
+                        "message": f"Bundle {delivered}/{len(bundles)} delivered to {node_id}",
+                    })
+                else:
+                    # Write verification failed — keep in queue for retry
+                    chunk_path.unlink(missing_ok=True)
+                    print(f"[DTN] ❌ Write verify failed for {bundle['chunk_id'][:8]}... (will retry)")
 
-        except Exception as e:
-            print(f"[DTN] ❌ Delivery error: {e}")
+            except Exception as e:
+                print(f"[DTN] ❌ Delivery error: {e} (bundle will retry)")
 
-    # Clear queue after flush
-    _clear_queue(node_id)
-    update_dtn_queue_depth(node_id, 0)
+        # Only remove successfully delivered bundles; keep failed ones for retry
+        remaining = [b for b in bundles if b["chunk_id"] not in delivered_chunk_ids]
+        if remaining:
+            _write_queue(node_id, remaining)
+            update_dtn_queue_depth(node_id, len(remaining))
+        else:
+            _clear_queue(node_id)
+            update_dtn_queue_depth(node_id, 0)
 
     await manager.broadcast("DTN_FLUSH_COMPLETE", {
         "node_id": node_id,
