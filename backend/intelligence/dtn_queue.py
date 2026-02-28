@@ -1,44 +1,35 @@
 import asyncio
-import json
-from backend.config import NODES_DIR, ORBITAL_PLANES
-from backend.metadata.manager import _load_db
+import os
+import shutil
+from backend.config import DTN_QUEUE_PATH, NODES_BASE_PATH, ALL_NODES
+from backend.metadata.manager import get_node, update_dtn_queue_depth
 from backend.utils.ws_manager import manager
 
 async def dtn_flush_worker():
     """
     Background worker that strictly emulates Delay Tolerant Networking.
-    Polls the dtn_queue folders. If a node is ONLINE, it unwraps the bundled metadata
-    and delivers the binary payload, clearing the queue.
+    Polls the dtn_queue folders. If a node is ONLINE, it delivers the payload.
     """
     while True:
         try:
-            db = _load_db()
-            node_states = db.get("nodes", {})
-            
-            for plane, nodes in ORBITAL_PLANES.items():
-                for node in nodes:
-                    if node_states.get(node, {}).get("status") == "ONLINE":
-                        queue_dir = NODES_DIR / node / "dtn_queue"
+            for node_id in ALL_NODES:
+                node_data = get_node(node_id)
+                if node_data and node_data.status == "ONLINE":
+                    node_queue_dir = DTN_QUEUE_PATH / node_id
+                    
+                    if node_queue_dir.exists():
+                        bundles = list(node_queue_dir.glob("*.bin"))
+                        update_dtn_queue_depth(node_id, len(bundles))
                         
-                        # Process bundles if queue dir exists
-                        if queue_dir.exists():
-                            for bundle_file in queue_dir.glob("*.json"):
-                                with open(bundle_file, "r") as f:
-                                    bundle = json.load(f)
-                                
-                                # Unpack DTN bundle
-                                bin_filename = bundle_file.name.replace(".json", "")
-                                bin_path = NODES_DIR / node / bin_filename
-                                
-                                # Write payload using hex decode
-                                with open(bin_path, "wb") as bf:
-                                    bf.write(bytes.fromhex(bundle["shard"]["data"]))
-                                
-                                await manager.broadcast("DTN_FLUSH", f"DTN Queue delivered {bin_filename} to {node} upon horizon acquisition.", {"node": node})
-                                
-                                # Remove delivered bundle
-                                bundle_file.unlink()
+                        for bundle_path in bundles:
+                            dest_path = NODES_BASE_PATH / node_id / bundle_path.name
+                            shutil.move(str(bundle_path), str(dest_path))
+                            
+                            await manager.broadcast("DTN_FLUSH", f"DTN delivered {bundle_path.name} to {node_id}.", {"node": node_id})
+                            
+                        # Update depth after flush
+                        update_dtn_queue_depth(node_id, 0)
         except Exception as e:
-            print(f"DTN Worker Error: {e}")
+            print(f"[DTN] Error: {e}")
             
-        await asyncio.sleep(5)  # Poll every 5 seconds
+        await asyncio.sleep(5)

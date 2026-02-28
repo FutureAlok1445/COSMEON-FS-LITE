@@ -10,18 +10,32 @@ from backend.core.chunker import split_file, compute_sha256
 from backend.core.encoder import encode_rs_shards
 from backend.core.distributor import distribute_shards
 from backend.core.reassembler import retrieve_file_shards
-from backend.metadata.manager import save_file_record, get_file_record
+from backend.metadata.manager import register_file, get_file, init_store
 from backend.utils.ws_manager import manager
 from backend.intelligence.chaos import router as chaos_router
 from backend.intelligence.dtn_queue import dtn_flush_worker
+from backend.intelligence.trajectory import orbit_timer_worker
+from backend.intelligence.predictor import predictor_worker
+from backend.intelligence.rebalancer import rebalancer_worker
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Start the DTN daemon
+    # Initialize the store.json if it doesn't exist
+    init_store()
+    
+    # Start all Person 3 background workers
     dtn_task = asyncio.create_task(dtn_flush_worker())
+    orbit_task = asyncio.create_task(orbit_timer_worker())
+    predictor_task = asyncio.create_task(predictor_worker())
+    rebalancer_task = asyncio.create_task(rebalancer_worker())
+    
     yield
+    
     # Shutdown
     dtn_task.cancel()
+    orbit_task.cancel()
+    predictor_task.cancel()
+    rebalancer_task.cancel()
 
 app = FastAPI(title="COSMEON FS-LITE Final Architecture API", lifespan=lifespan)
 
@@ -57,14 +71,19 @@ async def upload_file(file: UploadFile = File(...)):
         base_chunks = split_file(content, CHUNK_SIZE)
         shards = encode_rs_shards(base_chunks)
         
+        # Note: distribute_shards should return List[ChunkRecord] in the new architecture
         allocation_ledger = distribute_shards(file_id, shards)
         
-        save_file_record(file_id, {
-            "filename": file.filename,
-            "hash": full_hash,
-            "size_bytes": len(content),
-            "shards": allocation_ledger
-        })
+        from backend.metadata.schemas import FileRecord
+        file_record = FileRecord(
+            file_id=file_id,
+            filename=file.filename,
+            full_sha256=full_hash,
+            size=len(content),
+            chunk_count=len(allocation_ledger),
+            chunks=allocation_ledger
+        )
+        register_file(file_record)
         
         await manager.broadcast("UPLOAD_COMPLETE", f"{file.filename} partitioned across orbital mesh.")
         
@@ -78,21 +97,27 @@ async def upload_file(file: UploadFile = File(...)):
 @app.get("/api/download/{file_id}")
 async def download_file(file_id: str):
     """Reconstructs the file from fragments distributed in orbit."""
-    record = get_file_record(file_id)
+    record = get_file(file_id)
     if not record:
         raise HTTPException(status_code=404, detail="File ID not found.")
         
     try:
-        file_bytes = await retrieve_file_shards(file_id, record)
+        from backend.metadata.manager import get_node
+        # Adapt retrieve_file_shards to use the new chunk records and get_node_status callback
+        file_bytes = await fetch_and_reassemble(
+            [c.model_dump() for c in record.chunks],
+            lambda node_id: get_node(node_id).status if get_node(node_id) else "OFFLINE",
+            record.full_sha256
+        )
         
-        if compute_sha256(file_bytes) != record["hash"]:
+        if compute_sha256(file_bytes) != record.full_sha256:
             await manager.broadcast("FILE_CORRUPTED", "Catastrophic error: Final hash mismatch.")
             raise Exception("Final File Integrity Verification FAILED.")
             
         await manager.broadcast("DOWNLOAD_COMPLETE", "File reconstructed and verified 100% intact.")
         
         # Pass the original filename to the client
-        original_filename = record.get("filename", f"recovered_{file_id[:8]}.dat")
+        original_filename = record.filename
         headers = {
             "Content-Disposition": f'attachment; filename="{original_filename}"'
         }

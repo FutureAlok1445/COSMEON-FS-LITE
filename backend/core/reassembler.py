@@ -11,6 +11,7 @@ from backend.core.chunker import Chunk, _compute_hash, reassemble_chunks
 from backend.core.decoder import decode_chunks
 from backend.core.integrity import verify_read, verify_file
 from backend.config import NODES_BASE_PATH, RS_K
+from backend.intelligence.predictor import log_chunk_request
 
 
 def fetch_and_reassemble(
@@ -57,6 +58,7 @@ def fetch_and_reassemble(
 
                 # Level 2 integrity check
                 if verify_read(data, c_hash):
+                    log_chunk_request(node_id, c_id)
                     available_chunks.append(Chunk(
                         chunk_id        = c_id,
                         sequence_number = seq,
