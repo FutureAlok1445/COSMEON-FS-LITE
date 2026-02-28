@@ -5,11 +5,11 @@ from fastapi import FastAPI, UploadFile, File, HTTPException, WebSocket
 from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.config import CHUNK_SIZE, init_fs
-from backend.core.chunker import split_file, compute_sha256
-from backend.core.encoder import encode_rs_shards
+from backend.config import CHUNK_SIZE, init_node_folders
+from backend.core.chunker import chunk_file, _compute_hash
+from backend.core.encoder import encode_chunks
 from backend.core.distributor import distribute_shards
-from backend.core.reassembler import retrieve_file_shards
+from backend.core.reassembler import fetch_and_reassemble
 from backend.metadata.manager import register_file, get_file, init_store
 from backend.utils.ws_manager import manager
 from backend.intelligence.chaos import router as chaos_router
@@ -20,7 +20,8 @@ from backend.intelligence.rebalancer import rebalancer_worker
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize the store.json if it doesn't exist
+    # Initialize the store.json and node folders
+    init_node_folders()
     init_store()
     
     # Start all Person 3 background workers
@@ -64,12 +65,12 @@ async def upload_file(file: UploadFile = File(...)):
     try:
         content = await file.read()
         file_id = str(uuid.uuid4())
-        full_hash = compute_sha256(content)
+        full_hash = _compute_hash(content)
         
         await manager.broadcast("UPLOAD_START", f"Ingesting {file.filename}")
         
-        base_chunks = split_file(content, CHUNK_SIZE)
-        shards = encode_rs_shards(base_chunks)
+        base_chunks, _ = chunk_file(content)
+        shards = encode_chunks(base_chunks)
         
         # Note: distribute_shards should return List[ChunkRecord] in the new architecture
         allocation_ledger = distribute_shards(file_id, shards)
@@ -110,7 +111,7 @@ async def download_file(file_id: str):
             record.full_sha256
         )
         
-        if compute_sha256(file_bytes) != record.full_sha256:
+        if _compute_hash(file_bytes) != record.full_sha256:
             await manager.broadcast("FILE_CORRUPTED", "Catastrophic error: Final hash mismatch.")
             raise Exception("Final File Integrity Verification FAILED.")
             

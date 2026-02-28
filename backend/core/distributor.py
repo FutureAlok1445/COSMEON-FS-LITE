@@ -11,7 +11,7 @@ from backend.core.chunker import Chunk
 from backend.core.integrity import verify_write
 from backend.config import (
     ORBITAL_PLANES, NODE_TO_PLANE, ALL_NODES,
-    NODES_BASE_PATH, RS_K
+    NODES_BASE_PATH, DTN_QUEUE_PATH, RS_K
 )
 from backend.metadata import manager as meta
 
@@ -46,7 +46,8 @@ def _pick_node_with_least_chunks(node_list: List[str]) -> Optional[str]:
 # MAIN DISTRIBUTION FUNCTION
 # ─────────────────────────────────────────────
 
-def distribute_chunks(
+def distribute_shards(
+    file_id: str,
     chunks: List[Chunk],
     dtn_enqueue: Optional[Callable] = None,
 ) -> List[dict]:
@@ -105,50 +106,38 @@ def distribute_chunks(
                 "chunk_id":        chunk.chunk_id,
                 "node_id":         target_node,
                 "sequence_number": chunk.sequence_number,
+                "size":            chunk.size,
+                "sha256_hash":     chunk.sha256_hash,
                 "is_parity":       chunk.is_parity,
-                "plane":           target_plane,
-                "success":         success,
-                "queued":          False,
+                "pad_size":        getattr(chunk, 'pad_size', 0),
             })
         else:
             # All nodes in target plane are OFFLINE → try any online node in other planes
             fallback_node = _find_any_online_node(exclude_plane=target_plane)
 
             if fallback_node:
-                success = _write_chunk_to_node(chunk, fallback_node)
+                _write_chunk_to_node(chunk, fallback_node)
                 placements.append({
                     "chunk_id":        chunk.chunk_id,
                     "node_id":         fallback_node,
                     "sequence_number": chunk.sequence_number,
+                    "size":            chunk.size,
+                    "sha256_hash":     chunk.sha256_hash,
                     "is_parity":       chunk.is_parity,
-                    "plane":           NODE_TO_PLANE[fallback_node],
-                    "success":         success,
-                    "queued":          False,
+                    "pad_size":        getattr(chunk, '_pad_size', 0),
                 })
-            elif dtn_enqueue:
+            else:
                 # All nodes offline → queue via DTN (Person 3)
-                # Pick first node in target plane (will get delivered when it comes online)
                 queued_node = ORBITAL_PLANES[target_plane][0]
-                dtn_enqueue(queued_node, chunk)
+                _enqueue_to_dtn(queued_node, chunk)
                 placements.append({
                     "chunk_id":        chunk.chunk_id,
                     "node_id":         queued_node,
                     "sequence_number": chunk.sequence_number,
+                    "size":            chunk.size,
+                    "sha256_hash":     chunk.sha256_hash,
                     "is_parity":       chunk.is_parity,
-                    "plane":           target_plane,
-                    "success":         False,
-                    "queued":          True,
-                })
-            else:
-                placements.append({
-                    "chunk_id":        chunk.chunk_id,
-                    "node_id":         None,
-                    "sequence_number": chunk.sequence_number,
-                    "is_parity":       chunk.is_parity,
-                    "plane":           target_plane,
-                    "success":         False,
-                    "queued":          False,
-                    "error":           "No online nodes available and no DTN queue provided",
+                    "pad_size":        getattr(chunk, '_pad_size', 0),
                 })
 
     return placements
@@ -188,6 +177,18 @@ def _write_chunk_to_node(chunk: Chunk, node_id: str) -> bool:
     except Exception as e:
         print(f"[DISTRIBUTOR] ❌ Error writing {chunk.chunk_id} to {node_id}: {e}")
         return False
+
+
+def _enqueue_to_dtn(node_id: str, chunk: Chunk):
+    """Save chunk to the DTN queue directory for Person 3's worker."""
+    queue_dir = DTN_QUEUE_PATH / node_id
+    queue_dir.mkdir(parents=True, exist_ok=True)
+    chunk_path = queue_dir / f"{chunk.chunk_id}.bin"
+    with open(chunk_path, "wb") as f:
+        f.write(chunk.data)
+    # Update depth in metadata
+    depth = len(list(queue_dir.glob("*.bin")))
+    meta.update_dtn_queue_depth(node_id, depth)
 
 
 def _find_any_online_node(exclude_plane: str = None) -> Optional[str]:
