@@ -1,14 +1,21 @@
 import React from 'react';
 import { Bell, Search, User } from 'lucide-react';
 
-export default function Topbar() {
+export default function Topbar({ currentTab, setCurrentTab }) {
+    const tabs = ['Orbital Engine', 'Network Map', 'Payload Telemetry', 'Ground Links'];
+
     return (
         <div className="flex justify-between items-center h-16 bg-[#0a0f1c] border-b border-[#1e293b] px-6">
             <div className="flex gap-8 text-sm font-semibold text-gray-400">
-                <a href="#" className="text-white border-b-2 border-blue-500 pb-[18px]">Orbital Engine</a>
-                <a href="#" className="hover:text-gray-200 transition-colors">Network Map</a>
-                <a href="#" className="hover:text-gray-200 transition-colors">Payload Telemetry</a>
-                <a href="#" className="hover:text-gray-200 transition-colors">Ground Links</a>
+                {tabs.map(tab => (
+                    <button
+                        key={tab}
+                        onClick={() => setCurrentTab && setCurrentTab(tab)}
+                        className={`pb-[18px] transition-colors ${currentTab === tab ? 'text-white border-b-2 border-blue-500' : 'hover:text-gray-200'}`}
+                    >
+                        {tab}
+                    </button>
+                ))}
             </div>
 
             <div className="flex items-center gap-6">
