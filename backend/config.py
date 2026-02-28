@@ -64,4 +64,4 @@ def init_node_folders():
 
     DTN_QUEUE_PATH.mkdir(parents=True, exist_ok=True)
     METADATA_PATH.parent.mkdir(parents=True, exist_ok=True)
-    print(f"[CONFIG] ✅ Node folders initialized: {ALL_NODES}")
+    print(f"[CONFIG] [SUCCESS] Node folders initialized: {ALL_NODES}")

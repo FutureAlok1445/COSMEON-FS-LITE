@@ -9,6 +9,7 @@
       "storage_used": 524288,
       "chunk_count": 1,
       "orbit_timer": 100,
+      "orbit_timer": 45,
       "dtn_queue_depth": 0
     },
     "SAT-02": {
@@ -19,6 +20,7 @@
       "storage_used": 524288,
       "chunk_count": 1,
       "orbit_timer": 100,
+      "orbit_timer": 45,
       "dtn_queue_depth": 0
     },
     "SAT-03": {

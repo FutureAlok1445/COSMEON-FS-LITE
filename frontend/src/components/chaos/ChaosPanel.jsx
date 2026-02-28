@@ -23,28 +23,31 @@ export function ChaosPanel() {
     };
 
     const cards = [
-        { id: 'solar_flare', name: 'Solar Flare', desc: 'Kills Plane Beta (SAT-03, SAT-04)', icon: Zap, color: 'text-yellow-500', bg: 'bg-yellow-500/10' },
+        { id: 'solar_flare', name: 'Solar Flare', desc: 'Kills Plane Beta (SAT-03, SAT-04)', icon: Zap, color: 'text-amber-500', bg: 'bg-amber-500/10' },
         { id: 'bit_rot', name: 'Radiation Bit Rot', desc: 'Silently corrupts 1 byte in SAT-01', icon: Activity, color: 'text-purple-500', bg: 'bg-purple-500/10' },
-        { id: 'partition', name: 'Network Partition', desc: 'Cuts link to Plane Beta (DTN mode)', icon: ShieldAlert, color: 'text-red-500', bg: 'bg-red-500/10' }
+        { id: 'partition', name: 'Network Partition', desc: 'Cuts link to Plane Beta (DTN mode)', icon: ShieldAlert, color: 'text-rose-500', bg: 'bg-rose-500/10' }
     ];
 
     return (
-        <div className="bg-gray-900 border border-gray-700 rounded-lg p-4 h-full flex flex-col">
-            <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-2 text-red-500 font-bold">
-                    <AlertCircle size={20} />
-                    <span>CHAOS ENGINEERING</span>
+        <div className="bg-[#111827]/80 backdrop-blur-xl border border-[#1e293b] rounded-2xl p-6 h-full flex flex-col shadow-2xl relative overflow-hidden group">
+
+            <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 blur-[80px] group-hover:bg-red-500/10 transition-all duration-700"></div>
+
+            <div className="flex justify-between items-center mb-6 relative z-10">
+                <div className="flex items-center gap-3">
+                    <AlertCircle className="text-red-500" size={20} />
+                    <h3 className="text-white font-bold tracking-wide">Chaos Injection Array</h3>
                 </div>
                 <button
                     onClick={resetAll}
-                    className="flex items-center gap-2 bg-green-500/20 text-green-400 px-3 py-1 rounded text-sm hover:bg-green-500/30 transition-colors"
+                    className="flex items-center gap-2 bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-500/30 transition-all shadow-[0_0_10px_rgba(16,185,129,0.2)]"
                 >
                     <RefreshCw size={14} />
-                    RESTORE ALL
+                    SYSTEM RESTORE
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 flex-1">
+            <div className="grid grid-cols-1 gap-3 flex-1 relative z-10">
                 {cards.map(card => {
                     const Icon = card.icon;
                     return (
@@ -52,16 +55,19 @@ export function ChaosPanel() {
                             key={card.id}
                             onClick={() => triggerChaos(card.id)}
                             disabled={active && active !== card.id}
-                            className={`text-left p-3 rounded border transition-all ${active === card.id
-                                    ? `${card.border} ${card.bg} border-${card.color.split('-')[1]}-500 animate-pulse`
-                                    : `border-gray-800 hover:border-gray-600 bg-gray-800/50 ${active ? 'opacity-50' : ''}`
+                            className={`text-left p-4 rounded-xl border transition-all ${active === card.id
+                                ? `border-${card.color.split('-')[1]}-500 ${card.bg} shadow-[0_0_15px_rgba(255,255,255,0.1)]`
+                                : `border-[#1e293b] hover:border-gray-500 bg-[#0f172a]/50 ${active ? 'opacity-40 grayscale' : ''}`
                                 }`}
                         >
-                            <div className="flex items-center gap-3 mb-1">
-                                <Icon className={card.color} size={18} />
-                                <span className="font-semibold text-gray-200">{card.name}</span>
+                            <div className="flex justify-between items-center">
+                                <div className="flex items-center gap-3">
+                                    <Icon className={card.color} size={18} />
+                                    <span className="font-bold text-gray-200">{card.name}</span>
+                                </div>
+                                {active === card.id && <span className="text-[10px] font-mono text-red-400 animate-pulse">ACTIVE</span>}
                             </div>
-                            <p className="text-xs text-gray-500 ml-7">{card.desc}</p>
+                            <p className="text-xs text-gray-500 ml-8 mt-1">{card.desc}</p>
                         </button>
                     );
                 })}
