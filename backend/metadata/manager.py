@@ -137,13 +137,29 @@ def get_all_files() -> List[FileRecord]:
 
 
 def delete_file(file_id: str) -> bool:
-    """Remove a file record from store.json."""
+    """Remove a file record from store.json and delete physical chunks."""
     with _lock:
         store = _read_store()
         if file_id not in store.files:
             return False
+
+        file_rec = store.files[file_id]
+        
+        # Deduct storage and delete physical files
+        for chunk in file_rec.chunks:
+            node_id = chunk.node_id
+            if node_id in store.nodes:
+                store.nodes[node_id].storage_used = max(0, store.nodes[node_id].storage_used - chunk.size)
+                store.nodes[node_id].chunk_count = max(0, store.nodes[node_id].chunk_count - 1)
+                
+            # Physically delete the chunk file
+            if node_id:
+                chunk_path = Path(NODES_BASE_PATH) / node_id / f"{chunk.chunk_id}.bin"
+                chunk_path.unlink(missing_ok=True)
+                
         filename = store.files[file_id].filename
         del store.files[file_id]
+        
         _log_event(store, "FILE_DELETED", f"File '{filename}' removed", {"file_id": file_id})
         _write_store(store)
         return True

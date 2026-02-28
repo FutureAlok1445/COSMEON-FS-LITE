@@ -76,6 +76,20 @@ export default function StorageMap() {
         }
     };
 
+    const handleDelete = async (fileId) => {
+        try {
+            const res = await fetch(`${API_URL}/delete/${fileId}`, { method: 'DELETE' });
+            if (res.ok) {
+                await fetchState();
+            } else {
+                const errData = await res.json();
+                alert(`Delete failed: ${errData.detail}`);
+            }
+        } catch (err) {
+            alert(`Delete failed: ${err.message}`);
+        }
+    };
+
     const toggleNodeStatus = async (nodeId) => {
         try {
             await fetch(`${API_URL}/node/${nodeId}/toggle`, { method: 'POST' });
@@ -157,7 +171,10 @@ export default function StorageMap() {
                                         >
                                             <Download size={12} /> Fetch
                                         </button>
-                                        <button className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded p-1.5 transition-colors">
+                                        <button
+                                            onClick={() => handleDelete(file.file_id)}
+                                            className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded p-1.5 transition-colors"
+                                        >
                                             <Trash2 size={12} />
                                         </button>
                                     </div>

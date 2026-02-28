@@ -1,1406 +1,33 @@
 {
   "files": {
-    "77c5e1fe-17e0-4e4c-907c-cbc59055d713": {
-      "file_id": "77c5e1fe-17e0-4e4c-907c-cbc59055d713",
-      "filename": "COSMEON_FS_LITE_Complete_Plan.pdf",
-      "size": 4429862,
-      "full_sha256": "8f6e1c886a7f5f2089617c7fd339fb247d968e527b671b5d64bd38334702f563",
-      "chunk_count": 9,
-      "uploaded_at": "2026-02-28T15:37:57.480873",
-      "chunks": [
-        {
-          "chunk_id": "16a97624-05fd-4c19-b85e-dc0035090780",
-          "sequence_number": 0,
-          "size": 524288,
-          "sha256_hash": "b8525dce4d7989748bf433e61a9c80d3b3fba809a9afdf18483a636358595029",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "cfc76700-1b12-45f9-9b35-0dceb7b027fd",
-          "sequence_number": 1,
-          "size": 524288,
-          "sha256_hash": "9ec6fdba6f06e2287efa09e8fb28ac74b8b5a9d36d38cf83c6ae084632ccac71",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "f5c1afe2-942e-49b1-a5d1-3540c53d0676",
-          "sequence_number": 2,
-          "size": 524288,
-          "sha256_hash": "b75f93f66ba67cc2460dd89ad0fc88d8a9a3fc570a3dcbd4c3ea654c2baca332",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "02603093-d62e-4448-b02e-8fa1c7bfc54d",
-          "sequence_number": 3,
-          "size": 524288,
-          "sha256_hash": "96ca3b6daa56f49515e455ad8e97c9b11fe050e5a4a948a4d80ab2334d605e9c",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "64538c47-edcd-4321-9680-dc0d2a737e74",
-          "sequence_number": 4,
-          "size": 524288,
-          "sha256_hash": "26df8bc358c7959508da81b8bfc21a7ef654aa470fc9e2f5a406b1b7d1376d01",
-          "node_id": "SAT-03",
-          "is_parity": true,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "4536444d-278c-4682-ba8d-ee0aa0fe84bf",
-          "sequence_number": 5,
-          "size": 524288,
-          "sha256_hash": "57d089084fb8f7c3888803d76da89839b65a3dfda997f256999b8cb4d8a5231a",
-          "node_id": "SAT-01",
-          "is_parity": true,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "f7dab528-b90a-4bc0-8515-e9bea73cc740",
-          "sequence_number": 4,
-          "size": 524288,
-          "sha256_hash": "5c264f5b97f42edf5c9ae3fdd821d2bf9cbde22f2ed196c0c306ecfe27edb332",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "f3d79cd2-c8fd-4ddc-a978-db0ae146a962",
-          "sequence_number": 5,
-          "size": 524288,
-          "sha256_hash": "485f50ec3b2d836a67283860d207403e0ff59ef408d47896edd14848979cd0b1",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "73cee486-15c1-455c-8baa-d81b63192e42",
-          "sequence_number": 6,
-          "size": 524288,
-          "sha256_hash": "a06cbf27a3a81e128ef2a85a43a867f95e2142a241339c8498d631fae8d9ee09",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "ef38b631-ed1d-4c48-ae24-908ebff5e02f",
-          "sequence_number": 7,
-          "size": 524288,
-          "sha256_hash": "ab1a043ae6af94ec8cd6e9f87edb96afba357ee5c522566a25901cc464f459e6",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "700f008c-336b-445c-a453-a52c13e05694",
-          "sequence_number": 4,
-          "size": 524288,
-          "sha256_hash": "0e448a0670734ec2e4c1fe9c30e65672f43b0e6b44b6f9d35e9487a86a2b8a1a",
-          "node_id": "SAT-03",
-          "is_parity": true,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "87bd845b-d955-438d-a5dd-57abaabd8c27",
-          "sequence_number": 5,
-          "size": 524288,
-          "sha256_hash": "8b02db14ba2e6dae7a86a9e4b5d418c11abbe0907e902bd5b92a41b51bb0733e",
-          "node_id": "SAT-03",
-          "is_parity": true,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "a47662a0-9c36-4525-80a6-a72b565d9dbe",
-          "sequence_number": 8,
-          "size": 235558,
-          "sha256_hash": "01c1bfe86cf7046fc40d8aef516f517f6dedc92a9a393380f20b4aa83279ea89",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 235558
-        },
-        {
-          "chunk_id": "ab5babdd-9669-4a6f-a139-3e696b7b7bda",
-          "sequence_number": 9,
-          "size": 0,
-          "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 235558
-        },
-        {
-          "chunk_id": "b441e705-6c36-4288-b25d-77c72c23dbd3",
-          "sequence_number": 10,
-          "size": 0,
-          "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 235558
-        },
-        {
-          "chunk_id": "5b10d122-61f0-4d1e-8971-9641fdae3888",
-          "sequence_number": 11,
-          "size": 0,
-          "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 235558
-        },
-        {
-          "chunk_id": "bd97631f-f16c-454e-a0cf-92078854c4d1",
-          "sequence_number": 4,
-          "size": 235558,
-          "sha256_hash": "4072614544e4d100e20ca28ca0900206f837afa6b8f969cd4f98892d81917407",
-          "node_id": "SAT-03",
-          "is_parity": true,
-          "pad_size": 235558
-        },
-        {
-          "chunk_id": "8dba1751-4677-415a-be50-1f16ac129e8b",
-          "sequence_number": 5,
-          "size": 235558,
-          "sha256_hash": "28247ccaf8d022a033a05cb83ee1cb87a1f3846b894304d433929e96be2c3d3a",
-          "node_id": "SAT-03",
-          "is_parity": true,
-          "pad_size": 235558
-        }
-      ]
-    },
-    "8375da9a-95e4-426e-be3e-ab8cbd8e3a31": {
-      "file_id": "8375da9a-95e4-426e-be3e-ab8cbd8e3a31",
-      "filename": "COSMEON_FS_LITE_Complete_Plan.pdf",
-      "size": 4429862,
-      "full_sha256": "8f6e1c886a7f5f2089617c7fd339fb247d968e527b671b5d64bd38334702f563",
-      "chunk_count": 9,
-      "uploaded_at": "2026-02-28T15:39:14.190621",
-      "chunks": [
-        {
-          "chunk_id": "241006eb-b962-49a3-9dbb-939d20cdb1eb",
-          "sequence_number": 0,
-          "size": 524288,
-          "sha256_hash": "b8525dce4d7989748bf433e61a9c80d3b3fba809a9afdf18483a636358595029",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "c2562c99-33f7-4f9b-a169-95001205eac8",
-          "sequence_number": 1,
-          "size": 524288,
-          "sha256_hash": "9ec6fdba6f06e2287efa09e8fb28ac74b8b5a9d36d38cf83c6ae084632ccac71",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "cd429e31-24ce-4292-b0dd-d0bce0eb2481",
-          "sequence_number": 2,
-          "size": 524288,
-          "sha256_hash": "b75f93f66ba67cc2460dd89ad0fc88d8a9a3fc570a3dcbd4c3ea654c2baca332",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "eef031a3-85f9-4127-8206-d29ef7d6fcdd",
-          "sequence_number": 3,
-          "size": 524288,
-          "sha256_hash": "96ca3b6daa56f49515e455ad8e97c9b11fe050e5a4a948a4d80ab2334d605e9c",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "b56cb46a-43d7-423d-81d0-19e6b77dcda7",
-          "sequence_number": 4,
-          "size": 524288,
-          "sha256_hash": "26df8bc358c7959508da81b8bfc21a7ef654aa470fc9e2f5a406b1b7d1376d01",
-          "node_id": "SAT-03",
-          "is_parity": true,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "f2475f58-7527-4758-9e4c-2343a1095be1",
-          "sequence_number": 5,
-          "size": 524288,
-          "sha256_hash": "57d089084fb8f7c3888803d76da89839b65a3dfda997f256999b8cb4d8a5231a",
-          "node_id": "SAT-03",
-          "is_parity": true,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "02e05a5c-c3c3-4205-bac6-27c0f4000398",
-          "sequence_number": 4,
-          "size": 524288,
-          "sha256_hash": "5c264f5b97f42edf5c9ae3fdd821d2bf9cbde22f2ed196c0c306ecfe27edb332",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "92c71806-f38f-4a8e-8a8b-0ef0f5c71bbd",
-          "sequence_number": 5,
-          "size": 524288,
-          "sha256_hash": "485f50ec3b2d836a67283860d207403e0ff59ef408d47896edd14848979cd0b1",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "034b222b-decf-415c-85a2-29400176f4b9",
-          "sequence_number": 6,
-          "size": 524288,
-          "sha256_hash": "a06cbf27a3a81e128ef2a85a43a867f95e2142a241339c8498d631fae8d9ee09",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "a1f67513-63b9-4d5c-b603-114a8f8fbf57",
-          "sequence_number": 7,
-          "size": 524288,
-          "sha256_hash": "ab1a043ae6af94ec8cd6e9f87edb96afba357ee5c522566a25901cc464f459e6",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "6b41a674-950f-4faf-9a22-1d66a777812e",
-          "sequence_number": 4,
-          "size": 524288,
-          "sha256_hash": "0e448a0670734ec2e4c1fe9c30e65672f43b0e6b44b6f9d35e9487a86a2b8a1a",
-          "node_id": "SAT-03",
-          "is_parity": true,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "d33ec009-2889-4f96-a760-0ce042a4a892",
-          "sequence_number": 5,
-          "size": 524288,
-          "sha256_hash": "8b02db14ba2e6dae7a86a9e4b5d418c11abbe0907e902bd5b92a41b51bb0733e",
-          "node_id": "SAT-03",
-          "is_parity": true,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "87734ce8-dbc5-4461-b090-f12ba1f39547",
-          "sequence_number": 8,
-          "size": 235558,
-          "sha256_hash": "01c1bfe86cf7046fc40d8aef516f517f6dedc92a9a393380f20b4aa83279ea89",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 235558
-        },
-        {
-          "chunk_id": "a00d8648-af9d-4229-8e14-f5d73164256b",
-          "sequence_number": 9,
-          "size": 0,
-          "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 235558
-        },
-        {
-          "chunk_id": "21b6e5f8-8b9d-4ea8-9fdb-03747424b4e1",
-          "sequence_number": 10,
-          "size": 0,
-          "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 235558
-        },
-        {
-          "chunk_id": "e7bb6ea4-9032-47f1-8af9-07bfeea55aaa",
-          "sequence_number": 11,
-          "size": 0,
-          "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 235558
-        },
-        {
-          "chunk_id": "8efd57c9-b32b-4749-8859-3c899efb4aa1",
-          "sequence_number": 4,
-          "size": 235558,
-          "sha256_hash": "4072614544e4d100e20ca28ca0900206f837afa6b8f969cd4f98892d81917407",
-          "node_id": "SAT-03",
-          "is_parity": true,
-          "pad_size": 235558
-        },
-        {
-          "chunk_id": "2c83e679-9daf-4429-95a3-1a1391989d14",
-          "sequence_number": 5,
-          "size": 235558,
-          "sha256_hash": "28247ccaf8d022a033a05cb83ee1cb87a1f3846b894304d433929e96be2c3d3a",
-          "node_id": "SAT-03",
-          "is_parity": true,
-          "pad_size": 235558
-        }
-      ]
-    },
-    "sim_file_1": {
-      "file_id": "sim_file_1",
-      "filename": "test_imbalance.bin",
-      "size": 37888,
-      "full_sha256": "fake_full",
-      "chunk_count": 37,
-      "uploaded_at": "2026-02-28T15:51:44.018330",
-      "chunks": [
-        {
-          "chunk_id": "sim_chunk_1_0",
-          "sequence_number": 0,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_1",
-          "sequence_number": 1,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_2",
-          "sequence_number": 2,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_3",
-          "sequence_number": 3,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_4",
-          "sequence_number": 4,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_5",
-          "sequence_number": 5,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_6",
-          "sequence_number": 6,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_7",
-          "sequence_number": 7,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_8",
-          "sequence_number": 8,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_9",
-          "sequence_number": 9,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_10",
-          "sequence_number": 10,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_11",
-          "sequence_number": 11,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_12",
-          "sequence_number": 12,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_13",
-          "sequence_number": 13,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_14",
-          "sequence_number": 14,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_15",
-          "sequence_number": 15,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_16",
-          "sequence_number": 16,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_17",
-          "sequence_number": 17,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_18",
-          "sequence_number": 18,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_1_19",
-          "sequence_number": 19,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_2_0",
-          "sequence_number": 20,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_2_1",
-          "sequence_number": 21,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_2_2",
-          "sequence_number": 22,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_2_3",
-          "sequence_number": 23,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_2_4",
-          "sequence_number": 24,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_2_5",
-          "sequence_number": 25,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_2_6",
-          "sequence_number": 26,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_2_7",
-          "sequence_number": 27,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_2_8",
-          "sequence_number": 28,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_2_9",
-          "sequence_number": 29,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_2_10",
-          "sequence_number": 30,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_2_11",
-          "sequence_number": 31,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_2_12",
-          "sequence_number": 32,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_2_13",
-          "sequence_number": 33,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_2_14",
-          "sequence_number": 34,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_3_0",
-          "sequence_number": 35,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "sim_chunk_3_1",
-          "sequence_number": 36,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        }
-      ]
-    },
-    "b4a629bf-c483-41a4-a86e-a435ddc6184e": {
-      "file_id": "b4a629bf-c483-41a4-a86e-a435ddc6184e",
-      "filename": "chaos_imbalance_payload.bin",
-      "size": 37888,
-      "full_sha256": "fake_full",
-      "chunk_count": 37,
-      "uploaded_at": "2026-02-28T16:01:57.798281",
-      "chunks": [
-        {
-          "chunk_id": "6a30525c-0e5d-4c7a-b2b9-f41d9eea7ce1",
-          "sequence_number": 0,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "8217e60e-f27d-4558-971d-9219c016146c",
-          "sequence_number": 1,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "d2cce14e-830d-4b49-8626-ab79a3171a89",
-          "sequence_number": 2,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "2e98d78c-775d-4cf2-a49f-a1c28e4bfdfd",
-          "sequence_number": 3,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "43612bc4-52ef-442b-897a-2c1d799b8db3",
-          "sequence_number": 4,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "b7e2ace5-0044-46b5-9d05-d193db4a3dc0",
-          "sequence_number": 5,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "11d4b2e0-28a8-4948-bb93-8925d373e54f",
-          "sequence_number": 6,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "42cc4a7b-d34d-4a22-96ad-c190c5e7c6d6",
-          "sequence_number": 7,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "35c8effd-7af8-4698-b9f7-30d87188cb82",
-          "sequence_number": 8,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "4452afd7-ecfb-4c37-926c-2a73aaf8e8f9",
-          "sequence_number": 9,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "02180c06-ef7c-4aa8-89e4-5a2c2781a3fe",
-          "sequence_number": 10,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "d1f42cb5-d207-401b-93f9-7333d44c9d79",
-          "sequence_number": 11,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "484d226c-4888-456e-b767-868df7450242",
-          "sequence_number": 12,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "c659b189-70d4-41f3-95ca-81747f26b34f",
-          "sequence_number": 13,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "ab9a4445-932a-4cf9-b5ef-210cf127aaa7",
-          "sequence_number": 14,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "82117b9b-24de-4f5a-a90d-ca116bfc618f",
-          "sequence_number": 15,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "2872078c-ce38-4e6c-94e9-f0d924731178",
-          "sequence_number": 16,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "77cd46f5-9eea-4bce-ae9d-136642b1cc16",
-          "sequence_number": 17,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "ffd13f0e-2dd0-408c-904b-ea8de8c81f1a",
-          "sequence_number": 18,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "60da195d-1914-4077-a4a8-f43544a798d3",
-          "sequence_number": 19,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "6d4cea93-b064-48d4-881e-8a9d4eebd326",
-          "sequence_number": 20,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "a1e2d532-03cf-4177-ad2b-64318c0cd767",
-          "sequence_number": 21,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "f57a6b26-e4af-4e10-9621-8302a9fe979a",
-          "sequence_number": 22,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "280f0c1f-b125-439c-8e44-4ebb0fe75cc7",
-          "sequence_number": 23,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "70b89858-0e1c-43df-9314-72e439268127",
-          "sequence_number": 24,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "faacb8ed-7c19-400f-9bf9-5b147ba6888c",
-          "sequence_number": 25,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "3e208177-f7cb-445e-a4cc-29f1e343566a",
-          "sequence_number": 26,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "e27e8abf-697a-474c-bc2d-709bd6803351",
-          "sequence_number": 27,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-04",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "3759f35a-a038-484a-a344-fda4269acfe1",
-          "sequence_number": 28,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-04",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "db714b5b-09b4-4a21-96ed-5e8c19c8e837",
-          "sequence_number": 29,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-03",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "b89189f0-37cf-429d-81fe-8515a75c21f4",
-          "sequence_number": 30,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "0c69e7e6-ba20-4e1d-aaf3-e488fe3e9d5c",
-          "sequence_number": 31,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "cafb10fc-4d62-469b-b2fe-7ab76d341c2b",
-          "sequence_number": 32,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "070c0b61-9f49-4039-9f97-f970f492216f",
-          "sequence_number": 33,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "ea202e25-3bd5-45b6-bc26-8574c4eb823b",
-          "sequence_number": 34,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "4c145871-8278-4f0e-9833-728ba9956893",
-          "sequence_number": 35,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "b4bde84b-b2bb-4281-8bf9-66c7ff705866",
-          "sequence_number": 36,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        }
-      ]
-    },
-    "5f436e6b-0bd1-4664-829e-f4de80fb7dd6": {
-      "file_id": "5f436e6b-0bd1-4664-829e-f4de80fb7dd6",
-      "filename": "chaos_imbalance_payload.bin",
-      "size": 37888,
-      "full_sha256": "fake_full",
-      "chunk_count": 37,
-      "uploaded_at": "2026-02-28T16:02:05.434826",
-      "chunks": [
-        {
-          "chunk_id": "8c9b6adb-03e5-4d65-965b-7b9b4a2a98ef",
-          "sequence_number": 0,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "cc430786-7ef7-4c86-9f28-b86974d35690",
-          "sequence_number": 1,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "950e92c3-540c-49b9-a6e3-8a4901267ac1",
-          "sequence_number": 2,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "03c43c8c-26cf-43f4-bd41-e36e70841621",
-          "sequence_number": 3,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "294e83f6-30d2-45e6-bcb5-294d2d40588f",
-          "sequence_number": 4,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "169e1be0-4f5e-4a67-8899-9d8093920ff1",
-          "sequence_number": 5,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "23391427-c2c5-4e21-b6e1-4ae00e3c73eb",
-          "sequence_number": 6,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "7401ae01-b067-48db-8b9e-fdf589fe5ec1",
-          "sequence_number": 7,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "fefd252f-acac-422c-999a-950b3f7e090c",
-          "sequence_number": 8,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "44f924e9-2396-4015-9c2e-038ad9eb8452",
-          "sequence_number": 9,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "425d22f8-9446-460d-9c8c-b637a77db906",
-          "sequence_number": 10,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "eeec2b85-b0b5-4b76-aedc-8c251c459192",
-          "sequence_number": 11,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "32065e2e-1bd2-42c1-b1d6-d9e33d011154",
-          "sequence_number": 12,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "5cd22365-67d4-4403-a6e0-33cd01665fb9",
-          "sequence_number": 13,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "ce8a0df3-5fb9-4f51-bcc9-12519243c396",
-          "sequence_number": 14,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "60fec6e7-2a8a-4975-a54b-df3f851f390f",
-          "sequence_number": 15,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "9fbedb45-2055-4b7a-a536-f761e22947e5",
-          "sequence_number": 16,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "14463cda-f563-4f29-b155-8dbc9d6a0e32",
-          "sequence_number": 17,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "6af4f4f0-10fd-4198-94ad-096d12cb8949",
-          "sequence_number": 18,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "dbe45a2c-43b5-418d-9f0b-b9b4e1f0ff3d",
-          "sequence_number": 19,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-01",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "caf02e7b-9b9b-4035-bc11-588b5d037d2f",
-          "sequence_number": 20,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "a2786970-ecf8-4976-b588-2f80f237d21e",
-          "sequence_number": 21,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "d0f08702-c4b0-4f4b-85d9-bc4b2737b91a",
-          "sequence_number": 22,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "55108f18-e9e9-461c-85af-cec9d5109991",
-          "sequence_number": 23,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "b2c325d5-040b-4ef6-8630-1c56f30ac0ae",
-          "sequence_number": 24,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "35244562-6bd5-488f-a236-9b08e75fdeeb",
-          "sequence_number": 25,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "a114f44b-bbcc-4caa-bed1-570e127b5a07",
-          "sequence_number": 26,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "ad51e67e-2ca4-4d8b-8545-f661a41147f6",
-          "sequence_number": 27,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "fb44b36d-f6d5-4550-8209-d082cc6cddf3",
-          "sequence_number": 28,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "f75ee1c7-0914-4e30-b5b8-1b3759e71679",
-          "sequence_number": 29,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "3dec9b2f-4719-4891-9160-c8026c1e2a2f",
-          "sequence_number": 30,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "3bdd4ab5-2606-4aba-b857-9c61816ee188",
-          "sequence_number": 31,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "b5be498a-eced-4cd6-bf1f-6e1a48d62fad",
-          "sequence_number": 32,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "4a649573-060c-4006-97a5-0ce4a913c45a",
-          "sequence_number": 33,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "f8e4e9b4-dac1-48f8-bb29-e63e90944649",
-          "sequence_number": 34,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "2ec63503-fbed-463a-a0ab-e3d5b16541d4",
-          "sequence_number": 35,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        },
-        {
-          "chunk_id": "4da487b6-2af1-4129-86ac-b5fe0098395c",
-          "sequence_number": 36,
-          "size": 1024,
-          "sha256_hash": "fake",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 512
-        }
-      ]
-    },
-    "3f1712b5-987e-4d08-adba-7627f542d8e8": {
-      "file_id": "3f1712b5-987e-4d08-adba-7627f542d8e8",
+    "f9aefc53-a982-4be0-b4a1-2a1af8d23593": {
+      "file_id": "f9aefc53-a982-4be0-b4a1-2a1af8d23593",
       "filename": "BugBytes_A.P.ShahInstituteOfTechnology_DataWeb2026.pdf",
       "size": 5877881,
       "full_sha256": "6187496c77f10f512c60b641ff7bea6ad4bc4b49726f95abdbc6fcbd5d98c5da",
       "chunk_count": 12,
-      "uploaded_at": "2026-02-28T16:54:20.566014",
+      "uploaded_at": "2026-02-28T19:09:21.893382",
       "chunks": [
         {
-          "chunk_id": "6e871d19-24bd-4ab5-969b-4103c408205c",
+          "chunk_id": "1e8d14c2-c43d-4969-8321-ffec143569c9",
           "sequence_number": 0,
           "size": 524288,
           "sha256_hash": "19f5f3f2034c0d5f89902bb1c74e674f79d1785cadfd8b693f153d63724aced2",
-          "node_id": "SAT-02",
+          "node_id": "SAT-01",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "f6374a46-736b-4c2b-90f5-3d813078b592",
+          "chunk_id": "56953d17-5be7-4e80-ba00-0c1e4c0a7b45",
           "sequence_number": 1,
           "size": 524288,
           "sha256_hash": "9440600474ea6c485a6136bdcadd37c0924fd670ec723515c5dbf3abe5c4979e",
-          "node_id": "SAT-04",
+          "node_id": "SAT-01",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "7bd65d79-6298-4acf-8efd-1544dbb184c3",
+          "chunk_id": "26dd0abf-20c2-4622-a433-997a56ba8767",
           "sequence_number": 2,
           "size": 524288,
           "sha256_hash": "2038f50ddb485c2a34ef1132aafcc3ef4062d4e48b0488b75b879dbbfd72d13c",
@@ -1409,52 +36,52 @@
           "pad_size": 524288
         },
         {
-          "chunk_id": "89c264e6-3882-487c-b659-f5eb680baf11",
+          "chunk_id": "6ef3375e-d3db-49f6-a508-373f7233a5fd",
           "sequence_number": 3,
           "size": 524288,
           "sha256_hash": "84270380b7abe6324992f2a7f9eefa976c9b7aab8534686571876af7182c5d45",
-          "node_id": "SAT-02",
+          "node_id": "SAT-01",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "6df705a0-8fb4-4421-a18f-1b8062feba31",
+          "chunk_id": "7389a0b7-7be0-4d2e-958c-dbf1e8f5bcdf",
           "sequence_number": 4,
           "size": 524288,
           "sha256_hash": "802bcf934ab4f93cfcb59a839c3b740e988f8846aedb5ec4a75a37023daf1b24",
-          "node_id": "SAT-04",
+          "node_id": "SAT-03",
           "is_parity": true,
           "pad_size": 524288
         },
         {
-          "chunk_id": "d0907ef7-3ed8-4034-b98a-a31457f067fa",
+          "chunk_id": "87d6e906-7843-412b-b5c0-c17e295ba0bc",
           "sequence_number": 5,
           "size": 524288,
           "sha256_hash": "8584045f07427af745174bd75a84a9329ac4801b95bdb4a4512d18f60dde84ff",
-          "node_id": "SAT-05",
+          "node_id": "SAT-03",
           "is_parity": true,
           "pad_size": 524288
         },
         {
-          "chunk_id": "18629a85-90d7-4235-adc5-4f0266957179",
+          "chunk_id": "4d3650ba-72d2-4719-981c-7026c078c1d5",
           "sequence_number": 4,
           "size": 524288,
           "sha256_hash": "2b7db20ebf02bdbec87d654f556c8fef5061bf29afafedcfa2669b6536b1ad61",
-          "node_id": "SAT-02",
+          "node_id": "SAT-01",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "7cfa831e-46ea-4da9-93ba-791912efe924",
+          "chunk_id": "7818a995-0845-44ea-933c-8d60d5ca6e82",
           "sequence_number": 5,
           "size": 524288,
           "sha256_hash": "108e76841a5c83bc7815534bdbcda37915b8730c0178246beaa8dcc0c73e58b0",
-          "node_id": "SAT-04",
+          "node_id": "SAT-01",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "f3eada32-168b-4278-bc97-95adfc12cc45",
+          "chunk_id": "0f3adf02-0bd6-444f-b61b-914b5934c557",
           "sequence_number": 6,
           "size": 524288,
           "sha256_hash": "bccc146305dbf21f7cd416e1be52b80567ae90e5c16a197fdd4b95ac067b1d21",
@@ -1463,7 +90,7 @@
           "pad_size": 524288
         },
         {
-          "chunk_id": "ca04f106-d53f-4edb-aac7-4645ee300a1a",
+          "chunk_id": "a04935f9-012e-4e6b-bff7-5f907ac63456",
           "sequence_number": 7,
           "size": 524288,
           "sha256_hash": "aee9e1d8f591df6d9f80797c5d1bbeded47287da82f068a88bad2f1be22051f5",
@@ -1472,25 +99,25 @@
           "pad_size": 524288
         },
         {
-          "chunk_id": "98d6dd5b-5829-4109-8a89-5ca51cc3fa9a",
+          "chunk_id": "b6f17c14-5701-44fa-9b2a-8246354bbeca",
           "sequence_number": 4,
           "size": 524288,
           "sha256_hash": "7efff77e96b7fcaeaa153b6af60f94141c334eea97daacd74d3722c6b9d07bc0",
-          "node_id": "SAT-04",
+          "node_id": "SAT-03",
           "is_parity": true,
           "pad_size": 524288
         },
         {
-          "chunk_id": "36fd7006-72ed-4f60-aedf-5849699e3963",
+          "chunk_id": "1fdfc760-3bdc-44c4-a1c4-2e5d0f191c77",
           "sequence_number": 5,
           "size": 524288,
           "sha256_hash": "7a05d7286fd852c2096dc2f136f47ffaa1f75cb92569a60e3dbbae05f0a9fe6a",
-          "node_id": "SAT-05",
+          "node_id": "SAT-03",
           "is_parity": true,
           "pad_size": 524288
         },
         {
-          "chunk_id": "15c961a7-3118-4878-a813-09551483bbe8",
+          "chunk_id": "dab5f0d2-9c4f-45a5-bde3-81c6fe7fb513",
           "sequence_number": 8,
           "size": 524288,
           "sha256_hash": "11acf28357c4a98ba79cb99484a725557042f13de9506397e6a1cf6ff4ba5a8e",
@@ -1499,16 +126,16 @@
           "pad_size": 524288
         },
         {
-          "chunk_id": "cfb6395c-53fd-490e-b199-133f1cf11991",
+          "chunk_id": "6002bb22-9ff1-4c2c-bd7e-71492fc66da9",
           "sequence_number": 9,
           "size": 524288,
           "sha256_hash": "70a7745fee4f68c4ecff8fa2c25c1d8a96e36ca680f62382ad21df475befdf7e",
-          "node_id": "SAT-04",
+          "node_id": "SAT-01",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "f1c8bf97-ded9-493e-a050-d3252db756f5",
+          "chunk_id": "59ead09d-a8d4-4ab2-9f65-2d2ce5d2f985",
           "sequence_number": 10,
           "size": 524288,
           "sha256_hash": "82391ac09d27dd5315642353cfb03d726b91024f84857b8ef0dd58d940a4d621",
@@ -1517,7 +144,7 @@
           "pad_size": 524288
         },
         {
-          "chunk_id": "98273140-d33b-4f2b-b690-d018a702814f",
+          "chunk_id": "a3e7d604-1e8c-415a-a450-233639aae5cc",
           "sequence_number": 11,
           "size": 110713,
           "sha256_hash": "05f7897a4bcc0494de1d74ffbcd9063c54aae9874c4bff7618ca4f26a7757d02",
@@ -1526,418 +153,246 @@
           "pad_size": 524288
         },
         {
-          "chunk_id": "fd6c0d97-a003-430b-9731-062ca329aba0",
+          "chunk_id": "f05c6c3d-807a-4a43-b68e-d2277fcb13e7",
           "sequence_number": 4,
           "size": 524288,
           "sha256_hash": "647372f02b27cab60aef40eba717e8032355b027ac4c4aa7b7b206200765d38a",
-          "node_id": "SAT-04",
+          "node_id": "SAT-03",
           "is_parity": true,
           "pad_size": 524288
         },
         {
-          "chunk_id": "cf817adb-207c-4369-bd0e-9c90a3a1d58d",
+          "chunk_id": "4caf8cd7-6cbf-4b20-b09a-6569e7022198",
           "sequence_number": 5,
           "size": 524288,
           "sha256_hash": "bc89d60c88cddc4d2bd2cca391d90ea971b9e24a0e1a1c325834223719bd9040",
-          "node_id": "SAT-05",
+          "node_id": "SAT-03",
           "is_parity": true,
           "pad_size": 524288
         }
       ]
     },
-    "c72bef1f-5892-4047-a1b7-bb1a82b5d249": {
-      "file_id": "c72bef1f-5892-4047-a1b7-bb1a82b5d249",
-      "filename": "COSMEON_FS_LITE_Complete_Plan.pdf",
-      "size": 4429862,
-      "full_sha256": "8f6e1c886a7f5f2089617c7fd339fb247d968e527b671b5d64bd38334702f563",
-      "chunk_count": 9,
-      "uploaded_at": "2026-02-28T17:28:16.950095",
+    "36e63728-5e5e-4225-bcf0-1fba8295be1b": {
+      "file_id": "36e63728-5e5e-4225-bcf0-1fba8295be1b",
+      "filename": "Gemini_Generated_Image_1akw6b1akw6b1akw.png",
+      "size": 7838333,
+      "full_sha256": "f4c21a11aa4518a89ff481e30a2540d9bddfc9678ffeee9e78d5f93c54a7b95f",
+      "chunk_count": 15,
+      "uploaded_at": "2026-02-28T19:13:47.340599",
       "chunks": [
         {
-          "chunk_id": "b1823c02-4612-47dc-8138-4e1585cf5a6d",
+          "chunk_id": "fd04ae9b-21e0-4503-a625-43a073b6989b",
           "sequence_number": 0,
           "size": 524288,
-          "sha256_hash": "b8525dce4d7989748bf433e61a9c80d3b3fba809a9afdf18483a636358595029",
+          "sha256_hash": "80aa25fea9cf997fc898e0c9eb70886dc2cb9756adfa1246881dacfe926ba3de",
           "node_id": "SAT-02",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "51e02305-a5d4-4977-9a3e-b1a643443e32",
+          "chunk_id": "062a36db-eb78-4862-bbf9-e0a130475bc6",
           "sequence_number": 1,
           "size": 524288,
-          "sha256_hash": "9ec6fdba6f06e2287efa09e8fb28ac74b8b5a9d36d38cf83c6ae084632ccac71",
+          "sha256_hash": "b9251e75df4eaea09a54632b71efaf06391179c9830e1bb2b9dcaade3ec5845e",
           "node_id": "SAT-04",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "4beecb57-1e44-422f-92c4-66959c351ce6",
+          "chunk_id": "c4c4fdb3-553f-4ece-9be8-72e6d6ee3413",
           "sequence_number": 2,
           "size": 524288,
-          "sha256_hash": "b75f93f66ba67cc2460dd89ad0fc88d8a9a3fc570a3dcbd4c3ea654c2baca332",
-          "node_id": "SAT-06",
+          "sha256_hash": "9c637b14b9487f499e87d421753bef46f4493d697f8b622d6cc7a307ba244e5d",
+          "node_id": "SAT-01",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "1d13c18e-7fbf-4cc7-91db-e4635092a319",
+          "chunk_id": "167dcacf-d965-4b11-8c6c-fa656f0dc9ba",
           "sequence_number": 3,
           "size": 524288,
-          "sha256_hash": "96ca3b6daa56f49515e455ad8e97c9b11fe050e5a4a948a4d80ab2334d605e9c",
+          "sha256_hash": "da9838cc09fe4b81fb8bec151c5049e23b65d2c3142804d4d0ea01fb1cb4f7a0",
           "node_id": "SAT-02",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "b3aff895-a5a2-44b7-af80-b6334c0c776b",
+          "chunk_id": "e018bc2a-d668-4dc6-a6dd-cb887bc6475f",
           "sequence_number": 4,
           "size": 524288,
-          "sha256_hash": "26df8bc358c7959508da81b8bfc21a7ef654aa470fc9e2f5a406b1b7d1376d01",
+          "sha256_hash": "f3780d0233a73570a3e8f3c36195cd495bf87411c4c4155764fb9001f3e0144f",
           "node_id": "SAT-04",
           "is_parity": true,
           "pad_size": 524288
         },
         {
-          "chunk_id": "ce0b2072-8102-406c-8025-eb7a79327d45",
+          "chunk_id": "d700254b-0ad2-4fd5-a4f4-fe4dc4c911d7",
           "sequence_number": 5,
           "size": 524288,
-          "sha256_hash": "57d089084fb8f7c3888803d76da89839b65a3dfda997f256999b8cb4d8a5231a",
-          "node_id": "SAT-06",
+          "sha256_hash": "3f346e9c5fa5c985d5d5668cd2422af16b2140c7d501faf6f601570b20041dd3",
+          "node_id": "SAT-05",
           "is_parity": true,
           "pad_size": 524288
         },
         {
-          "chunk_id": "c9ad41bb-9d0d-4353-a40f-79871d8203da",
+          "chunk_id": "c317e506-f21f-4557-abf7-15d425c6d1e6",
           "sequence_number": 4,
           "size": 524288,
-          "sha256_hash": "5c264f5b97f42edf5c9ae3fdd821d2bf9cbde22f2ed196c0c306ecfe27edb332",
+          "sha256_hash": "18f52dbbdd9a6ec0d8df6325f0107820d4a667eec1a89c99b6db4fe035c97381",
           "node_id": "SAT-02",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "c07d50d0-f6a5-4543-8027-5730da1e08ba",
+          "chunk_id": "ec3124c8-135b-4d9c-b22c-531887e7dffd",
           "sequence_number": 5,
           "size": 524288,
-          "sha256_hash": "485f50ec3b2d836a67283860d207403e0ff59ef408d47896edd14848979cd0b1",
+          "sha256_hash": "3442233c0dd8b1338978fdcbe1b7262cb4d4a27a819848e3a276edf447eb5803",
           "node_id": "SAT-04",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "f71adffc-6286-4257-9705-00aa56074020",
+          "chunk_id": "26db1c36-d348-4feb-9b13-a4162e8f3705",
           "sequence_number": 6,
           "size": 524288,
-          "sha256_hash": "a06cbf27a3a81e128ef2a85a43a867f95e2142a241339c8498d631fae8d9ee09",
-          "node_id": "SAT-06",
+          "sha256_hash": "7814c3b20897f8b5bd5c4b47bca9111df711a208217321301e40265cb458385c",
+          "node_id": "SAT-01",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "7a0836d0-c744-4137-b854-84f21a16dd4a",
+          "chunk_id": "c1ffe58d-fb47-4462-a61d-a056218f73ad",
           "sequence_number": 7,
           "size": 524288,
-          "sha256_hash": "ab1a043ae6af94ec8cd6e9f87edb96afba357ee5c522566a25901cc464f459e6",
+          "sha256_hash": "97a21b312133031074350a508c30b2b1cc6470c149dce0fe982dccfb154f3ef8",
           "node_id": "SAT-02",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "84b7ce49-037d-464a-88f9-ccef8f1ef0ba",
+          "chunk_id": "2fe460ea-8957-4411-a13c-3fd08b5353ad",
           "sequence_number": 4,
           "size": 524288,
-          "sha256_hash": "0e448a0670734ec2e4c1fe9c30e65672f43b0e6b44b6f9d35e9487a86a2b8a1a",
+          "sha256_hash": "b9a33572475ed174943f32b595aa622812a82865f01c891a0263b17699aab2f6",
           "node_id": "SAT-04",
           "is_parity": true,
           "pad_size": 524288
         },
         {
-          "chunk_id": "6404c043-0f27-4411-8170-bc64659e51fb",
+          "chunk_id": "8b139744-ada9-467e-8524-ddf198be3caa",
           "sequence_number": 5,
           "size": 524288,
-          "sha256_hash": "8b02db14ba2e6dae7a86a9e4b5d418c11abbe0907e902bd5b92a41b51bb0733e",
+          "sha256_hash": "0149471acf7d153b8fa523d0fd12360be9c809682709dcfd6f57d6106a83476f",
           "node_id": "SAT-05",
           "is_parity": true,
           "pad_size": 524288
         },
         {
-          "chunk_id": "b4d4ba28-76d2-4634-acda-e348000a42d2",
-          "sequence_number": 8,
-          "size": 235558,
-          "sha256_hash": "01c1bfe86cf7046fc40d8aef516f517f6dedc92a9a393380f20b4aa83279ea89",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 235558
-        },
-        {
-          "chunk_id": "089a3870-42a7-4d5b-8b4c-325217cf6abf",
-          "sequence_number": 9,
-          "size": 0,
-          "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "node_id": "SAT-04",
-          "is_parity": false,
-          "pad_size": 235558
-        },
-        {
-          "chunk_id": "95bb4c99-ec9b-4958-954a-3058d9f8e7d9",
-          "sequence_number": 10,
-          "size": 0,
-          "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "node_id": "SAT-06",
-          "is_parity": false,
-          "pad_size": 235558
-        },
-        {
-          "chunk_id": "93ec925b-9d91-4b05-bfe1-45f28c81c746",
-          "sequence_number": 11,
-          "size": 0,
-          "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 235558
-        },
-        {
-          "chunk_id": "5b86de76-efe0-41bf-9bfd-d07d9f6d8ec3",
-          "sequence_number": 4,
-          "size": 235558,
-          "sha256_hash": "4072614544e4d100e20ca28ca0900206f837afa6b8f969cd4f98892d81917407",
-          "node_id": "SAT-04",
-          "is_parity": true,
-          "pad_size": 235558
-        },
-        {
-          "chunk_id": "7a4852ea-13dd-485f-ab63-f1a14b1e9a4f",
-          "sequence_number": 5,
-          "size": 235558,
-          "sha256_hash": "28247ccaf8d022a033a05cb83ee1cb87a1f3846b894304d433929e96be2c3d3a",
-          "node_id": "SAT-05",
-          "is_parity": true,
-          "pad_size": 235558
-        }
-      ]
-    },
-    "77c643b8-0701-4c4c-9dce-7ef0702b5a55": {
-      "file_id": "77c643b8-0701-4c4c-9dce-7ef0702b5a55",
-      "filename": "HackNova_PPT_Template.pptx",
-      "size": 8074585,
-      "full_sha256": "873d17bbaba9241931f149f4aed9e85d48339c02b736a839f7bb53a14fdfee9d",
-      "chunk_count": 16,
-      "uploaded_at": "2026-02-28T18:42:38.827399",
-      "chunks": [
-        {
-          "chunk_id": "2e5a2647-bf59-4dc1-a1a3-b76ec4a5a33b",
-          "sequence_number": 0,
-          "size": 524288,
-          "sha256_hash": "62bcad0b37f602bcb1a68dc84308e30fc819bec96ac571e5b5380dced0cc235f",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "16a73aaa-58cc-4835-b52c-3e168a24bf40",
-          "sequence_number": 1,
-          "size": 524288,
-          "sha256_hash": "a37c19ccf31d621465e1ca95d8eb26e83c3bdf11f56512aece0b75fe0e47a508",
-          "node_id": "SAT-04",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "cd4c2577-ca1f-42a8-a7ba-eca88c449bc8",
-          "sequence_number": 2,
-          "size": 524288,
-          "sha256_hash": "2755b339e6cb9839e773567a8d54a58eaaef7976c62a78303ebac33d55efcb98",
-          "node_id": "SAT-06",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "03fc2b5e-0248-48ae-8ec5-dc85ef5f71b3",
-          "sequence_number": 3,
-          "size": 524288,
-          "sha256_hash": "9b477416a648b9b2856196f9287ccb31a83c729e6416e835c8550feba99e3046",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "4ed3b9c5-8ece-4a78-ad82-6d6793c2c966",
-          "sequence_number": 4,
-          "size": 524288,
-          "sha256_hash": "856d86f6bcb0d14b6309c4445484559879e09bf2c7a6c7706baebd473272c366",
-          "node_id": "SAT-04",
-          "is_parity": true,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "fb1c67ea-ef9a-4f90-80e0-643d8ed278fd",
-          "sequence_number": 5,
-          "size": 524288,
-          "sha256_hash": "8a6ab8434ff9ef7192293bd505c5909b309b0939ac409de140ba20788b77a817",
-          "node_id": "SAT-05",
-          "is_parity": true,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "bac75a33-536e-4947-a4c6-c065c26ee332",
-          "sequence_number": 4,
-          "size": 524288,
-          "sha256_hash": "51f6ad3aad5163568d81269ef878934edc6ba6040ee6c247fe54dfaf0347a994",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "343cd3b8-dd56-40d1-b6e6-1177c57a5245",
-          "sequence_number": 5,
-          "size": 524288,
-          "sha256_hash": "a12ba99bf45fccf26435da534986e33e355be7c8303b422087bc491d28ecbf98",
-          "node_id": "SAT-04",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "3909a839-9408-462c-b8a7-4d82b24d0343",
-          "sequence_number": 6,
-          "size": 524288,
-          "sha256_hash": "cbfeffd32fa283e5b1dc419a48a887436d64a83d3f8a9172c6b3d5d237d1a433",
-          "node_id": "SAT-06",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "f356eb53-df71-4ba6-863b-53bdb03be5ad",
-          "sequence_number": 7,
-          "size": 524288,
-          "sha256_hash": "a4a0b8caa3646cb5f8d4459e84ec8514a108e66f86f38f324a4ddad3e945f0c0",
-          "node_id": "SAT-02",
-          "is_parity": false,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "40c75111-3796-46aa-9464-bfd30479f141",
-          "sequence_number": 4,
-          "size": 524288,
-          "sha256_hash": "24faa4759e027bd57975c597dca292a76311c777a390ff69cf1179fb19c1603e",
-          "node_id": "SAT-04",
-          "is_parity": true,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "5737fc52-2686-4c13-a020-fcd0608d78c2",
-          "sequence_number": 5,
-          "size": 524288,
-          "sha256_hash": "f02180a7e648179c8717857fd39890ea1660520e7a4a2eaddef58378733c4244",
-          "node_id": "SAT-05",
-          "is_parity": true,
-          "pad_size": 524288
-        },
-        {
-          "chunk_id": "eac26cca-e856-449c-a97c-fbe45921e392",
+          "chunk_id": "7aa212db-ec73-46f7-b758-389c0902d537",
           "sequence_number": 8,
           "size": 524288,
-          "sha256_hash": "6fdcea6ec5f6ac1506e0c265157f78535b011d4e60777cef65d1571b9db40611",
+          "sha256_hash": "1b399b5ff25b085b4a7c3efbc005f37abf58229f5158720dc713f5d9e6582c8d",
           "node_id": "SAT-02",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "2817f2e0-51ad-46ab-875b-582666bc605e",
+          "chunk_id": "5fd8f636-f291-4c52-abef-78f8b73fb01c",
           "sequence_number": 9,
           "size": 524288,
-          "sha256_hash": "bbd9e456f7656081e8474cc0fa0c2bfcbccc9abba6c0952482bb098165dccdf0",
+          "sha256_hash": "306c133c12f4b641b9f4ae70d075f5402bd25b1fb01be56ae2775f67178def0f",
           "node_id": "SAT-04",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "b9da4f55-b635-465b-89e0-d85d06e0db57",
+          "chunk_id": "73c7bdee-55a3-44db-8487-b8b3182291f0",
           "sequence_number": 10,
           "size": 524288,
-          "sha256_hash": "2a33d1b66ef1cec2da2913728b27be6e9044177deb5a7377fd67febbacfec11a",
-          "node_id": "SAT-06",
+          "sha256_hash": "a98a35b5c75f3f2bf73d743dbb51178bc46cbb0bf4ee627ff586dd65d77297fc",
+          "node_id": "SAT-01",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "f877fcca-edac-4dbc-ae9d-0064590c7a59",
+          "chunk_id": "c536280e-be74-4643-99c7-f581a639c4b5",
           "sequence_number": 11,
           "size": 524288,
-          "sha256_hash": "52f2b50fc72fc5bfbf3f416b11b1b3b59fd093ac24e71f4c844652db28b9821e",
+          "sha256_hash": "60b77306128b8d56e270af188720404593b05213cc11ec7bc34bcbc3d3a8c62e",
           "node_id": "SAT-02",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "d7a5a15b-d6fa-4b7c-b895-f5b065751d0c",
+          "chunk_id": "c8d5a5da-d936-4189-929e-da324ac90e98",
           "sequence_number": 4,
           "size": 524288,
-          "sha256_hash": "c75ea1ba75d57d65b23ec8712cebf5271928287d5a80dd21083530eb3448753e",
+          "sha256_hash": "c19c64672a6780db3cdab057f025e8de0d0c134137f568d5221eb4bbdf08d8a4",
           "node_id": "SAT-04",
           "is_parity": true,
           "pad_size": 524288
         },
         {
-          "chunk_id": "572b0a19-7e0f-4fe7-8d6d-914cd4258a20",
+          "chunk_id": "f62ccbee-87df-4188-ab22-4e7528b64e30",
           "sequence_number": 5,
           "size": 524288,
-          "sha256_hash": "964bade7d3d8a53bae9b25dbdc15cc6b1fd6f37dc1a6dd52213ffc9769ae2187",
+          "sha256_hash": "094a3f5216ad746e5b5780e2e4e37e71d4c303cf8e80a197b0a31742af343271",
           "node_id": "SAT-05",
           "is_parity": true,
           "pad_size": 524288
         },
         {
-          "chunk_id": "6cb8e542-26d2-41c0-a3eb-5dce160e32b8",
+          "chunk_id": "4731050b-90e9-405e-b813-1735ee7110bc",
           "sequence_number": 12,
           "size": 524288,
-          "sha256_hash": "350ef669de7b42d95de7c95ac56e4e83e352dec70a1aa1ad33d1ee895cbddf49",
-          "node_id": "SAT-02",
+          "sha256_hash": "5d70346a146a8f3b4576cee5c1f4e5431c6cc5aca26f38fe7e130c027f8f0cf6",
+          "node_id": "SAT-01",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "63a737b9-b409-4fd0-90e5-de629fe661a6",
+          "chunk_id": "b286924b-f88a-4543-a8da-780a862bb676",
           "sequence_number": 13,
           "size": 524288,
-          "sha256_hash": "d635d8567ddaf3012b0487cc3775804fdc31b33a3a2cf5cf20dd5b54959c3023",
-          "node_id": "SAT-04",
+          "sha256_hash": "cd55d976419ae87ef92ac4e8345db5cfab036f5efa54a7cc72195b789baed28c",
+          "node_id": "SAT-03",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "323af329-11ad-4fd9-a786-74617261df84",
+          "chunk_id": "ccafd89d-306d-45fc-a98d-23afc3681a54",
           "sequence_number": 14,
-          "size": 524288,
-          "sha256_hash": "32b93f65d020a1bbad22fc9b2c05a36d500db65710880aa86173bf5798fb111c",
-          "node_id": "SAT-06",
+          "size": 498301,
+          "sha256_hash": "f7713ff106c8349d0fc2e7d464c62067e8c190be092e9c357fa1fb7df7c309de",
+          "node_id": "SAT-05",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "35eef803-9391-4b83-b6e2-2bcc807ac4a9",
+          "chunk_id": "512b95f7-fae1-49e9-94b7-de42dcc75505",
           "sequence_number": 15,
-          "size": 210265,
-          "sha256_hash": "18e28b1774772d76671b4f85f9fba66c6b9823d9a2c47331f797138592e9171f",
+          "size": 0,
+          "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "node_id": "SAT-02",
           "is_parity": false,
           "pad_size": 524288
         },
         {
-          "chunk_id": "54f0e024-3c26-435a-b2ef-de813d76d7a0",
+          "chunk_id": "bd9625be-7439-49a1-9126-22c1d1c05994",
           "sequence_number": 4,
           "size": 524288,
-          "sha256_hash": "d7b300af724bc07067fa6cc3d14f4dc60f5d1845c70ea5f9c62d3c67ae4dbbe4",
+          "sha256_hash": "4f8e4df15453c343df71adde41e66fae4b114ff0a8477295750cf89875e3a01a",
           "node_id": "SAT-04",
           "is_parity": true,
           "pad_size": 524288
         },
         {
-          "chunk_id": "78e82e5d-6c7b-4958-8408-393c43e62256",
+          "chunk_id": "bc1af8b8-0469-448a-88e3-d6106a7b9651",
           "sequence_number": 5,
           "size": 524288,
-          "sha256_hash": "3b6ba997e0e328508d583cf8e350203bc2e2ff5773a949210a118da31d5822cc",
-          "node_id": "SAT-05",
+          "sha256_hash": "a5db93862fe0f769f9ebd95fcdae3abeb65a995026f942c5cfd9a103c133c0f5",
+          "node_id": "SAT-06",
           "is_parity": true,
           "pad_size": 524288
         }
@@ -1950,9 +405,9 @@
       "plane": "Alpha",
       "status": "ONLINE",
       "health_score": 100,
-      "storage_used": 7643174,
-      "chunk_count": 84,
-      "orbit_timer": 100,
+      "storage_used": 6815744,
+      "chunk_count": 13,
+      "orbit_timer": 19,
       "dtn_queue_depth": 0
     },
     "SAT-02": {
@@ -1960,9 +415,9 @@
       "plane": "Alpha",
       "status": "ONLINE",
       "health_score": 100,
-      "storage_used": 8970744,
-      "chunk_count": 45,
-      "orbit_timer": 100,
+      "storage_used": 4305017,
+      "chunk_count": 10,
+      "orbit_timer": 19,
       "dtn_queue_depth": 0
     },
     "SAT-03": {
@@ -1970,9 +425,9 @@
       "plane": "Beta",
       "status": "ONLINE",
       "health_score": 100,
-      "storage_used": 8011966,
-      "chunk_count": 39,
-      "orbit_timer": 100,
+      "storage_used": 3670016,
+      "chunk_count": 7,
+      "orbit_timer": 19,
       "dtn_queue_depth": 0
     },
     "SAT-04": {
@@ -1980,9 +435,9 @@
       "plane": "Beta",
       "status": "ONLINE",
       "health_score": 100,
-      "storage_used": 9674790,
-      "chunk_count": 22,
-      "orbit_timer": 100,
+      "storage_used": 3670016,
+      "chunk_count": 7,
+      "orbit_timer": 19,
       "dtn_queue_depth": 0
     },
     "SAT-05": {
@@ -1990,9 +445,9 @@
       "plane": "Gamma",
       "status": "ONLINE",
       "health_score": 100,
-      "storage_used": 4429862,
-      "chunk_count": 9,
-      "orbit_timer": 100,
+      "storage_used": 2071165,
+      "chunk_count": 4,
+      "orbit_timer": 19,
       "dtn_queue_depth": 0
     },
     "SAT-06": {
@@ -2000,1361 +455,13 @@
       "plane": "Gamma",
       "status": "ONLINE",
       "health_score": 100,
-      "storage_used": 3670016,
-      "chunk_count": 8,
-      "orbit_timer": 100,
+      "storage_used": 524288,
+      "chunk_count": 1,
+      "orbit_timer": 19,
       "dtn_queue_depth": 0
     }
   },
   "events": [
-    {
-      "event_id": "2253ea56-bf48-46be-beec-fe5d94b5b946",
-      "timestamp": "2026-02-28T18:47:44.824511",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 02603093-d62e-4448-b02e-8fa1c7bfc54d moved SAT-04 \u2192 SAT-03",
-      "metadata": {}
-    },
-    {
-      "event_id": "d418b802-1886-4938-92ae-b773f72bdcde",
-      "timestamp": "2026-02-28T18:47:44.848834",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 64538c47-edcd-4321-9680-dc0d2a737e74 moved SAT-04 \u2192 SAT-03",
-      "metadata": {}
-    },
-    {
-      "event_id": "f8716383-c8fb-425c-b406-1eaadeb86734",
-      "timestamp": "2026-02-28T18:47:44.872664",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "8731aec3-28a0-4b79-8090-b684732c3125",
-      "timestamp": "2026-02-28T18:47:44.895369",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "dc4d6e20-44f8-4b75-8777-f34dee30a88a",
-      "timestamp": "2026-02-28T18:47:44.917311",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "5892840d-5129-409a-a9f0-f79f73e4e78a",
-      "timestamp": "2026-02-28T18:47:44.941208",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "c2263acc-496a-4fab-96b0-73745d40b2a4",
-      "timestamp": "2026-02-28T18:47:44.964265",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "369e45ab-8c6a-4fe7-8419-8ca3d5d80779",
-      "timestamp": "2026-02-28T18:47:44.987263",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "e865f124-610a-4e48-973c-76d0ae534e7d",
-      "timestamp": "2026-02-28T18:48:17.855091",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-01 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-01"
-      }
-    },
-    {
-      "event_id": "78446404-c65f-4273-97c2-c42d7dacc6b7",
-      "timestamp": "2026-02-28T18:48:17.888479",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-02 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-02"
-      }
-    },
-    {
-      "event_id": "3182e415-33ea-4e9c-b539-d8ff78229662",
-      "timestamp": "2026-02-28T18:48:17.923737",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-03 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-03"
-      }
-    },
-    {
-      "event_id": "ab6edf78-ab27-454d-a21b-3e315f94dcaa",
-      "timestamp": "2026-02-28T18:48:17.959401",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-04 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-04"
-      }
-    },
-    {
-      "event_id": "526f8e5e-7f07-46b0-8219-730977846053",
-      "timestamp": "2026-02-28T18:48:17.993835",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-05 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-05"
-      }
-    },
-    {
-      "event_id": "e582f72d-ae10-479d-8151-c1c7c95ef194",
-      "timestamp": "2026-02-28T18:48:18.026430",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-06 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-06"
-      }
-    },
-    {
-      "event_id": "7299eb36-57aa-4dfa-8ffc-7d581cda2120",
-      "timestamp": "2026-02-28T18:48:20.883743",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-01 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-01"
-      }
-    },
-    {
-      "event_id": "7c8cc6db-9def-40a7-b588-01aa2f2f746e",
-      "timestamp": "2026-02-28T18:48:20.912012",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-02 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-02"
-      }
-    },
-    {
-      "event_id": "8756e2c1-43da-4d23-96f6-fbc7dab97be4",
-      "timestamp": "2026-02-28T18:48:20.944254",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-03 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-03"
-      }
-    },
-    {
-      "event_id": "4c7a7a04-904b-42a4-a622-4fc1e05b2239",
-      "timestamp": "2026-02-28T18:48:20.979357",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-04 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-04"
-      }
-    },
-    {
-      "event_id": "bfb7422a-ef10-44dd-9902-8852b1a2bbef",
-      "timestamp": "2026-02-28T18:48:21.017370",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-05 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-05"
-      }
-    },
-    {
-      "event_id": "5aa9d79e-bacd-4287-8f03-fd66d04126d2",
-      "timestamp": "2026-02-28T18:48:21.055870",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-06 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-06"
-      }
-    },
-    {
-      "event_id": "094857c7-309d-4ce0-bf41-b50fb794ab53",
-      "timestamp": "2026-02-28T18:49:53.764790",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 16a97624-05fd-4c19-b85e-dc0035090780 moved SAT-01 \u2192 SAT-02",
-      "metadata": {}
-    },
-    {
-      "event_id": "2dfbf039-f3f2-487e-9b7f-8f4df7ee3e6b",
-      "timestamp": "2026-02-28T18:49:53.798638",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk f5c1afe2-942e-49b1-a5d1-3540c53d0676 moved SAT-01 \u2192 SAT-02",
-      "metadata": {}
-    },
-    {
-      "event_id": "13eb4c3f-698d-42ea-974e-95971ddfdfac",
-      "timestamp": "2026-02-28T18:49:53.831274",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 4536444d-278c-4682-ba8d-ee0aa0fe84bf moved SAT-01 \u2192 SAT-02",
-      "metadata": {}
-    },
-    {
-      "event_id": "e5c55870-4471-44fd-b3bc-ec4f36f68c8f",
-      "timestamp": "2026-02-28T18:49:53.866443",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 16a97624-05fd-4c19-b85e-dc0035090780 moved SAT-02 \u2192 SAT-01",
-      "metadata": {}
-    },
-    {
-      "event_id": "35f532c3-449d-4770-be15-c704cd7f6a8c",
-      "timestamp": "2026-02-28T18:49:53.898729",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk f5c1afe2-942e-49b1-a5d1-3540c53d0676 moved SAT-02 \u2192 SAT-01",
-      "metadata": {}
-    },
-    {
-      "event_id": "6800507f-bb86-49d0-8000-d86cade2d69f",
-      "timestamp": "2026-02-28T18:49:53.931425",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 4536444d-278c-4682-ba8d-ee0aa0fe84bf moved SAT-02 \u2192 SAT-01",
-      "metadata": {}
-    },
-    {
-      "event_id": "83219ca0-0c17-4d01-bdc6-327f720d39fa",
-      "timestamp": "2026-02-28T18:49:53.966458",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cfc76700-1b12-45f9-9b35-0dceb7b027fd moved SAT-03 \u2192 SAT-04",
-      "metadata": {}
-    },
-    {
-      "event_id": "1b931534-9c08-4536-997f-7b4b4c04a9ea",
-      "timestamp": "2026-02-28T18:49:53.999519",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 02603093-d62e-4448-b02e-8fa1c7bfc54d moved SAT-03 \u2192 SAT-04",
-      "metadata": {}
-    },
-    {
-      "event_id": "47e8d013-fc62-4c0f-944a-fdbc29d86b66",
-      "timestamp": "2026-02-28T18:49:54.032160",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 64538c47-edcd-4321-9680-dc0d2a737e74 moved SAT-03 \u2192 SAT-04",
-      "metadata": {}
-    },
-    {
-      "event_id": "97f2d545-cdaa-465d-8837-8bd6ec062c32",
-      "timestamp": "2026-02-28T18:49:54.066343",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cfc76700-1b12-45f9-9b35-0dceb7b027fd moved SAT-04 \u2192 SAT-03",
-      "metadata": {}
-    },
-    {
-      "event_id": "a0f320bb-9d87-48e4-bd95-2550d33ee8af",
-      "timestamp": "2026-02-28T18:49:54.098342",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 02603093-d62e-4448-b02e-8fa1c7bfc54d moved SAT-04 \u2192 SAT-03",
-      "metadata": {}
-    },
-    {
-      "event_id": "e036d368-05dc-4bd4-b417-cc40d9244eaa",
-      "timestamp": "2026-02-28T18:49:54.131965",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 64538c47-edcd-4321-9680-dc0d2a737e74 moved SAT-04 \u2192 SAT-03",
-      "metadata": {}
-    },
-    {
-      "event_id": "046a6686-94f0-4c34-8955-d3d1c491a36a",
-      "timestamp": "2026-02-28T18:49:54.167116",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "c258dc0c-f66b-496d-b6cc-59c127b8ac7a",
-      "timestamp": "2026-02-28T18:49:54.200007",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "e1537922-cf19-4b4c-9bae-5221fc381ab1",
-      "timestamp": "2026-02-28T18:49:54.232594",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "13d517cd-01bb-4526-823f-3835e8490704",
-      "timestamp": "2026-02-28T18:49:54.270028",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "fc334335-5878-43c7-9aa6-6a1a9c4f87e7",
-      "timestamp": "2026-02-28T18:49:54.302949",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "7244d5c9-16a1-45cf-b7ea-61a886604cf6",
-      "timestamp": "2026-02-28T18:49:54.337518",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "97feaa40-7b8e-4d5d-ba09-20f1c9ec8585",
-      "timestamp": "2026-02-28T18:51:42.410910",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-01 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-01"
-      }
-    },
-    {
-      "event_id": "6d102e00-1889-4079-8ec1-272f2f5bb3d2",
-      "timestamp": "2026-02-28T18:51:42.465102",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-02 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-02"
-      }
-    },
-    {
-      "event_id": "b86cb1b8-4b89-423d-b25f-851ff4410ef4",
-      "timestamp": "2026-02-28T18:51:42.516763",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-03 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-03"
-      }
-    },
-    {
-      "event_id": "996d6467-7442-40f5-846d-da5619783f10",
-      "timestamp": "2026-02-28T18:51:42.567142",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-04 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-04"
-      }
-    },
-    {
-      "event_id": "f298066a-bb79-4cdd-8b90-b3572ba8c8c8",
-      "timestamp": "2026-02-28T18:51:42.615736",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-05 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-05"
-      }
-    },
-    {
-      "event_id": "7a802539-cca2-4d66-8b70-c0660d7a3c47",
-      "timestamp": "2026-02-28T18:51:42.660468",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-06 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-06"
-      }
-    },
-    {
-      "event_id": "de4f2f05-e461-4143-918e-7c28334f3555",
-      "timestamp": "2026-02-28T18:51:45.429847",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-01 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-01"
-      }
-    },
-    {
-      "event_id": "363dfd41-bbe8-4749-9bc4-9bbdc4462191",
-      "timestamp": "2026-02-28T18:51:45.492901",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-02 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-02"
-      }
-    },
-    {
-      "event_id": "b267622f-b57b-4834-ba97-277c6d939122",
-      "timestamp": "2026-02-28T18:51:45.540183",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-03 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-03"
-      }
-    },
-    {
-      "event_id": "c46af842-5447-4e11-9203-86585a163470",
-      "timestamp": "2026-02-28T18:51:45.596162",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-04 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-04"
-      }
-    },
-    {
-      "event_id": "10c83fb1-abd9-4d52-9369-fe8463232fc3",
-      "timestamp": "2026-02-28T18:51:45.647403",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-05 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-05"
-      }
-    },
-    {
-      "event_id": "4eff7f0e-cac9-4118-a334-7a323024177d",
-      "timestamp": "2026-02-28T18:51:45.704179",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-06 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-06"
-      }
-    },
-    {
-      "event_id": "9bd84667-f9f7-4a39-9867-e654423fdf06",
-      "timestamp": "2026-02-28T18:53:19.397023",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 16a97624-05fd-4c19-b85e-dc0035090780 moved SAT-01 \u2192 SAT-02",
-      "metadata": {}
-    },
-    {
-      "event_id": "a07e23f1-48b8-45f3-8ee3-0a5cd0a777eb",
-      "timestamp": "2026-02-28T18:53:19.427264",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk f5c1afe2-942e-49b1-a5d1-3540c53d0676 moved SAT-01 \u2192 SAT-02",
-      "metadata": {}
-    },
-    {
-      "event_id": "a62208e1-3164-4f8f-a9b4-5b4f354cf0ed",
-      "timestamp": "2026-02-28T18:53:19.459585",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 4536444d-278c-4682-ba8d-ee0aa0fe84bf moved SAT-01 \u2192 SAT-02",
-      "metadata": {}
-    },
-    {
-      "event_id": "4626ad71-50fa-478c-ae96-2aff6ace6c26",
-      "timestamp": "2026-02-28T18:53:19.493460",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 16a97624-05fd-4c19-b85e-dc0035090780 moved SAT-02 \u2192 SAT-01",
-      "metadata": {}
-    },
-    {
-      "event_id": "d840cbc9-342a-4f00-be0d-659acf2cef12",
-      "timestamp": "2026-02-28T18:53:19.527257",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk f5c1afe2-942e-49b1-a5d1-3540c53d0676 moved SAT-02 \u2192 SAT-01",
-      "metadata": {}
-    },
-    {
-      "event_id": "a90a12ba-6f70-4ad4-b0b6-2c85bd55dbf4",
-      "timestamp": "2026-02-28T18:53:19.559816",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 4536444d-278c-4682-ba8d-ee0aa0fe84bf moved SAT-02 \u2192 SAT-01",
-      "metadata": {}
-    },
-    {
-      "event_id": "b1b0435f-97fd-45b0-8d60-0b78720e9d76",
-      "timestamp": "2026-02-28T18:53:19.596113",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cfc76700-1b12-45f9-9b35-0dceb7b027fd moved SAT-03 \u2192 SAT-04",
-      "metadata": {}
-    },
-    {
-      "event_id": "ce73a1ca-1a52-4179-949f-e192b23d56df",
-      "timestamp": "2026-02-28T18:53:19.628593",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 02603093-d62e-4448-b02e-8fa1c7bfc54d moved SAT-03 \u2192 SAT-04",
-      "metadata": {}
-    },
-    {
-      "event_id": "b14a2c36-430e-4deb-aeb8-13005ba405b5",
-      "timestamp": "2026-02-28T18:53:19.661078",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 64538c47-edcd-4321-9680-dc0d2a737e74 moved SAT-03 \u2192 SAT-04",
-      "metadata": {}
-    },
-    {
-      "event_id": "96e80a63-00c0-411b-af0b-0ca329d3f041",
-      "timestamp": "2026-02-28T18:53:19.697270",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cfc76700-1b12-45f9-9b35-0dceb7b027fd moved SAT-04 \u2192 SAT-03",
-      "metadata": {}
-    },
-    {
-      "event_id": "63099701-29ba-4a1e-9a33-7af558bee1fb",
-      "timestamp": "2026-02-28T18:53:19.729345",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 02603093-d62e-4448-b02e-8fa1c7bfc54d moved SAT-04 \u2192 SAT-03",
-      "metadata": {}
-    },
-    {
-      "event_id": "f7de5cd2-d464-4d3b-ab10-bc7cdc614281",
-      "timestamp": "2026-02-28T18:53:19.761265",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 64538c47-edcd-4321-9680-dc0d2a737e74 moved SAT-04 \u2192 SAT-03",
-      "metadata": {}
-    },
-    {
-      "event_id": "706b5a69-6352-457a-8104-eba2c393eb3e",
-      "timestamp": "2026-02-28T18:53:19.794761",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "68772a70-c0da-45bf-8db9-fc278c57f528",
-      "timestamp": "2026-02-28T18:53:19.844233",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "11e7bb09-8853-4d5a-ac29-97512e4f0834",
-      "timestamp": "2026-02-28T18:53:19.876906",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "f2f838a9-179c-4a60-bc60-215d3cbcaa67",
-      "timestamp": "2026-02-28T18:53:19.910912",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "be243e60-95c8-4b38-9a7a-54902b13eb1d",
-      "timestamp": "2026-02-28T18:53:19.943812",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "67fe04b8-007d-4b3c-9d61-9b4c27a874a7",
-      "timestamp": "2026-02-28T18:53:19.977620",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "0afb45b2-284e-48f8-932b-0ce79050de01",
-      "timestamp": "2026-02-28T18:53:52.892093",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-01 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-01"
-      }
-    },
-    {
-      "event_id": "8a715218-d2ab-4a5f-980d-456259748fce",
-      "timestamp": "2026-02-28T18:53:52.947194",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-02 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-02"
-      }
-    },
-    {
-      "event_id": "e5782354-fcdb-405a-baee-7b0f0a8668eb",
-      "timestamp": "2026-02-28T18:53:53.000482",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-03 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-03"
-      }
-    },
-    {
-      "event_id": "75f74969-6e38-4ce6-8d63-6fe79020a2c5",
-      "timestamp": "2026-02-28T18:53:53.048949",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-04 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-04"
-      }
-    },
-    {
-      "event_id": "e66a1979-28f5-47f7-a360-0666607bbfd5",
-      "timestamp": "2026-02-28T18:53:53.095382",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-05 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-05"
-      }
-    },
-    {
-      "event_id": "ae68ab75-5f48-4d34-a000-03881f0daaae",
-      "timestamp": "2026-02-28T18:53:53.139083",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-06 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-06"
-      }
-    },
-    {
-      "event_id": "5d512ce3-7913-4691-9ee8-b103b3d8f745",
-      "timestamp": "2026-02-28T18:53:55.911660",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-01 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-01"
-      }
-    },
-    {
-      "event_id": "eb8dc21f-f34c-4717-92f4-20ea8de3af32",
-      "timestamp": "2026-02-28T18:53:55.977891",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-02 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-02"
-      }
-    },
-    {
-      "event_id": "e68d67a2-42ed-4254-8869-22030c51e6b2",
-      "timestamp": "2026-02-28T18:53:56.025113",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-03 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-03"
-      }
-    },
-    {
-      "event_id": "c89b19db-f3d1-4988-bcfe-706250f7076c",
-      "timestamp": "2026-02-28T18:53:56.074587",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-04 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-04"
-      }
-    },
-    {
-      "event_id": "dd091850-2fbf-4727-b39e-7b038a8a955f",
-      "timestamp": "2026-02-28T18:53:56.127954",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-05 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-05"
-      }
-    },
-    {
-      "event_id": "433ef230-6f5e-4db2-918b-23d52d0952d2",
-      "timestamp": "2026-02-28T18:53:56.183499",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-06 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-06"
-      }
-    },
-    {
-      "event_id": "644046db-9fe1-4e19-be60-409dd68a9116",
-      "timestamp": "2026-02-28T18:55:28.620907",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 16a97624-05fd-4c19-b85e-dc0035090780 moved SAT-01 \u2192 SAT-02",
-      "metadata": {}
-    },
-    {
-      "event_id": "91ace1e7-6464-44f9-a8f5-827113cf56b7",
-      "timestamp": "2026-02-28T18:55:28.653185",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk f5c1afe2-942e-49b1-a5d1-3540c53d0676 moved SAT-01 \u2192 SAT-02",
-      "metadata": {}
-    },
-    {
-      "event_id": "2049e0fd-143f-4fcf-a0a1-10e7fd11a04c",
-      "timestamp": "2026-02-28T18:55:28.687056",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 4536444d-278c-4682-ba8d-ee0aa0fe84bf moved SAT-01 \u2192 SAT-02",
-      "metadata": {}
-    },
-    {
-      "event_id": "3487a157-7809-4c7a-a23b-7197679bda6d",
-      "timestamp": "2026-02-28T18:55:28.722619",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 16a97624-05fd-4c19-b85e-dc0035090780 moved SAT-02 \u2192 SAT-01",
-      "metadata": {}
-    },
-    {
-      "event_id": "31b1dd23-830c-402f-b418-6373e1a7a2ec",
-      "timestamp": "2026-02-28T18:55:28.755922",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk f5c1afe2-942e-49b1-a5d1-3540c53d0676 moved SAT-02 \u2192 SAT-01",
-      "metadata": {}
-    },
-    {
-      "event_id": "1e1b7496-dfd5-410e-9f5d-7b70cd7cc94b",
-      "timestamp": "2026-02-28T18:55:28.789743",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 4536444d-278c-4682-ba8d-ee0aa0fe84bf moved SAT-02 \u2192 SAT-01",
-      "metadata": {}
-    },
-    {
-      "event_id": "cc96d2f9-2f3f-4cf7-b835-b3a209502015",
-      "timestamp": "2026-02-28T18:55:28.823551",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cfc76700-1b12-45f9-9b35-0dceb7b027fd moved SAT-03 \u2192 SAT-04",
-      "metadata": {}
-    },
-    {
-      "event_id": "65f536f0-70f3-48e7-ab1d-a5e5f499ff66",
-      "timestamp": "2026-02-28T18:55:28.855400",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 02603093-d62e-4448-b02e-8fa1c7bfc54d moved SAT-03 \u2192 SAT-04",
-      "metadata": {}
-    },
-    {
-      "event_id": "ea200b3c-2eaa-4422-a0df-96de10c719ce",
-      "timestamp": "2026-02-28T18:55:28.888173",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 64538c47-edcd-4321-9680-dc0d2a737e74 moved SAT-03 \u2192 SAT-04",
-      "metadata": {}
-    },
-    {
-      "event_id": "e98286cc-3afc-4f9d-bb7e-d09668b6f271",
-      "timestamp": "2026-02-28T18:55:28.922045",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cfc76700-1b12-45f9-9b35-0dceb7b027fd moved SAT-04 \u2192 SAT-03",
-      "metadata": {}
-    },
-    {
-      "event_id": "14f32cd7-e7f1-4742-8203-573c2b044ffd",
-      "timestamp": "2026-02-28T18:55:28.954404",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 02603093-d62e-4448-b02e-8fa1c7bfc54d moved SAT-04 \u2192 SAT-03",
-      "metadata": {}
-    },
-    {
-      "event_id": "09fccda0-253e-49d7-b42e-71b8e9f3880f",
-      "timestamp": "2026-02-28T18:55:28.987290",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 64538c47-edcd-4321-9680-dc0d2a737e74 moved SAT-04 \u2192 SAT-03",
-      "metadata": {}
-    },
-    {
-      "event_id": "b86cddc3-3045-482e-a6fd-827347fc3aa7",
-      "timestamp": "2026-02-28T18:55:29.020590",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "e13ba077-ca29-42d8-b5f6-1c6142006040",
-      "timestamp": "2026-02-28T18:55:29.052544",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "f0671eb7-63f3-45be-bbb5-7bf338287d48",
-      "timestamp": "2026-02-28T18:55:29.085892",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "2b18fb13-c256-4780-9ffd-180693c501ea",
-      "timestamp": "2026-02-28T18:55:29.123031",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "bf26356b-c000-40c6-b3e4-aa763754fd6c",
-      "timestamp": "2026-02-28T18:55:29.161554",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "5cf8f461-9824-44b6-8575-108ae6bac142",
-      "timestamp": "2026-02-28T18:55:29.195087",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "52bc0b1b-5dda-4ced-b95b-e4a6715365e2",
-      "timestamp": "2026-02-28T18:56:01.862177",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-01 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-01"
-      }
-    },
-    {
-      "event_id": "85fa6d03-7d35-4843-ba6f-3ba6a14e33e7",
-      "timestamp": "2026-02-28T18:56:01.895751",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-02 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-02"
-      }
-    },
-    {
-      "event_id": "2ed0dbc0-c5b9-4483-bcc8-47b9faad46d8",
-      "timestamp": "2026-02-28T18:56:01.932685",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-03 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-03"
-      }
-    },
-    {
-      "event_id": "3ff4aca1-2347-47f2-bd63-eaff7c98f6c3",
-      "timestamp": "2026-02-28T18:56:01.967336",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-04 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-04"
-      }
-    },
-    {
-      "event_id": "fac57176-0d55-4790-bca9-60a5355701e3",
-      "timestamp": "2026-02-28T18:56:01.998424",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-05 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-05"
-      }
-    },
-    {
-      "event_id": "f1c6323e-ffb7-40e7-bc06-1f36ed3febc0",
-      "timestamp": "2026-02-28T18:56:02.028832",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-06 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-06"
-      }
-    },
-    {
-      "event_id": "3ff9a889-20a5-4cf6-92b9-26309d27dbd5",
-      "timestamp": "2026-02-28T18:56:04.880926",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-01 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-01"
-      }
-    },
-    {
-      "event_id": "e51d7355-4e3a-4c5d-915f-f2242e129f82",
-      "timestamp": "2026-02-28T18:56:04.921335",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-02 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-02"
-      }
-    },
-    {
-      "event_id": "852f866f-647a-4018-a597-35925e27c984",
-      "timestamp": "2026-02-28T18:56:04.951620",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-03 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-03"
-      }
-    },
-    {
-      "event_id": "e60069f9-89c6-4901-b256-6f5ee5fb76b8",
-      "timestamp": "2026-02-28T18:56:04.985771",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-04 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-04"
-      }
-    },
-    {
-      "event_id": "83ad3112-e383-493b-9588-5314ac0fabe5",
-      "timestamp": "2026-02-28T18:56:05.019971",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-05 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-05"
-      }
-    },
-    {
-      "event_id": "34bd585d-b003-4af8-952b-f5f83bebbb7b",
-      "timestamp": "2026-02-28T18:56:05.055956",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-06 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-06"
-      }
-    },
-    {
-      "event_id": "d8bf08b4-4ca2-47b1-80b9-c150c43530e4",
-      "timestamp": "2026-02-28T18:57:37.894703",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 16a97624-05fd-4c19-b85e-dc0035090780 moved SAT-01 \u2192 SAT-02",
-      "metadata": {}
-    },
-    {
-      "event_id": "58cd4a68-5614-4cc6-b1c9-0d838a5cac92",
-      "timestamp": "2026-02-28T18:57:37.916572",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk f5c1afe2-942e-49b1-a5d1-3540c53d0676 moved SAT-01 \u2192 SAT-02",
-      "metadata": {}
-    },
-    {
-      "event_id": "34d50b57-35a4-443a-aa73-8956df2de2e2",
-      "timestamp": "2026-02-28T18:57:37.937293",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 4536444d-278c-4682-ba8d-ee0aa0fe84bf moved SAT-01 \u2192 SAT-02",
-      "metadata": {}
-    },
-    {
-      "event_id": "1b947379-d637-43ce-b24e-85e6f0086123",
-      "timestamp": "2026-02-28T18:57:37.961910",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 16a97624-05fd-4c19-b85e-dc0035090780 moved SAT-02 \u2192 SAT-01",
-      "metadata": {}
-    },
-    {
-      "event_id": "b8c6d6c8-5d2b-4185-8e74-d6a1b1b54676",
-      "timestamp": "2026-02-28T18:57:37.983025",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk f5c1afe2-942e-49b1-a5d1-3540c53d0676 moved SAT-02 \u2192 SAT-01",
-      "metadata": {}
-    },
-    {
-      "event_id": "67bd64bf-f952-49ea-90f5-8acfbf7c751b",
-      "timestamp": "2026-02-28T18:57:38.005680",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 4536444d-278c-4682-ba8d-ee0aa0fe84bf moved SAT-02 \u2192 SAT-01",
-      "metadata": {}
-    },
-    {
-      "event_id": "057858d8-1867-48cd-b0a4-1b2ee66ca6b5",
-      "timestamp": "2026-02-28T18:57:38.028243",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cfc76700-1b12-45f9-9b35-0dceb7b027fd moved SAT-03 \u2192 SAT-04",
-      "metadata": {}
-    },
-    {
-      "event_id": "84a18923-c167-41ab-ac04-0db51911c5de",
-      "timestamp": "2026-02-28T18:57:38.048496",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 02603093-d62e-4448-b02e-8fa1c7bfc54d moved SAT-03 \u2192 SAT-04",
-      "metadata": {}
-    },
-    {
-      "event_id": "e50fd577-68f1-43e6-8808-8cf8fcd2c10a",
-      "timestamp": "2026-02-28T18:57:38.067951",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 64538c47-edcd-4321-9680-dc0d2a737e74 moved SAT-03 \u2192 SAT-04",
-      "metadata": {}
-    },
-    {
-      "event_id": "3de44711-e1e0-427c-91d1-8c5eb6aa42b0",
-      "timestamp": "2026-02-28T18:57:38.088508",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cfc76700-1b12-45f9-9b35-0dceb7b027fd moved SAT-04 \u2192 SAT-03",
-      "metadata": {}
-    },
-    {
-      "event_id": "8bb3d0d2-6a65-498a-823c-70decba42f0b",
-      "timestamp": "2026-02-28T18:57:38.108441",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 02603093-d62e-4448-b02e-8fa1c7bfc54d moved SAT-04 \u2192 SAT-03",
-      "metadata": {}
-    },
-    {
-      "event_id": "cc50bff4-6cbd-45d5-93b8-4440af298019",
-      "timestamp": "2026-02-28T18:57:38.131164",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 64538c47-edcd-4321-9680-dc0d2a737e74 moved SAT-04 \u2192 SAT-03",
-      "metadata": {}
-    },
-    {
-      "event_id": "99f2472e-f8ee-4e89-8471-d41808f040d5",
-      "timestamp": "2026-02-28T18:57:38.154927",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "ef2bc3cf-67ad-4818-ba27-23ad17ab4ae9",
-      "timestamp": "2026-02-28T18:57:38.186886",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "41d26238-ba59-4ba7-b12c-8b6696f62999",
-      "timestamp": "2026-02-28T18:57:38.206378",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "dea6ce99-0917-4c3b-971a-c314725e1d07",
-      "timestamp": "2026-02-28T18:57:38.228579",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "72d537e5-854f-4f26-8cb8-ae0fa3bbbd7b",
-      "timestamp": "2026-02-28T18:57:38.250984",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "a36f96f0-8a9a-4dea-9cc2-b851a1a2a926",
-      "timestamp": "2026-02-28T18:57:38.272312",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "ffe33bf4-20e8-4c32-9b7e-ed241716fc20",
-      "timestamp": "2026-02-28T18:58:11.211370",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-01 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-01"
-      }
-    },
-    {
-      "event_id": "ec31cec0-f0e4-4c9a-9c86-d3755286a96e",
-      "timestamp": "2026-02-28T18:58:11.270043",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-02 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-02"
-      }
-    },
-    {
-      "event_id": "275ba0b1-0e84-489f-8619-2455a4de07da",
-      "timestamp": "2026-02-28T18:58:11.328651",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-03 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-03"
-      }
-    },
-    {
-      "event_id": "522cbeef-0160-4a74-b91a-c95d0d8ad2c3",
-      "timestamp": "2026-02-28T18:58:11.382850",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-04 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-04"
-      }
-    },
-    {
-      "event_id": "df4736d4-d508-405b-b614-dcd3601dddd9",
-      "timestamp": "2026-02-28T18:58:11.433962",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-05 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-05"
-      }
-    },
-    {
-      "event_id": "3cb9228c-7fda-4a29-921f-49f26c959de8",
-      "timestamp": "2026-02-28T18:58:11.484610",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-06 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-06"
-      }
-    },
-    {
-      "event_id": "527239f8-a585-4f81-890e-7cf30c07527c",
-      "timestamp": "2026-02-28T18:58:14.233166",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-01 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-01"
-      }
-    },
-    {
-      "event_id": "f4d6328f-1346-4a0a-a2eb-7f66d32ca47e",
-      "timestamp": "2026-02-28T18:58:14.299840",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-02 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-02"
-      }
-    },
-    {
-      "event_id": "b4a6e8ad-db2e-4322-8c3a-680c7dc51288",
-      "timestamp": "2026-02-28T18:58:14.356395",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-03 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-03"
-      }
-    },
-    {
-      "event_id": "48ccf2fb-48f7-490f-a736-bff7be96b3b9",
-      "timestamp": "2026-02-28T18:58:14.410512",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-04 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-04"
-      }
-    },
-    {
-      "event_id": "63251d02-9eaa-4ea9-8d12-aaf7c938e1ce",
-      "timestamp": "2026-02-28T18:58:14.468928",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-05 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-05"
-      }
-    },
-    {
-      "event_id": "51d0c0fe-cced-48bb-b52d-77fd741c0bc1",
-      "timestamp": "2026-02-28T18:58:14.530419",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-06 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-06"
-      }
-    },
-    {
-      "event_id": "c3642ec5-9cce-48f8-89b4-9e8f36ed1569",
-      "timestamp": "2026-02-28T18:59:58.482215",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 16a97624-05fd-4c19-b85e-dc0035090780 moved SAT-01 \u2192 SAT-02",
-      "metadata": {}
-    },
-    {
-      "event_id": "01d1b059-fb41-4cd7-93a2-8b7e64b2a128",
-      "timestamp": "2026-02-28T18:59:58.513638",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk f5c1afe2-942e-49b1-a5d1-3540c53d0676 moved SAT-01 \u2192 SAT-02",
-      "metadata": {}
-    },
-    {
-      "event_id": "4806ea57-d589-4020-9c90-13f991179628",
-      "timestamp": "2026-02-28T18:59:58.545489",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 4536444d-278c-4682-ba8d-ee0aa0fe84bf moved SAT-01 \u2192 SAT-02",
-      "metadata": {}
-    },
-    {
-      "event_id": "71e7678f-26d2-4f88-a44b-c00dfb6b54ad",
-      "timestamp": "2026-02-28T18:59:58.579379",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 16a97624-05fd-4c19-b85e-dc0035090780 moved SAT-02 \u2192 SAT-01",
-      "metadata": {}
-    },
-    {
-      "event_id": "5875af1f-af5d-4090-946b-c00ef17e403b",
-      "timestamp": "2026-02-28T18:59:58.612374",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk f5c1afe2-942e-49b1-a5d1-3540c53d0676 moved SAT-02 \u2192 SAT-01",
-      "metadata": {}
-    },
-    {
-      "event_id": "ca6e30b7-ddb3-4b38-9c7a-7cc4ab0f8dd0",
-      "timestamp": "2026-02-28T18:59:58.649430",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 4536444d-278c-4682-ba8d-ee0aa0fe84bf moved SAT-02 \u2192 SAT-01",
-      "metadata": {}
-    },
-    {
-      "event_id": "a8ed7a8d-814e-4ac0-bc16-fe58053b84e6",
-      "timestamp": "2026-02-28T18:59:58.685352",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cfc76700-1b12-45f9-9b35-0dceb7b027fd moved SAT-03 \u2192 SAT-04",
-      "metadata": {}
-    },
-    {
-      "event_id": "12d781fa-dfca-4d37-a0e6-3abeb11e8542",
-      "timestamp": "2026-02-28T18:59:58.716842",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 02603093-d62e-4448-b02e-8fa1c7bfc54d moved SAT-03 \u2192 SAT-04",
-      "metadata": {}
-    },
-    {
-      "event_id": "7ab6e34c-f076-466c-82f4-662c1d54a3d9",
-      "timestamp": "2026-02-28T18:59:58.752173",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 64538c47-edcd-4321-9680-dc0d2a737e74 moved SAT-03 \u2192 SAT-04",
-      "metadata": {}
-    },
-    {
-      "event_id": "9656d40e-5c67-44b3-86d1-683fc5cf29f6",
-      "timestamp": "2026-02-28T18:59:58.785506",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cfc76700-1b12-45f9-9b35-0dceb7b027fd moved SAT-04 \u2192 SAT-03",
-      "metadata": {}
-    },
-    {
-      "event_id": "94708afd-a6ce-4ae1-b6d4-65c645430bfc",
-      "timestamp": "2026-02-28T18:59:58.815220",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 02603093-d62e-4448-b02e-8fa1c7bfc54d moved SAT-04 \u2192 SAT-03",
-      "metadata": {}
-    },
-    {
-      "event_id": "66d4dcfc-3d7b-4b36-938e-9ba588da2e03",
-      "timestamp": "2026-02-28T18:59:58.846894",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 64538c47-edcd-4321-9680-dc0d2a737e74 moved SAT-04 \u2192 SAT-03",
-      "metadata": {}
-    },
-    {
-      "event_id": "6624d6eb-8e84-4b0e-9830-1ad90ffac136",
-      "timestamp": "2026-02-28T18:59:58.882156",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "06481823-859b-432e-8e21-d918e0541ab3",
-      "timestamp": "2026-02-28T18:59:58.910850",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "8019fcac-1a3f-4a49-9b06-fb48add68692",
-      "timestamp": "2026-02-28T18:59:58.935786",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-05 \u2192 SAT-06",
-      "metadata": {}
-    },
-    {
-      "event_id": "ff4525c9-e126-4782-bcaa-34d34f714f8f",
-      "timestamp": "2026-02-28T18:59:58.961894",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "1e63adfc-78b8-4f00-8107-c6153a209d9a",
-      "timestamp": "2026-02-28T18:59:58.994149",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "96260665-ecb4-4add-8a7f-aa928049b1ae",
-      "timestamp": "2026-02-28T18:59:59.029812",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-06 \u2192 SAT-05",
-      "metadata": {}
-    },
-    {
-      "event_id": "142ad997-87d6-4792-85e5-3b587d0a196a",
-      "timestamp": "2026-02-28T19:00:31.541687",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-01 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-01"
-      }
-    },
-    {
-      "event_id": "4fb3d4c9-5e45-46c3-9e81-d910871bac86",
-      "timestamp": "2026-02-28T19:00:31.584307",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-02 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-02"
-      }
-    },
-    {
-      "event_id": "c37e1fd7-c35a-4dfe-ad59-985a32c08b8d",
-      "timestamp": "2026-02-28T19:00:31.622708",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-03 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-03"
-      }
-    },
-    {
-      "event_id": "1611cf14-37e6-4ced-adde-529da1e6dfa6",
-      "timestamp": "2026-02-28T19:00:31.660960",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-04 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-04"
-      }
-    },
-    {
-      "event_id": "582f96c0-7592-45f2-99c6-487561eae884",
-      "timestamp": "2026-02-28T19:00:31.706386",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-05 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-05"
-      }
-    },
-    {
-      "event_id": "0499f684-e6ba-4568-867f-b09374dfa7da",
-      "timestamp": "2026-02-28T19:00:31.742894",
-      "event_type": "NODE_DEGRADED",
-      "message": "SAT-06 is now DEGRADED",
-      "metadata": {
-        "node_id": "SAT-06"
-      }
-    },
-    {
-      "event_id": "4822f44f-3708-4099-9aba-d794ba66f274",
-      "timestamp": "2026-02-28T19:00:34.562405",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-01 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-01"
-      }
-    },
-    {
-      "event_id": "2fe5db47-3a3a-4bab-a510-84d10b3ffdbb",
-      "timestamp": "2026-02-28T19:00:34.616988",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-02 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-02"
-      }
-    },
-    {
-      "event_id": "8e08c23f-e82e-4764-9c9d-6fdcd9338e40",
-      "timestamp": "2026-02-28T19:00:34.662971",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-03 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-03"
-      }
-    },
-    {
-      "event_id": "541b644a-2f60-4095-a606-ea26506dd739",
-      "timestamp": "2026-02-28T19:00:34.711271",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-04 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-04"
-      }
-    },
-    {
-      "event_id": "39f1d0d1-70a6-4216-8019-8b59f17a1820",
-      "timestamp": "2026-02-28T19:00:34.761321",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-05 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-05"
-      }
-    },
-    {
-      "event_id": "648ea06c-dc06-497e-8d74-48ef85a94547",
-      "timestamp": "2026-02-28T19:00:34.803653",
-      "event_type": "NODE_ONLINE",
-      "message": "SAT-06 is now ONLINE",
-      "metadata": {
-        "node_id": "SAT-06"
-      }
-    },
-    {
-      "event_id": "b53ba9b6-39cc-4da3-8d89-afffe8b31b1b",
-      "timestamp": "2026-02-28T19:02:07.765864",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk 16a97624-05fd-4c19-b85e-dc0035090780 moved SAT-01 \u2192 SAT-02",
-      "metadata": {}
-    },
-    {
-      "event_id": "c7391e59-4b8f-4253-819c-026d32b62110",
-      "timestamp": "2026-02-28T19:02:07.793355",
-      "event_type": "CHUNK_MIGRATED",
-      "message": "Chunk f5c1afe2-942e-49b1-a5d1-3540c53d0676 moved SAT-01 \u2192 SAT-02",
-      "metadata": {}
-    },
     {
       "event_id": "00c568cc-be82-4fc5-9fc3-b1fb6e948526",
       "timestamp": "2026-02-28T19:02:07.824283",
@@ -3574,6 +681,1354 @@
       "metadata": {
         "node_id": "SAT-06"
       }
+    },
+    {
+      "event_id": "6116e85e-1a76-46ca-ab6a-5353f46d61a9",
+      "timestamp": "2026-02-28T19:04:16.803246",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 16a97624-05fd-4c19-b85e-dc0035090780 moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "daf59d8e-38a4-400e-84ba-c171e4fba801",
+      "timestamp": "2026-02-28T19:04:16.823871",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk f5c1afe2-942e-49b1-a5d1-3540c53d0676 moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "ddfa42cc-e4a0-4193-bba3-6912a0205aa8",
+      "timestamp": "2026-02-28T19:04:16.854777",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 4536444d-278c-4682-ba8d-ee0aa0fe84bf moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "718c1be5-d506-4d85-bdff-40e9cd23acd6",
+      "timestamp": "2026-02-28T19:04:16.877498",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 16a97624-05fd-4c19-b85e-dc0035090780 moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "22a8c611-1956-468e-b0b1-ebf4038f9df2",
+      "timestamp": "2026-02-28T19:04:16.900861",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk f5c1afe2-942e-49b1-a5d1-3540c53d0676 moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "da322c36-83f8-4456-bdaa-666904faa130",
+      "timestamp": "2026-02-28T19:04:16.924507",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 4536444d-278c-4682-ba8d-ee0aa0fe84bf moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "1cf99bcc-e2a5-4f7c-be5f-78760933ccc7",
+      "timestamp": "2026-02-28T19:04:16.956468",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk cfc76700-1b12-45f9-9b35-0dceb7b027fd moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "6a023d94-3e69-4a36-9352-e7f4fc0b83a9",
+      "timestamp": "2026-02-28T19:04:16.979621",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 02603093-d62e-4448-b02e-8fa1c7bfc54d moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "3d410545-03c4-4832-b9bc-cb80edb2c29b",
+      "timestamp": "2026-02-28T19:04:17.003384",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 64538c47-edcd-4321-9680-dc0d2a737e74 moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "20d5dd35-5e7a-46cf-81a3-0a20a7812dd7",
+      "timestamp": "2026-02-28T19:04:17.028523",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk cfc76700-1b12-45f9-9b35-0dceb7b027fd moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "c7a03aa4-f10b-4ffc-814c-b96819fad7be",
+      "timestamp": "2026-02-28T19:04:17.054638",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 02603093-d62e-4448-b02e-8fa1c7bfc54d moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "546b4874-430a-4106-9b73-ef8eae8a8fd8",
+      "timestamp": "2026-02-28T19:04:17.081032",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 64538c47-edcd-4321-9680-dc0d2a737e74 moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "d273f598-da4b-4f35-a1fe-69aa48ac0301",
+      "timestamp": "2026-02-28T19:04:17.104884",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-05 \u2192 SAT-06",
+      "metadata": {}
+    },
+    {
+      "event_id": "011b6182-c29b-4a75-80e3-e0ebf85a345b",
+      "timestamp": "2026-02-28T19:04:17.132940",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-05 \u2192 SAT-06",
+      "metadata": {}
+    },
+    {
+      "event_id": "9a8c93fe-71bd-4fe8-be52-687bc86536b1",
+      "timestamp": "2026-02-28T19:04:17.159542",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-05 \u2192 SAT-06",
+      "metadata": {}
+    },
+    {
+      "event_id": "ad7f5585-4b91-4e36-9f91-6f486287546c",
+      "timestamp": "2026-02-28T19:04:17.185338",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-06 \u2192 SAT-05",
+      "metadata": {}
+    },
+    {
+      "event_id": "e8db166a-7a9f-4262-8838-c915f0bf0dc2",
+      "timestamp": "2026-02-28T19:04:17.207533",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-06 \u2192 SAT-05",
+      "metadata": {}
+    },
+    {
+      "event_id": "c8e8501b-e26c-42e5-9359-8c2928823f28",
+      "timestamp": "2026-02-28T19:04:17.232049",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-06 \u2192 SAT-05",
+      "metadata": {}
+    },
+    {
+      "event_id": "8add59d3-2a48-4766-8757-5510eb559ed3",
+      "timestamp": "2026-02-28T19:04:51.171470",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-01 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-01"
+      }
+    },
+    {
+      "event_id": "4451a553-4165-481e-8e64-284aada6c13b",
+      "timestamp": "2026-02-28T19:04:51.210334",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-02 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-02"
+      }
+    },
+    {
+      "event_id": "78972c91-cfe1-4de8-a549-bfd1ce39d489",
+      "timestamp": "2026-02-28T19:04:51.253000",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-03 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-03"
+      }
+    },
+    {
+      "event_id": "08113f1d-e037-4e22-a093-2cd6ab454b5f",
+      "timestamp": "2026-02-28T19:04:51.306298",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-04 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-04"
+      }
+    },
+    {
+      "event_id": "f5b6a004-6750-4c79-b3c8-901f0bbeaa43",
+      "timestamp": "2026-02-28T19:04:51.344140",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-05 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-05"
+      }
+    },
+    {
+      "event_id": "21f961b1-5de9-4e37-8834-b51724f744ef",
+      "timestamp": "2026-02-28T19:04:51.376520",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-06 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-06"
+      }
+    },
+    {
+      "event_id": "7d27a3b6-1369-4a02-b719-19999f8e55c2",
+      "timestamp": "2026-02-28T19:04:54.191794",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-01 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-01"
+      }
+    },
+    {
+      "event_id": "144bb943-bc17-4410-aa95-134b92bb4bf0",
+      "timestamp": "2026-02-28T19:04:54.230144",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-02 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-02"
+      }
+    },
+    {
+      "event_id": "68d6a2eb-d5fc-4ceb-8ae4-c99bf928af58",
+      "timestamp": "2026-02-28T19:04:54.270893",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-03 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-03"
+      }
+    },
+    {
+      "event_id": "c32e599a-7491-4e31-a42b-454a2b45ae94",
+      "timestamp": "2026-02-28T19:04:54.332895",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-04 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-04"
+      }
+    },
+    {
+      "event_id": "e127b801-9572-4cbf-b123-cbb70231b6b0",
+      "timestamp": "2026-02-28T19:04:54.372977",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-05 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-05"
+      }
+    },
+    {
+      "event_id": "a8e0e5b8-3a03-49b8-aaaf-e93cb2462909",
+      "timestamp": "2026-02-28T19:04:54.408029",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-06 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-06"
+      }
+    },
+    {
+      "event_id": "09c13e89-1ef8-46d6-b18c-55fcfde7c014",
+      "timestamp": "2026-02-28T19:06:27.907984",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 16a97624-05fd-4c19-b85e-dc0035090780 moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "965ea72b-e15a-463a-94e3-6072ef31b7ea",
+      "timestamp": "2026-02-28T19:06:27.928240",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk f5c1afe2-942e-49b1-a5d1-3540c53d0676 moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "4332b8f1-5e59-4c83-ab3e-9d33cd23ce9d",
+      "timestamp": "2026-02-28T19:06:27.948771",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 4536444d-278c-4682-ba8d-ee0aa0fe84bf moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "1fff9149-d7a7-4b9b-a9d5-dfeedc53fdaf",
+      "timestamp": "2026-02-28T19:06:27.975234",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 16a97624-05fd-4c19-b85e-dc0035090780 moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "db78ad98-1d5e-4ad1-8526-de1ff3006ccd",
+      "timestamp": "2026-02-28T19:06:27.998220",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk f5c1afe2-942e-49b1-a5d1-3540c53d0676 moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "32d1ff26-7eb6-454e-abe5-0f7cf3b3effb",
+      "timestamp": "2026-02-28T19:06:28.018233",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 4536444d-278c-4682-ba8d-ee0aa0fe84bf moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "eaf42b25-0863-4232-8864-afa0747d2d05",
+      "timestamp": "2026-02-28T19:06:28.040115",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk cfc76700-1b12-45f9-9b35-0dceb7b027fd moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "c1fed2a7-e3b1-4056-8499-64680e555761",
+      "timestamp": "2026-02-28T19:06:28.060704",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 02603093-d62e-4448-b02e-8fa1c7bfc54d moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "b6d114d1-e476-427a-a992-9a9973282070",
+      "timestamp": "2026-02-28T19:06:28.081832",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 64538c47-edcd-4321-9680-dc0d2a737e74 moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "8fb84cd1-14b9-449a-9150-eb8230f4259a",
+      "timestamp": "2026-02-28T19:06:28.105318",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk cfc76700-1b12-45f9-9b35-0dceb7b027fd moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "e5525961-40a0-4ace-a765-8b2fb09ef04c",
+      "timestamp": "2026-02-28T19:06:28.127096",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 02603093-d62e-4448-b02e-8fa1c7bfc54d moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "95fa4c78-9ee2-4ac8-b01c-551b1a1433ba",
+      "timestamp": "2026-02-28T19:06:28.150152",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 64538c47-edcd-4321-9680-dc0d2a737e74 moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "9957fc25-e06f-47b9-9568-75bcd8ac9bc8",
+      "timestamp": "2026-02-28T19:06:28.171493",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-05 \u2192 SAT-06",
+      "metadata": {}
+    },
+    {
+      "event_id": "c1e1ae10-4445-496b-923e-a288058054e9",
+      "timestamp": "2026-02-28T19:06:28.192714",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-05 \u2192 SAT-06",
+      "metadata": {}
+    },
+    {
+      "event_id": "6351c5cd-2265-48a7-97b9-e74e0529aa0f",
+      "timestamp": "2026-02-28T19:06:28.215243",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-05 \u2192 SAT-06",
+      "metadata": {}
+    },
+    {
+      "event_id": "809c7fc2-f857-40ec-9a98-af410479e548",
+      "timestamp": "2026-02-28T19:06:28.239117",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-06 \u2192 SAT-05",
+      "metadata": {}
+    },
+    {
+      "event_id": "310ad8c9-eead-4b61-8d20-93ff4121a22a",
+      "timestamp": "2026-02-28T19:06:28.260783",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-06 \u2192 SAT-05",
+      "metadata": {}
+    },
+    {
+      "event_id": "0cf9cf23-a37d-41f7-a932-5f300933b3af",
+      "timestamp": "2026-02-28T19:06:28.282074",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-06 \u2192 SAT-05",
+      "metadata": {}
+    },
+    {
+      "event_id": "9ec54868-05fd-4d18-8f5d-d23550b5a5dd",
+      "timestamp": "2026-02-28T19:06:59.699373",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-01 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-01"
+      }
+    },
+    {
+      "event_id": "161e7ff9-3778-4820-8cdb-eb624f9c676f",
+      "timestamp": "2026-02-28T19:06:59.734646",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-02 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-02"
+      }
+    },
+    {
+      "event_id": "7a2c41cb-0f54-42eb-9de6-71e76eb0231c",
+      "timestamp": "2026-02-28T19:06:59.770346",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-03 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-03"
+      }
+    },
+    {
+      "event_id": "8e5e9b13-b94f-41da-8faa-79d4abc5d658",
+      "timestamp": "2026-02-28T19:06:59.803936",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-04 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-04"
+      }
+    },
+    {
+      "event_id": "15736db2-8ec2-4494-b194-0402394c9d2e",
+      "timestamp": "2026-02-28T19:06:59.834909",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-05 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-05"
+      }
+    },
+    {
+      "event_id": "6d3da2b5-2794-4d53-aa7a-91c3991b83f7",
+      "timestamp": "2026-02-28T19:06:59.864377",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-06 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-06"
+      }
+    },
+    {
+      "event_id": "fbcc82c5-c5c0-4acc-84b5-82d4dbfe4140",
+      "timestamp": "2026-02-28T19:07:02.717816",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-01 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-01"
+      }
+    },
+    {
+      "event_id": "45b9f2b8-a32d-431c-9a66-a5385d0b3f0a",
+      "timestamp": "2026-02-28T19:07:02.754847",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-02 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-02"
+      }
+    },
+    {
+      "event_id": "2247f615-50af-4d3b-8b3d-97e45fe5d1f4",
+      "timestamp": "2026-02-28T19:07:02.787452",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-03 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-03"
+      }
+    },
+    {
+      "event_id": "89f5dfd8-6516-4044-88c0-68d0d9ad3825",
+      "timestamp": "2026-02-28T19:07:02.834677",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-04 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-04"
+      }
+    },
+    {
+      "event_id": "7f9eb506-6f87-4449-9c40-34055263d49d",
+      "timestamp": "2026-02-28T19:07:02.870132",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-05 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-05"
+      }
+    },
+    {
+      "event_id": "44b631b0-fdae-424d-ae8c-264a0c0cf17b",
+      "timestamp": "2026-02-28T19:07:02.912160",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-06 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-06"
+      }
+    },
+    {
+      "event_id": "e90d2a62-f29a-483d-bd86-f8cc17f81308",
+      "timestamp": "2026-02-28T19:08:21.732834",
+      "event_type": "FILE_DELETED",
+      "message": "File 'COSMEON_FS_LITE_Complete_Plan.pdf' removed",
+      "metadata": {
+        "file_id": "77c5e1fe-17e0-4e4c-907c-cbc59055d713"
+      }
+    },
+    {
+      "event_id": "d8f47029-3077-42d3-8daf-1c613b3ce14a",
+      "timestamp": "2026-02-28T19:08:51.938139",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 241006eb-b962-49a3-9dbb-939d20cdb1eb moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "237594d3-88eb-43ef-a9f1-5d3d28c99b11",
+      "timestamp": "2026-02-28T19:08:51.968394",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk c2562c99-33f7-4f9b-a169-95001205eac8 moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "ef6d830d-aa3c-4754-8650-9cd81a0b2507",
+      "timestamp": "2026-02-28T19:08:52.000060",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk cd429e31-24ce-4292-b0dd-d0bce0eb2481 moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "e0073347-7bbb-4f49-bbb6-058c11de465e",
+      "timestamp": "2026-02-28T19:08:52.034692",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 241006eb-b962-49a3-9dbb-939d20cdb1eb moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "b4db97a2-53a0-458f-8ceb-38bfbd44fc2b",
+      "timestamp": "2026-02-28T19:08:52.065185",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk c2562c99-33f7-4f9b-a169-95001205eac8 moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "d48188d0-fe9e-4f89-888a-6e6ff5ebcd77",
+      "timestamp": "2026-02-28T19:08:52.097412",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk cd429e31-24ce-4292-b0dd-d0bce0eb2481 moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "218b05dd-9821-4007-9080-987d083b1147",
+      "timestamp": "2026-02-28T19:08:52.133006",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk b56cb46a-43d7-423d-81d0-19e6b77dcda7 moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "fa6b0677-ab0b-4d90-be11-55bcbae8f3d2",
+      "timestamp": "2026-02-28T19:08:52.163450",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk f2475f58-7527-4758-9e4c-2343a1095be1 moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "12a17cb0-1436-40a2-97e2-3442047b11e9",
+      "timestamp": "2026-02-28T19:08:52.197542",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 6b41a674-950f-4faf-9a22-1d66a777812e moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "6dd9c178-102f-481f-a776-1efd8edb6c95",
+      "timestamp": "2026-02-28T19:08:52.230760",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk b56cb46a-43d7-423d-81d0-19e6b77dcda7 moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "e845d706-2347-4f53-b932-b2a32684841c",
+      "timestamp": "2026-02-28T19:08:52.263250",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk f2475f58-7527-4758-9e4c-2343a1095be1 moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "55d8c04d-7dc0-43d1-a22f-78e5bdce43d2",
+      "timestamp": "2026-02-28T19:08:52.295688",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 6b41a674-950f-4faf-9a22-1d66a777812e moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "c00f1e3e-672a-4728-9d33-a9cdaa62bfd6",
+      "timestamp": "2026-02-28T19:08:52.335106",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-05 \u2192 SAT-06",
+      "metadata": {}
+    },
+    {
+      "event_id": "c2e2db7f-b671-4e83-a401-d7077fae6529",
+      "timestamp": "2026-02-28T19:08:52.366915",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-05 \u2192 SAT-06",
+      "metadata": {}
+    },
+    {
+      "event_id": "8e3acaf0-8c7c-4e41-9a41-5b032e063e8a",
+      "timestamp": "2026-02-28T19:08:52.399890",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-05 \u2192 SAT-06",
+      "metadata": {}
+    },
+    {
+      "event_id": "699cc4ae-6c62-4fba-8b5f-e3aab6c7488c",
+      "timestamp": "2026-02-28T19:08:52.432749",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk d0907ef7-3ed8-4034-b98a-a31457f067fa moved SAT-06 \u2192 SAT-05",
+      "metadata": {}
+    },
+    {
+      "event_id": "543e4372-01b3-4b96-a82a-c8451b7d6e83",
+      "timestamp": "2026-02-28T19:08:52.464608",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 36fd7006-72ed-4f60-aedf-5849699e3963 moved SAT-06 \u2192 SAT-05",
+      "metadata": {}
+    },
+    {
+      "event_id": "430ddc8d-31a9-40a5-b25f-d33675e15a02",
+      "timestamp": "2026-02-28T19:08:52.496708",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk cf817adb-207c-4369-bd0e-9c90a3a1d58d moved SAT-06 \u2192 SAT-05",
+      "metadata": {}
+    },
+    {
+      "event_id": "5d1eaf28-ffde-4973-a29e-fbb32b9c272e",
+      "timestamp": "2026-02-28T19:08:55.436246",
+      "event_type": "FILE_DELETED",
+      "message": "File 'HackNova_PPT_Template.pptx' removed",
+      "metadata": {
+        "file_id": "77c643b8-0701-4c4c-9dce-7ef0702b5a55"
+      }
+    },
+    {
+      "event_id": "7fb65bdd-6e00-4ee1-8d23-ba62d1b359ad",
+      "timestamp": "2026-02-28T19:08:56.827272",
+      "event_type": "FILE_DELETED",
+      "message": "File 'COSMEON_FS_LITE_Complete_Plan.pdf' removed",
+      "metadata": {
+        "file_id": "c72bef1f-5892-4047-a1b7-bb1a82b5d249"
+      }
+    },
+    {
+      "event_id": "4a572080-183a-4895-bced-444946f86a25",
+      "timestamp": "2026-02-28T19:08:57.627288",
+      "event_type": "FILE_DELETED",
+      "message": "File 'BugBytes_A.P.ShahInstituteOfTechnology_DataWeb2026.pdf' removed",
+      "metadata": {
+        "file_id": "3f1712b5-987e-4d08-adba-7627f542d8e8"
+      }
+    },
+    {
+      "event_id": "9f742788-7a38-4740-9933-177ca2465e6f",
+      "timestamp": "2026-02-28T19:08:58.167411",
+      "event_type": "FILE_DELETED",
+      "message": "File 'chaos_imbalance_payload.bin' removed",
+      "metadata": {
+        "file_id": "5f436e6b-0bd1-4664-829e-f4de80fb7dd6"
+      }
+    },
+    {
+      "event_id": "f6d598f5-1370-4401-91d1-659571612cca",
+      "timestamp": "2026-02-28T19:08:58.621158",
+      "event_type": "FILE_DELETED",
+      "message": "File 'chaos_imbalance_payload.bin' removed",
+      "metadata": {
+        "file_id": "b4a629bf-c483-41a4-a86e-a435ddc6184e"
+      }
+    },
+    {
+      "event_id": "28d51fbd-4ac2-4372-88ed-de58d378cf80",
+      "timestamp": "2026-02-28T19:08:58.875603",
+      "event_type": "FILE_DELETED",
+      "message": "File 'test_imbalance.bin' removed",
+      "metadata": {
+        "file_id": "sim_file_1"
+      }
+    },
+    {
+      "event_id": "98b646c8-8e4f-4086-83d9-d00403f92b23",
+      "timestamp": "2026-02-28T19:08:59.815824",
+      "event_type": "FILE_DELETED",
+      "message": "File 'COSMEON_FS_LITE_Complete_Plan.pdf' removed",
+      "metadata": {
+        "file_id": "8375da9a-95e4-426e-be3e-ab8cbd8e3a31"
+      }
+    },
+    {
+      "event_id": "1ef7b279-a37c-4702-bb6f-9834263b1f1a",
+      "timestamp": "2026-02-28T19:09:21.902696",
+      "event_type": "FILE_REGISTERED",
+      "message": "File 'BugBytes_A.P.ShahInstituteOfTechnology_DataWeb2026.pdf' registered",
+      "metadata": {
+        "file_id": "f9aefc53-a982-4be0-b4a1-2a1af8d23593",
+        "size": 5877881,
+        "chunks": 12
+      }
+    },
+    {
+      "event_id": "8bfec9f6-174f-43bc-8385-38fcdebcb7c4",
+      "timestamp": "2026-02-28T19:09:32.159994",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-01 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-01"
+      }
+    },
+    {
+      "event_id": "5f29e886-9376-4b7b-bb53-4894095ff9b4",
+      "timestamp": "2026-02-28T19:09:32.186739",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-02 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-02"
+      }
+    },
+    {
+      "event_id": "cbfb748a-f67c-4197-8cbd-66b92d8b8546",
+      "timestamp": "2026-02-28T19:09:32.215938",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-03 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-03"
+      }
+    },
+    {
+      "event_id": "4669d96c-d9f4-402c-9e03-52dc900517b8",
+      "timestamp": "2026-02-28T19:09:32.244733",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-04 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-04"
+      }
+    },
+    {
+      "event_id": "9c1c039f-8358-402a-a323-1cd3be799d94",
+      "timestamp": "2026-02-28T19:09:32.272291",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-05 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-05"
+      }
+    },
+    {
+      "event_id": "6cb807bf-930a-48b8-88f7-fc41f07c0e34",
+      "timestamp": "2026-02-28T19:09:32.298569",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-06 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-06"
+      }
+    },
+    {
+      "event_id": "3afb3c17-5714-4fac-9268-13719bb992dc",
+      "timestamp": "2026-02-28T19:09:35.185116",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-01 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-01"
+      }
+    },
+    {
+      "event_id": "c954c8b8-03bd-4f40-b1c3-3e7445b6eb36",
+      "timestamp": "2026-02-28T19:09:35.208046",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-02 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-02"
+      }
+    },
+    {
+      "event_id": "9ae15059-a6f2-4a9c-9d15-dd6ee631c27a",
+      "timestamp": "2026-02-28T19:09:35.232151",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-03 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-03"
+      }
+    },
+    {
+      "event_id": "0de6639c-a5e7-4b36-8eec-774f63936e25",
+      "timestamp": "2026-02-28T19:09:35.259847",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-04 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-04"
+      }
+    },
+    {
+      "event_id": "d6654aa1-f420-4da2-bbf1-b618eaa59b70",
+      "timestamp": "2026-02-28T19:09:35.294276",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-05 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-05"
+      }
+    },
+    {
+      "event_id": "54c5600f-c765-4ce6-a0c6-81027f6bc00a",
+      "timestamp": "2026-02-28T19:09:35.325211",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-06 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-06"
+      }
+    },
+    {
+      "event_id": "979d8186-ea7b-45ae-9cbc-d847bfc6d7c7",
+      "timestamp": "2026-02-28T19:11:08.423330",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 1e8d14c2-c43d-4969-8321-ffec143569c9 moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "56af63d8-e806-4d46-86ca-8187729a33ad",
+      "timestamp": "2026-02-28T19:11:08.440706",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 4d3650ba-72d2-4719-981c-7026c078c1d5 moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "d8d6c580-f78c-4106-9071-8a9a958ce1e3",
+      "timestamp": "2026-02-28T19:11:08.457229",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk dab5f0d2-9c4f-45a5-bde3-81c6fe7fb513 moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "484ba2d1-3713-4c2e-abb2-c105aa9720e5",
+      "timestamp": "2026-02-28T19:11:08.475501",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 1e8d14c2-c43d-4969-8321-ffec143569c9 moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "23154263-5ff3-4049-b13e-ced6494cbf08",
+      "timestamp": "2026-02-28T19:11:08.492272",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 6ef3375e-d3db-49f6-a508-373f7233a5fd moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "40da65a8-97b7-4541-ac09-a581f38629d6",
+      "timestamp": "2026-02-28T19:11:08.509697",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 4d3650ba-72d2-4719-981c-7026c078c1d5 moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "3ea4250a-081d-42c0-be8a-0f4a511f8d2a",
+      "timestamp": "2026-02-28T19:11:08.529611",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 56953d17-5be7-4e80-ba00-0c1e4c0a7b45 moved SAT-03 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "916e4a74-8e31-448b-854f-bdf167a6ae59",
+      "timestamp": "2026-02-28T19:11:08.548584",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 7818a995-0845-44ea-933c-8d60d5ca6e82 moved SAT-03 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "3de357b9-5f22-4383-ad2c-8a3e02a807b3",
+      "timestamp": "2026-02-28T19:11:08.566662",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 6002bb22-9ff1-4c2c-bd7e-71492fc66da9 moved SAT-03 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "8876c378-4e9b-484f-ad0b-964a9db14c4e",
+      "timestamp": "2026-02-28T19:11:08.585134",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 7389a0b7-7be0-4d2e-958c-dbf1e8f5bcdf moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "7da8f31a-6571-4f55-be5e-b768d693cfa6",
+      "timestamp": "2026-02-28T19:11:08.604326",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk b6f17c14-5701-44fa-9b2a-8246354bbeca moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "a45140ee-e0fb-483a-b5e2-f5e33aa33900",
+      "timestamp": "2026-02-28T19:11:08.622974",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk f05c6c3d-807a-4a43-b68e-d2277fcb13e7 moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "e2d0304f-10a0-4e06-bb02-cd97b34b01b5",
+      "timestamp": "2026-02-28T19:11:08.641232",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 26dd0abf-20c2-4622-a433-997a56ba8767 moved SAT-05 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "02a48122-8d0d-4006-af7f-801cb22169ec",
+      "timestamp": "2026-02-28T19:11:08.660001",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 0f3adf02-0bd6-444f-b61b-914b5934c557 moved SAT-05 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "b3f76097-2c48-4dfe-abb0-6b513b55bcf3",
+      "timestamp": "2026-02-28T19:11:08.677355",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 59ead09d-a8d4-4ab2-9f65-2d2ce5d2f985 moved SAT-05 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "3b9034f2-a53b-49a9-b762-c12329139dfa",
+      "timestamp": "2026-02-28T19:11:08.696911",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 87d6e906-7843-412b-b5c0-c17e295ba0bc moved SAT-06 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "71eac0dd-a394-4c52-97a3-3df4fd775c1e",
+      "timestamp": "2026-02-28T19:11:08.715508",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 1fdfc760-3bdc-44c4-a1c4-2e5d0f191c77 moved SAT-06 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "b8263c1e-34e2-4b16-872a-33661899240b",
+      "timestamp": "2026-02-28T19:11:08.734451",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 4caf8cd7-6cbf-4b20-b09a-6569e7022198 moved SAT-06 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "35ed6f62-df85-404e-a6a4-934e851357f8",
+      "timestamp": "2026-02-28T19:11:39.966927",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-01 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-01"
+      }
+    },
+    {
+      "event_id": "5a9c3afe-ce6c-4e6e-9b26-716f261774e5",
+      "timestamp": "2026-02-28T19:11:40.012207",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-02 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-02"
+      }
+    },
+    {
+      "event_id": "59391c06-8582-4d18-a079-c8adb8a162a0",
+      "timestamp": "2026-02-28T19:11:40.059755",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-03 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-03"
+      }
+    },
+    {
+      "event_id": "1289f673-89ff-46a0-883d-eabdc304bc0d",
+      "timestamp": "2026-02-28T19:11:40.103873",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-04 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-04"
+      }
+    },
+    {
+      "event_id": "057a1b58-147b-40b0-8f05-867e870192de",
+      "timestamp": "2026-02-28T19:11:40.144526",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-05 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-05"
+      }
+    },
+    {
+      "event_id": "a9cc4716-cfac-4a52-a313-61c136006e99",
+      "timestamp": "2026-02-28T19:11:40.173802",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-06 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-06"
+      }
+    },
+    {
+      "event_id": "3dfe2d0d-79b0-4b73-85bd-7391e40d60cb",
+      "timestamp": "2026-02-28T19:11:42.985035",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-01 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-01"
+      }
+    },
+    {
+      "event_id": "c3357c1b-a2e4-4e17-a3e2-d254257e3d15",
+      "timestamp": "2026-02-28T19:11:43.032474",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-02 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-02"
+      }
+    },
+    {
+      "event_id": "4be4998c-1e12-4484-a904-29faad7a7e92",
+      "timestamp": "2026-02-28T19:11:43.081784",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-03 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-03"
+      }
+    },
+    {
+      "event_id": "4fe8f529-44be-4c31-9e9b-6e428550f159",
+      "timestamp": "2026-02-28T19:11:43.122928",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-04 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-04"
+      }
+    },
+    {
+      "event_id": "3d4ae857-feb3-4de7-abf0-d74e46b1920a",
+      "timestamp": "2026-02-28T19:11:43.171457",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-05 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-05"
+      }
+    },
+    {
+      "event_id": "888f0561-cb3c-4973-9fe8-0406d92ac9e2",
+      "timestamp": "2026-02-28T19:11:43.203424",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-06 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-06"
+      }
+    },
+    {
+      "event_id": "fdc2a9a2-b1e0-466f-8287-82fe6a51472b",
+      "timestamp": "2026-02-28T19:13:15.309650",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 1e8d14c2-c43d-4969-8321-ffec143569c9 moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "f6daf77d-b6e1-45bd-853d-1aa1cb8cd55a",
+      "timestamp": "2026-02-28T19:13:15.327455",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 56953d17-5be7-4e80-ba00-0c1e4c0a7b45 moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "918bcbea-7ad0-42a7-9625-f658e4c39de7",
+      "timestamp": "2026-02-28T19:13:15.344897",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 26dd0abf-20c2-4622-a433-997a56ba8767 moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "bf41ae6d-0ffd-4048-a98f-cfcabc01a17b",
+      "timestamp": "2026-02-28T19:13:15.362634",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 1e8d14c2-c43d-4969-8321-ffec143569c9 moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "67a1883f-4817-49e1-b6f7-d2f6c6d0c15d",
+      "timestamp": "2026-02-28T19:13:15.382275",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 56953d17-5be7-4e80-ba00-0c1e4c0a7b45 moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "ef536dc9-0729-4c07-a55e-026c192d08e4",
+      "timestamp": "2026-02-28T19:13:15.400663",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 26dd0abf-20c2-4622-a433-997a56ba8767 moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "08a3e769-5e96-4db0-bca1-e2e8e3814576",
+      "timestamp": "2026-02-28T19:13:15.421122",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 7389a0b7-7be0-4d2e-958c-dbf1e8f5bcdf moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "cc0b63cb-d878-456b-bfd4-1dfdcf6625a2",
+      "timestamp": "2026-02-28T19:13:15.439996",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 87d6e906-7843-412b-b5c0-c17e295ba0bc moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "a3dbbed0-c703-4931-8791-a01396245e26",
+      "timestamp": "2026-02-28T19:13:15.459711",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk b6f17c14-5701-44fa-9b2a-8246354bbeca moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "0cbb173f-772e-4927-a366-6530f494d999",
+      "timestamp": "2026-02-28T19:13:15.480403",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 7389a0b7-7be0-4d2e-958c-dbf1e8f5bcdf moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "5bc566dc-ba19-418e-8b0c-6b7bf4a6d85c",
+      "timestamp": "2026-02-28T19:13:15.499359",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 87d6e906-7843-412b-b5c0-c17e295ba0bc moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "66849a54-3800-4a4d-b33b-78889d21bca6",
+      "timestamp": "2026-02-28T19:13:15.518507",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk b6f17c14-5701-44fa-9b2a-8246354bbeca moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "2faa7965-bcbd-4859-88b6-3074b2aa6a74",
+      "timestamp": "2026-02-28T19:13:47.351158",
+      "event_type": "FILE_REGISTERED",
+      "message": "File 'Gemini_Generated_Image_1akw6b1akw6b1akw.png' registered",
+      "metadata": {
+        "file_id": "36e63728-5e5e-4225-bcf0-1fba8295be1b",
+        "size": 7838333,
+        "chunks": 15
+      }
+    },
+    {
+      "event_id": "574bde78-566b-4587-bf0a-82e031cb78f3",
+      "timestamp": "2026-02-28T19:14:00.033064",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-01 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-01"
+      }
+    },
+    {
+      "event_id": "84ebfc84-2dba-4973-b938-3b5cbc98c322",
+      "timestamp": "2026-02-28T19:14:00.080130",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-02 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-02"
+      }
+    },
+    {
+      "event_id": "98a3bb21-83fe-4774-8ef0-dce4be06140e",
+      "timestamp": "2026-02-28T19:14:00.126341",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-03 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-03"
+      }
+    },
+    {
+      "event_id": "9fc276cf-3d1e-432c-91f1-1b8777433684",
+      "timestamp": "2026-02-28T19:14:00.168682",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-04 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-04"
+      }
+    },
+    {
+      "event_id": "f80eb45d-8d8e-42e7-9100-7c66af728bc0",
+      "timestamp": "2026-02-28T19:14:00.206140",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-05 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-05"
+      }
+    },
+    {
+      "event_id": "fb3880fc-9237-45e4-b23e-661f324d3af3",
+      "timestamp": "2026-02-28T19:14:00.241252",
+      "event_type": "NODE_DEGRADED",
+      "message": "SAT-06 is now DEGRADED",
+      "metadata": {
+        "node_id": "SAT-06"
+      }
+    },
+    {
+      "event_id": "9d09801b-e09c-459e-bb52-c03319fe1ea3",
+      "timestamp": "2026-02-28T19:14:03.060955",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-01 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-01"
+      }
+    },
+    {
+      "event_id": "a4dbebd8-17a9-4dc8-9391-c0ae3fb3e8de",
+      "timestamp": "2026-02-28T19:14:03.110747",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-02 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-02"
+      }
+    },
+    {
+      "event_id": "bdd82d22-49b8-424e-b32b-d04134f04a28",
+      "timestamp": "2026-02-28T19:14:03.149970",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-03 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-03"
+      }
+    },
+    {
+      "event_id": "1e644303-d8ce-4b16-a087-32c3fe1cb03a",
+      "timestamp": "2026-02-28T19:14:03.187698",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-04 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-04"
+      }
+    },
+    {
+      "event_id": "291e7fd7-2cd2-448a-b2fe-f85727de0451",
+      "timestamp": "2026-02-28T19:14:03.232039",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-05 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-05"
+      }
+    },
+    {
+      "event_id": "be18a23e-255d-4967-8f16-0858194ac0f5",
+      "timestamp": "2026-02-28T19:14:03.278848",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-06 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-06"
+      }
+    },
+    {
+      "event_id": "4eccee49-88cc-4b8e-92db-5b1438f444f9",
+      "timestamp": "2026-02-28T19:15:35.799946",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 1e8d14c2-c43d-4969-8321-ffec143569c9 moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "319fef22-a19c-4f57-87bf-a6af0ce25b1c",
+      "timestamp": "2026-02-28T19:15:35.817770",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 56953d17-5be7-4e80-ba00-0c1e4c0a7b45 moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "6d53f6cb-5b0c-4ac4-af06-92a042ac6cb2",
+      "timestamp": "2026-02-28T19:15:35.837697",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 26dd0abf-20c2-4622-a433-997a56ba8767 moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "dec0af1e-b5d9-47a8-85a9-5e1bd24407aa",
+      "timestamp": "2026-02-28T19:15:35.860413",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 1e8d14c2-c43d-4969-8321-ffec143569c9 moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "deae9cbb-09b8-4a80-8e31-7a714011cd03",
+      "timestamp": "2026-02-28T19:15:35.879471",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 56953d17-5be7-4e80-ba00-0c1e4c0a7b45 moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "cbefffd8-afc7-420b-b229-6c945f279603",
+      "timestamp": "2026-02-28T19:15:35.901836",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 26dd0abf-20c2-4622-a433-997a56ba8767 moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "de2d5e50-d50e-4a8a-a41c-269e9bc149d6",
+      "timestamp": "2026-02-28T19:15:35.925472",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 7389a0b7-7be0-4d2e-958c-dbf1e8f5bcdf moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "33f967cc-f372-4057-9d46-40dcd1503750",
+      "timestamp": "2026-02-28T19:15:35.947151",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 87d6e906-7843-412b-b5c0-c17e295ba0bc moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "9e9f9e75-3da7-4b32-9867-4439d49dacfa",
+      "timestamp": "2026-02-28T19:15:35.970509",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk b6f17c14-5701-44fa-9b2a-8246354bbeca moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "c9d2631d-a093-44b3-bcdb-737a6f9a3af9",
+      "timestamp": "2026-02-28T19:15:35.990824",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 7389a0b7-7be0-4d2e-958c-dbf1e8f5bcdf moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "6dd962e4-5d11-4ee4-9b98-be87663ca98b",
+      "timestamp": "2026-02-28T19:15:36.009757",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 87d6e906-7843-412b-b5c0-c17e295ba0bc moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "cbf525e7-32f3-4250-94e3-44d9b551e690",
+      "timestamp": "2026-02-28T19:15:36.029459",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk b6f17c14-5701-44fa-9b2a-8246354bbeca moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "5952462c-ae3a-45c8-8891-9d2b1be3d8b7",
+      "timestamp": "2026-02-28T19:15:36.049668",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk c4c4fdb3-553f-4ece-9be8-72e6d6ee3413 moved SAT-05 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "60cb1807-32cc-455f-bcaa-1733b449aba4",
+      "timestamp": "2026-02-28T19:15:36.068503",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 26db1c36-d348-4feb-9b13-a4162e8f3705 moved SAT-05 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "90920d9e-00b5-4a4d-9549-4ea671248f4e",
+      "timestamp": "2026-02-28T19:15:36.089386",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 73c7bdee-55a3-44db-8487-b8b3182291f0 moved SAT-05 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "2153117c-4d03-40b2-ab3e-70e54f6daa0f",
+      "timestamp": "2026-02-28T19:15:36.109735",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk d700254b-0ad2-4fd5-a4f4-fe4dc4c911d7 moved SAT-06 \u2192 SAT-05",
+      "metadata": {}
+    },
+    {
+      "event_id": "7e6a7e6b-e51f-49e1-bed9-d07a0d3e9371",
+      "timestamp": "2026-02-28T19:15:36.130721",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 8b139744-ada9-467e-8524-ddf198be3caa moved SAT-06 \u2192 SAT-05",
+      "metadata": {}
+    },
+    {
+      "event_id": "89290bb4-fe8a-44d8-97e3-0200e76f1ab3",
+      "timestamp": "2026-02-28T19:15:36.150257",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk f62ccbee-87df-4188-ab22-4e7528b64e30 moved SAT-06 \u2192 SAT-05",
+      "metadata": {}
     }
   ]
 }

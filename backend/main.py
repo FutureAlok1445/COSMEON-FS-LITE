@@ -326,6 +326,35 @@ async def download_file(file_id: str):
 
 
 # ─────────────────────────────────────────────
+# DELETE /api/delete/{file_id} — Delete Pipeline
+# ─────────────────────────────────────────────
+
+@app.delete("/api/delete/{file_id}")
+async def delete_file_endpoint(file_id: str):
+    """Delete a file and its shards from the orbital grid."""
+    from backend.metadata.manager import delete_file, get_file
+    
+    record = get_file(file_id)
+    if not record:
+        raise HTTPException(status_code=404, detail="File ID not found")
+        
+    filename = record.filename
+    success = delete_file(file_id)
+    
+    if success:
+        await manager.broadcast("FILE_DELETED", {
+            "file_id": file_id,
+            "filename": filename,
+            "message": f"{filename} securely erased from all orbital nodes",
+        })
+        # Post-delete: broadcast metrics
+        await _broadcast_metrics()
+        
+        return {"success": True, "message": f"{filename} deleted successfully"}
+    else:
+        raise HTTPException(status_code=500, detail="Internal error during file deletion")
+
+# ─────────────────────────────────────────────
 # GET /api/files — List All Files
 # ─────────────────────────────────────────────
 

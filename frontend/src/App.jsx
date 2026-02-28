@@ -18,7 +18,7 @@ import ChaosOps from './components/chaos/ChaosOps';
 function Dashboard() {
   const { messages, connected } = useWebSocket('ws://localhost:8000/ws');
   const [fileId, setFileId] = useState(null);
-  const [currentTab, setCurrentTab] = useState('Orbital Engine');
+  const [currentTab, setCurrentTab] = useState('Payload Ops');
   const [booting, setBooting] = useState(true);
 
   const handleUpload = async (formData) => {
