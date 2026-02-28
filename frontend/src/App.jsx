@@ -10,10 +10,12 @@ import ResilienceChart from './components/metrics/ResilienceChart';
 import GsUplinkStatus from './components/metrics/GsUplinkStatus';
 import { ChaosPanel } from './components/chaos/ChaosPanel';
 import { MissionLog } from './components/terminal/MissionLog';
+import NetworkMap3D from './components/network/NetworkMap3D';
 
 function Dashboard() {
   const { messages, connected } = useWebSocket('ws://localhost:8000/ws');
   const [fileId, setFileId] = useState(null);
+  const [currentTab, setCurrentTab] = useState('Orbital Engine');
 
   const handleUpload = async (formData) => {
     try {
@@ -33,44 +35,61 @@ function Dashboard() {
   };
 
   return (
-    <div className="h-screen w-screen bg-[#020617] text-gray-200 flex overflow-hidden font-sans">
+    <div className="h-screen w-screen bg-[#02040A] text-gray-200 flex overflow-hidden font-sans">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col min-w-0">
-        <Topbar />
+      <div className="flex-1 flex flex-col min-w-0 relative">
+        {/* Subtle Ambient Glow Behind Main Content */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-blue-600/5 blur-[120px] rounded-full pointer-events-none"></div>
 
-        <div className="flex-1 flex p-6 gap-6 h-0">
+        <Topbar currentTab={currentTab} setCurrentTab={setCurrentTab} />
+
+        <div className="flex-1 flex px-8 pb-8 pt-4 gap-8 h-0 z-10">
           {/* Main Stage */}
           <div className="flex-1 flex flex-col min-w-0 h-full">
 
             {/* 3D Map Section */}
-            <div className="flex-1 relative pb-6 min-h-0 cursor-grab active:cursor-grabbing">
-              <div className="absolute top-0 left-0 z-10">
-                <h2 className="text-blue-500 font-bold tracking-[0.2em] text-[10px] uppercase">FS-LITE Real-Time Simulation</h2>
-                <h1 className="text-3xl font-bold text-white mt-1">Orbital Plane Heatmaps</h1>
-                <p className="text-xs text-gray-400 mt-2 max-w-sm leading-relaxed">
-                  Global telemetry mesh for high-fidelity orbital file system striping across active planes.
-                </p>
-              </div>
+            <div className="flex-1 relative mb-6 min-h-0 cursor-grab active:cursor-grabbing rounded-3xl overflow-hidden border border-white/5 bg-gradient-to-b from-white/[0.01] to-transparent shadow-[inset_0_0_100px_rgba(0,0,0,0.5)]">
 
-              {/* Status Indicator */}
-              <div className="absolute top-0 right-0 z-10 flex items-center justify-between bg-[#111827]/80 backdrop-blur border border-[#1e293b] rounded-xl px-4 py-3 min-w-[200px] shadow-2xl">
-                <div>
-                  <p className="text-[10px] text-gray-500 font-bold tracking-widest uppercase">Network Load</p>
-                  <p className="text-xl font-bold text-white leading-none mt-1">
-                    {connected ? '42.1 Gbps' : 'OFFLINE'}
-                  </p>
-                </div>
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${connected ? 'bg-blue-600 shadow-[0_0_15px_#2563eb]' : 'bg-red-600'}`}>
-                  <div className={`w-3 h-3 rounded-full ${connected ? 'bg-white blur-[1px] animate-pulse' : 'bg-white'}`}></div>
-                </div>
-              </div>
+              {currentTab === 'Orbital Engine' ? (
+                <>
+                  {/* Glassmorphic Project Info Layer */}
+                  <div className="absolute top-6 left-6 z-10 bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-2xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.5)] max-w-md pointer-events-none">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6] animate-pulse"></div>
+                      <h2 className="text-blue-500 font-bold tracking-[0.2em] text-[10px] uppercase">FS-LITE Real-Time Simulation</h2>
+                    </div>
+                    <h1 className="text-3xl font-bold text-white mb-2 leading-tight">Orbital Plane Heatmaps</h1>
+                    <p className="text-xs text-gray-400 leading-relaxed font-mono">
+                      Global telemetry mesh active. High-fidelity orbital file system striping across active planes.
+                    </p>
+                  </div>
 
-              <OrbitalMap3D />
+                  {/* Status Indicator */}
+                  <div className="absolute top-6 right-6 z-10 flex items-center justify-between bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-2xl px-5 py-4 min-w-[220px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] pointer-events-none">
+                    <div>
+                      <p className="text-[10px] text-gray-500 font-bold tracking-[0.15em] uppercase font-mono">Network Load</p>
+                      <p className="text-2xl font-bold text-white leading-none mt-1.5 font-mono">
+                        {connected ? '42.1 Gbps' : 'OFFLINE'}
+                      </p>
+                    </div>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${connected ? 'bg-blue-500/10 border-blue-500/30 shadow-[inset_0_0_15px_rgba(59,130,246,0.2)]' : 'bg-red-500/10 border-red-500/30'}`}>
+                      <div className={`w-3 h-3 rounded-full ${connected ? 'bg-blue-400 blur-[1px] animate-pulse shadow-[0_0_10px_#60a5fa]' : 'bg-red-500 shadow-[0_0_10px_#ef4444]'}`}></div>
+                    </div>
+                  </div>
+
+                  <OrbitalMap3D />
+                </>
+              ) : (
+                <NetworkMap3D />
+              )}
+
+              {/* Bottom Fade Mask for Map */}
+              <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-[#02040A] to-transparent pointer-events-none z-20"></div>
             </div>
 
             {/* Bottom Panels Layout */}
-            <div className="h-[250px] shrink-0 grid grid-cols-12 gap-6 relative z-10 w-full overflow-x-hidden">
+            <div className="h-[260px] shrink-0 grid grid-cols-12 gap-6 relative z-10 w-full overflow-x-hidden">
               <div className="col-span-3 h-full">
                 <ResilienceChart />
               </div>
@@ -87,7 +106,7 @@ function Dashboard() {
           </div>
 
           {/* Right Sidebar */}
-          <div className="w-80 shrink-0 border-l border-[#1e293b] h-full overflow-y-auto">
+          <div className="w-80 shrink-0 h-full overflow-y-auto bg-white/[0.01] backdrop-blur-2xl border border-white/5 rounded-3xl p-2 shadow-2xl">
             <RightSidebar
               messages={messages}
               fileId={fileId}
@@ -102,3 +121,4 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
