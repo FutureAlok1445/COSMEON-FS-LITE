@@ -19,7 +19,8 @@ def get_node_status(node_id: str) -> str:
 
 
 def set_online(node_id: str) -> None:
-    """Bring a node back online. Also triggers rebalancer (Person 3 will hook this)."""
+    """Bring a node back online. Push latest metadata before marking ONLINE."""
+    meta.replicate_to_node(node_id)
     meta.update_node_status(node_id, "ONLINE")
     print(f"[NODE_MANAGER] ✅ {node_id} → ONLINE")
 
@@ -60,7 +61,8 @@ def get_online_nodes() -> list:
 
 
 def restore_all_nodes() -> None:
-    """Bring all nodes back to ONLINE. Used by Chaos 'Restore' button."""
+    """Bring all nodes back to ONLINE. Push latest metadata to each before marking ONLINE."""
     for node_id in ALL_NODES:
+        meta.replicate_to_node(node_id)
         meta.update_node_status(node_id, "ONLINE")
     print("[NODE_MANAGER] ✅ All nodes restored to ONLINE")

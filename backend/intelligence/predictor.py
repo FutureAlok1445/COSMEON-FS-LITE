@@ -8,9 +8,9 @@ import shutil
 import time
 from pathlib import Path
 from collections import defaultdict
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 
-from backend.config import ALL_NODES, LOS_THRESHOLD, NODES_BASE_PATH
+from backend.config import ALL_NODES, LOS_THRESHOLD, NODES_BASE_PATH, NODE_TO_PLANE
 from backend.intelligence.trajectory import get_timer, get_all_timers
 from backend.utils.ws_manager import manager
 from backend.metadata.manager import (
@@ -56,8 +56,10 @@ def get_hot_chunks(node_id: str, top_n: int = 3) -> List[dict]:
                     "file_id": file_rec.file_id,
                     "chunk_id": chunk.chunk_id,
                     "sequence_number": chunk.sequence_number,
+                    "is_parity": chunk.is_parity,
                     "access_count": access_count,
                     "sha256_hash": chunk.sha256_hash,
+                    "file_chunks": file_rec.chunks,
                 })
 
     # Sort by access count descending
@@ -67,13 +69,44 @@ def get_hot_chunks(node_id: str, top_n: int = 3) -> List[dict]:
 
 # ─────────────────────────────────────────────
 # FIND HEALTHIEST NODE — highest orbit timer + ONLINE
+# Respects topology: excludes planes where paired chunk lives
 # ─────────────────────────────────────────────
 
-def _find_healthiest_node(exclude_node: str) -> Optional[str]:
+def _get_planes_to_avoid_for_chunk(
+    chunk_seq: int, chunk_is_parity: bool, file_chunks: List,
+) -> Set[str]:
+    """Planes we must NOT migrate this chunk to (topology rule)."""
+    planes: Set[str] = set()
+    for c in file_chunks:
+        plane = NODE_TO_PLANE.get(c.node_id)
+        if not plane:
+            continue
+        if chunk_is_parity:
+            if chunk_seq == 4 and not c.is_parity and c.sequence_number in (0, 2):
+                planes.add(plane)
+            elif chunk_seq == 5 and not c.is_parity and c.sequence_number in (1, 3):
+                planes.add(plane)
+        else:
+            parity_seq = 4 + (chunk_seq % 2)
+            if c.sequence_number == parity_seq:
+                planes.add(plane)
+                break
+    return planes
+
+
+def _find_healthiest_node(
+    exclude_node: str, exclude_planes: Optional[Set[str]] = None
+) -> Optional[str]:
     """Find the node with the most orbit time remaining (safest target)."""
     timers = get_all_timers()
     nodes = get_all_nodes()
-    online_nodes = [n for n in nodes if n.status == "ONLINE" and n.node_id != exclude_node]
+    exclude_planes = exclude_planes or set()
+    online_nodes = [
+        n for n in nodes
+        if n.status == "ONLINE"
+        and n.node_id != exclude_node
+        and NODE_TO_PLANE.get(n.node_id) not in exclude_planes
+    ]
 
     if not online_nodes:
         return None
@@ -152,19 +185,25 @@ async def start_predictor() -> None:
                     if not hot_chunks:
                         continue
 
-                    dest = _find_healthiest_node(exclude_node=node_id)
-                    if not dest:
-                        continue
-
                     await manager.broadcast("MIGRATE_START", {
                         "node_id": node_id,
                         "seconds_remaining": seconds,
                         "chunks_to_migrate": len(hot_chunks),
-                        "destination": dest,
                         "message": f"Pre-migrating {len(hot_chunks)} chunks from {node_id} (timer={seconds}s)",
                     })
 
                     for chunk_info in hot_chunks:
+                        planes_to_avoid = _get_planes_to_avoid_for_chunk(
+                            chunk_info["sequence_number"],
+                            chunk_info["is_parity"],
+                            chunk_info["file_chunks"],
+                        )
+                        dest = _find_healthiest_node(
+                            exclude_node=node_id,
+                            exclude_planes=planes_to_avoid,
+                        )
+                        if not dest:
+                            continue
                         await _migrate_chunk(
                             chunk_info["file_id"],
                             chunk_info["chunk_id"],

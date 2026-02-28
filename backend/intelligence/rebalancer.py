@@ -5,9 +5,9 @@
 
 import shutil
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
-from backend.config import ALL_NODES, NODES_BASE_PATH
+from backend.config import ALL_NODES, NODES_BASE_PATH, NODE_TO_PLANE
 from backend.metadata.manager import (
     get_all_files, get_all_nodes, update_chunk_node
 )
@@ -58,10 +58,37 @@ def _find_overloaded_and_underloaded() -> Tuple[List[str], List[str]]:
     return overloaded, underloaded
 
 
+def _get_planes_to_avoid_for_chunk(
+    chunk_seq: int, chunk_is_parity: bool, file_chunks: List,
+) -> Set[str]:
+    """
+    Planes we must NOT migrate this chunk to (topology rule).
+    Data and its paired parity must never be on the same plane.
+    """
+    planes: Set[str] = set()
+    for c in file_chunks:
+        plane = NODE_TO_PLANE.get(c.node_id)
+        if not plane:
+            continue
+        if chunk_is_parity:
+            # P0 (seq 4) pairs with D0,D2; P1 (seq 5) pairs with D1,D3
+            if chunk_seq == 4 and not c.is_parity and c.sequence_number in (0, 2):
+                planes.add(plane)
+            elif chunk_seq == 5 and not c.is_parity and c.sequence_number in (1, 3):
+                planes.add(plane)
+        else:
+            # Data chunk pairs with P[seq % 2] (seq 4 or 5)
+            parity_seq = 4 + (chunk_seq % 2)
+            if c.sequence_number == parity_seq:
+                planes.add(plane)
+                break
+    return planes
+
+
 def _find_movable_chunk(node_id: str) -> Optional[dict]:
     """
     Find a chunk on the given node that can be moved.
-    Returns {file_id, chunk_id} or None.
+    Returns {file_id, chunk_id, sha256_hash, chunk_record, file_chunks} or None.
     """
     for file_rec in get_all_files():
         for chunk in file_rec.chunks:
@@ -70,6 +97,8 @@ def _find_movable_chunk(node_id: str) -> Optional[dict]:
                     "file_id": file_rec.file_id,
                     "chunk_id": chunk.chunk_id,
                     "sha256_hash": chunk.sha256_hash,
+                    "chunk_record": chunk,
+                    "file_chunks": file_rec.chunks,
                 }
     return None
 
@@ -138,12 +167,29 @@ async def check_and_rebalance() -> dict:
         if not overloaded or not underloaded:
             break
 
-        # Pick the most overloaded node and least loaded target
-        source = overloaded[0]
-        target = underloaded[0]
+        # Find a valid (source, chunk, target) triplet respecting topology rule
+        chunk_info = None
+        source = None
+        target = None
+        for src in overloaded:
+            chunk_info = _find_movable_chunk(src)
+            if not chunk_info:
+                continue
+            planes_to_avoid = _get_planes_to_avoid_for_chunk(
+                chunk_info["chunk_record"].sequence_number,
+                chunk_info["chunk_record"].is_parity,
+                chunk_info["file_chunks"],
+            )
+            valid_targets = [
+                n for n in underloaded
+                if NODE_TO_PLANE.get(n) not in planes_to_avoid
+            ]
+            if valid_targets:
+                source = src
+                target = valid_targets[0]  # least loaded among valid
+                break
 
-        chunk_info = _find_movable_chunk(source)
-        if not chunk_info:
+        if not chunk_info or not source or not target:
             break
 
         # Move the file
