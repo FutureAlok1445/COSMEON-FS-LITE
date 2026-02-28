@@ -38,7 +38,10 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 export default function ResilienceChart() {
     return (
-        <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-2xl p-6 h-full flex flex-col shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative overflow-hidden group hover:border-white/20 transition-all duration-500">
+        <div
+            className="bg-[#0b101e]/80 backdrop-blur-3xl border-l-2 border-b-2 border-l-blue-500/30 border-b-blue-500/30 border-t border-r border-t-white/5 border-r-white/5 rounded-none p-6 h-full flex flex-col shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative overflow-hidden group hover:border-l-blue-400 hover:border-b-blue-400 transition-all duration-500"
+            style={{ clipPath: 'polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px)' }}
+        >
 
             {/* Subtle Top Glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-50"></div>

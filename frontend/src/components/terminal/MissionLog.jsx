@@ -19,11 +19,11 @@ export function MissionLog({ messages }) {
     };
 
     return (
-        <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-2xl p-5 flex flex-col h-full shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative overflow-hidden group hover:border-white/20 transition-all duration-500">
+        <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-2xl p-5 flex flex-col min-h-0 h-full shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative overflow-hidden group hover:border-white/20 transition-all duration-500">
             {/* Subtle Terminal Glow */}
             <div className="absolute top-0 right-1/2 translate-x-1/2 w-48 h-1 bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent"></div>
 
-            <div className="flex items-center justify-between mb-3 pb-3 border-b border-white/5">
+            <div className="flex items-center justify-between mb-3 pb-3 border-b border-white/5 shrink-0">
                 <div className="flex items-center gap-2 text-gray-400 font-mono text-[10px] tracking-[0.2em] uppercase font-bold">
                     <Terminal size={12} className="text-cyan-500" />
                     <span>Mission Terminal</span>

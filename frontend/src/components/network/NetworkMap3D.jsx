@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars } from '@react-three/drei';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import * as satellite from 'satellite.js';
 import { Activity, ShieldCheck, Zap, Search, X, Globe } from 'lucide-react';
@@ -101,12 +102,13 @@ function SatelliteSwarm({ satrecs, onSelect }) {
     );
 }
 
-export default function NetworkMap3D() {
+export default function NetworkMap3D({ messages }) {
     const [satrecs, setSatrecs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedSat, setSelectedSat] = useState(null);
     const [liveSatData, setLiveSatData] = useState(null);
+    const [explosionFlash, setExplosionFlash] = useState(false);
 
     const [analytics, setAnalytics] = useState({
         leo: 0,
@@ -116,6 +118,17 @@ export default function NetworkMap3D() {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+    // Chaos Engineering / Real-Time VFX Triggers
+    useEffect(() => {
+        if (!messages || messages.length === 0) return;
+        const lastMsg = messages[messages.length - 1];
+
+        if (lastMsg.type === 'NODE_OFFLINE' || lastMsg.type === 'CHAOS_TRIGGERED') {
+            setExplosionFlash(true);
+            setTimeout(() => setExplosionFlash(false), 800);
+        }
+    }, [messages]);
 
     useEffect(() => {
         async function fetchTLEs() {
@@ -227,10 +240,8 @@ export default function NetworkMap3D() {
     }, [selectedSat]);
 
     return (
-        <div className="w-full h-full relative">
-            <Canvas camera={{ position: [0, 15, 25], fov: 45 }}>
-                <color attach="background" args={['#02040A']} />
-
+        <div className="w-full h-full relative pointer-events-auto">
+            <Canvas camera={{ position: [0, 15, 25], fov: 45 }} gl={{ alpha: true }}>
                 <ambientLight intensity={0.5} color="#4facfe" />
                 <directionalLight position={[10, 10, 5]} intensity={2} color="#ffffff" />
 
@@ -248,6 +259,13 @@ export default function NetworkMap3D() {
                     autoRotate={true}
                     autoRotateSpeed={0.5}
                 />
+
+                <EffectComposer multibuffer>
+                    <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} height={300} intensity={explosionFlash ? 5.0 : 2.0} />
+                    {explosionFlash && (
+                        <ChromaticAberration offset={[0.08, 0.08]} blendFunction={13} /> // 13 is roughly BlendFunction.NORMAL in postprocessing depending on imports, but we can just use the component
+                    )}
+                </EffectComposer>
             </Canvas>
 
             {/* Analytics Overlay HUD */}
@@ -336,8 +354,8 @@ export default function NetworkMap3D() {
                     {/* Metadata Badges */}
                     <div className="flex items-center gap-2">
                         <span className={`text-[9px] font-mono px-2 py-0.5 rounded border ${selectedSat.orbitType === 'LEO' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30' :
-                                selectedSat.orbitType === 'GEO' ? 'bg-purple-500/10 text-purple-400 border-purple-500/30' :
-                                    'bg-blue-500/10 text-blue-400 border-blue-500/30'
+                            selectedSat.orbitType === 'GEO' ? 'bg-purple-500/10 text-purple-400 border-purple-500/30' :
+                                'bg-blue-500/10 text-blue-400 border-blue-500/30'
                             }`}>
                             CLASS: {selectedSat.orbitType}
                         </span>

@@ -328,10 +328,14 @@ export default function PayloadOps({ messages, onUpload, onDownload, fileId }) {
     };
 
     return (
-        <div className="w-full h-full bg-[#0a0f1c]/50 p-8 overflow-y-auto">
+        <div className="w-full h-full flex justify-center p-4 sm:p-8 overflow-y-auto custom-scrollbar">
+            <div
+                className="w-full max-w-5xl h-fit bg-[#05080f]/90 backdrop-blur-3xl border-l-4 border-b-4 border-l-blue-500/50 border-b-blue-500/50 border-t border-r border-t-white/10 border-r-white/10 p-10 relative shadow-[0_20px_60px_rgba(0,0,0,0.8)] mt-4"
+                style={{ clipPath: 'polygon(30px 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%, 0 30px)' }}
+            >
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 blur-[100px] -z-10 pointer-events-none rounded-full"></div>
 
-            <div className="max-w-4xl mx-auto">
-                <div className="flex items-center gap-3 mb-8">
+                <div className="flex items-center gap-4 mb-8">
                     <div className="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
                         <HardDrive className="text-blue-400" size={20} />
                     </div>

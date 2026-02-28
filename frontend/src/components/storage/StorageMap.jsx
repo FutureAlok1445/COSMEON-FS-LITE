@@ -92,7 +92,7 @@ export default function StorageMap() {
     );
 
     return (
-        <div className="w-full h-full bg-[#02040A] text-slate-300 p-8 flex gap-8 overflow-hidden font-mono text-sm relative">
+        <div className="w-full h-full bg-transparent text-slate-300 p-8 flex gap-8 overflow-hidden font-mono text-sm relative">
 
             {/* Background Effects */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
@@ -101,7 +101,7 @@ export default function StorageMap() {
             </div>
 
             {/* Left Panel: Mission Control */}
-            <div className="w-[350px] flex flex-col gap-6 z-10 shrink-0">
+            <div className="w-[350px] flex flex-col gap-6 z-10 shrink-0 pointer-events-auto">
                 {/* Upload Section */}
                 <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-2xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex flex-col gap-4">
                     <div className="flex items-center gap-2 border-b border-white/5 pb-3">
@@ -251,8 +251,8 @@ export default function StorageMap() {
                                                     <div
                                                         key={`${chunk.chunk_id}-${i}`}
                                                         className={`w-[calc(50%-4px)] p-2 rounded border flex flex-col justify-center animate-in zoom-in duration-300 ${chunk.is_parity
-                                                                ? 'bg-purple-500/10 border-purple-500/30 text-purple-200 shadow-[0_0_15px_rgba(168,85,247,0.15)]'
-                                                                : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.15)]'
+                                                            ? 'bg-purple-500/10 border-purple-500/30 text-purple-200 shadow-[0_0_15px_rgba(168,85,247,0.15)]'
+                                                            : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.15)]'
                                                             }`}
                                                         title={`Chunk of ${chunk.filename}\nSeq: ${chunk.sequence_number}`}
                                                     >
