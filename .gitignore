@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# COSMEON runtime data (generated at runtime)
+backend/nodes/
+backend/dtn_queue/
+backend/metadata/store.json
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+
+# Temp
+tmp/
+*.tmp

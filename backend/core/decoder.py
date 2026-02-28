@@ -1,41 +1,91 @@
-from reedsolo import RSCodec, ReedSolomonError
-from backend.config import RS_K, RS_M
+# backend/core/decoder.py
+# Person 1 owns this file completely
+# Responsibility: Given ANY 4 of 6 chunks → reconstruct missing data chunks
 
-def decode_rs_shards(available_shards_map, max_len: int):
+from typing import List, Optional, Dict
+
+import reedsolo
+
+from backend.core.chunker import Chunk, _compute_hash
+from backend.config import RS_K, RS_M, RS_TOTAL
+
+
+def decode_chunks(
+    available_chunks: List[Chunk],
+    pad_size: int,
+) -> List[Chunk]:
     """
-    Uses available shards (data + parity) to mathematically rebuild missing data shards.
-    Takes a dictionary mapping sequence index (0-5) to its bytearray.
+    RS(4,2) decode: reconstruct full set of 4 data chunks from any 4 of 6 available.
+
+    Args:
+        available_chunks — any subset of chunks (min 4 required)
+        pad_size         — original chunk size used during encoding (for unpadding)
+
+    Returns:
+        List of 4 reconstructed DATA chunks in sequence order (0,1,2,3).
+
+    Raises:
+        ValueError if fewer than RS_K=4 chunks provided.
     """
-    rsc = RSCodec(RS_M)
-    
-    reconstructed_data = []
-    
-    for i in range(max_len):
-        # Build the block with erasures.
-        # If a shard is missing from the map, we feed it to the decoder as a byte array with an erasure.
-        block = bytearray(RS_K + RS_M)
-        erase_pos = []
-        for seq in range(RS_K + RS_M):
-            if seq in available_shards_map:
-                block[seq] = available_shards_map[seq][i]
+    if len(available_chunks) < RS_K:
+        raise ValueError(
+            f"Cannot reconstruct: need at least {RS_K} chunks, "
+            f"only {len(available_chunks)} available."
+        )
+
+    rsc = reedsolo.RSCodec(RS_M)
+
+    # Map sequence_number → chunk data for quick lookup
+    chunk_map: Dict[int, bytes] = {
+        c.sequence_number: c.data for c in available_chunks
+    }
+
+    # Reconstruct byte-by-byte
+    recovered_buffers = [bytearray() for _ in range(RS_K)]
+
+    for i in range(pad_size):
+        # Build erasure-aware byte row (None = missing position)
+        byte_row = []
+        erasures = []
+        for pos in range(RS_TOTAL):
+            if pos in chunk_map:
+                byte_row.append(chunk_map[pos][i] if i < len(chunk_map[pos]) else 0)
             else:
-                block[seq] = 0  # Dummy zero for missing byte
-                erase_pos.append(seq)
-                
-        # Only decode if there are missing bytes in the data segment
-        if any(e < RS_K for e in erase_pos):
-            try:
-                decoded, _, _ = rsc.decode(block, erase_pos=erase_pos)
-            except ReedSolomonError:
-                raise Exception("Unrecoverable data loss. Not enough shards available to solve matrix.")
-        else:
-            decoded = block[:RS_K]
-            
-        # Reconstruct the original chunks byte-by-byte
-        if i == 0:
-            reconstructed_data = [bytearray() for _ in range(RS_K)]
-            
-        for c in range(RS_K):
-            reconstructed_data[c].append(decoded[c])
-            
-    return reconstructed_data
+                byte_row.append(0)         # placeholder
+                erasures.append(pos)
+
+        # reedsolo decode with explicit erasure positions
+        try:
+            decoded, _, _ = rsc.decode(bytes(byte_row), erase_pos=erasures)
+        except reedsolo.ReedSolomonError as e:
+            raise ValueError(f"RS decode failed at byte position {i}: {e}")
+
+        # decoded = first RS_K bytes = original data bytes
+        for d_idx in range(RS_K):
+            recovered_buffers[d_idx].append(decoded[d_idx])
+
+    # Build recovered Chunk objects — unpad last chunk
+    recovered_chunks: List[Chunk] = []
+    for seq in range(RS_K):
+        raw = bytes(recovered_buffers[seq])
+
+        # Strip zero-padding from last data chunk only
+        if seq == RS_K - 1:
+            raw = raw.rstrip(b'\x00') or raw  # keep at least 1 byte
+
+        # Try to preserve original chunk_id if available
+        original = chunk_map.get(seq)
+        original_chunk = next(
+            (c for c in available_chunks if c.sequence_number == seq), None
+        )
+
+        recovered_chunks.append(Chunk(
+            chunk_id        = original_chunk.chunk_id if original_chunk else f"recovered-{seq}",
+            sequence_number = seq,
+            size            = len(raw),
+            sha256_hash     = _compute_hash(raw),
+            data            = raw,
+            is_parity       = False,
+        ))
+
+    return recovered_chunks  # always returns [D0, D1, D2, D3] in order

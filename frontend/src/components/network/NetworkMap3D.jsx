@@ -3,7 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars } from '@react-three/drei';
 import * as THREE from 'three';
 import * as satellite from 'satellite.js';
-import { Activity, ShieldCheck, Zap } from 'lucide-react';
+import { Activity, ShieldCheck, Zap, Search, X, Globe } from 'lucide-react';
 
 // --- Constants & Config ---
 const EARTH_RADIUS_KM = 6371;
@@ -113,6 +113,9 @@ export default function NetworkMap3D() {
         geo: 0
     });
 
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+
     useEffect(() => {
         async function fetchTLEs() {
             try {
@@ -134,28 +137,31 @@ export default function NetworkMap3D() {
                 let stats = { leo: 0, meo: 0, geo: 0 };
 
                 for (let i = 0; i < lines.length; i += 3) {
-                    if (lines[i + 1] && lines[i + 2]) {
+                    if (lines[i] && lines[i + 1] && lines[i + 2]) {
+                        const satName = lines[i].trim();
                         const satrec = satellite.twoline2satrec(lines[i + 1].trim(), lines[i + 2].trim());
                         // Filter out decayed or invalid sats
                         if (satrec && satrec.error === 0) {
-                            parsedSats.push(satrec);
-
+                            satrec.name = satName;
                             // Calculate mean motion to approximate altitude
                             // Mean motion (revolutions per day)
                             // 1440 minutes in a day, 2*PI radians in a revolution
                             const meanMotion = satrec.no * (1440 / (2 * Math.PI)); // Convert rad/min to rev/day
 
+                            let orbitType = 'GEO';
                             // Rough altitude categories based on mean motion (rev/day)
-                            // LEO: ~11.25 - 16 rev/day (2000km - 160km)
-                            // MEO: ~1.5 - 11.25 rev/day (35786km - 2000km)
-                            // GEO: ~1 rev/day (35786km)
                             if (meanMotion >= 11.25) { // Roughly < 2000km
                                 stats.leo++;
+                                orbitType = 'LEO';
                             } else if (meanMotion < 11.25 && meanMotion > 1.5) { // Roughly 2000km - 35786km
                                 stats.meo++;
+                                orbitType = 'MEO';
                             } else { // Roughly > 35786km (including GEO)
                                 stats.geo++;
                             }
+                            satrec.orbitType = orbitType;
+
+                            parsedSats.push(satrec);
                         }
                     }
                 }
@@ -173,6 +179,13 @@ export default function NetworkMap3D() {
 
         fetchTLEs();
     }, []);
+
+    const filteredSatrecs = useMemo(() => {
+        if (!searchTerm) return satrecs;
+        return satrecs.filter(sat =>
+            sat.name && sat.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [satrecs, searchTerm]);
 
     return (
         <div className="w-full h-full relative">
@@ -278,6 +291,82 @@ export default function NetworkMap3D() {
                     <p className="font-bold tracking-widest uppercase text-sm">Error Syncing Telemetry</p>
                     <p className="text-xs font-mono mt-1 opacity-80">{error}</p>
                 </div>
+            )}
+
+            {/* Satellite Database Drawer */}
+            {!loading && (
+                <>
+                    {/* Floating Toggle Button (visible when drawer is closed) */}
+                    <button
+                        onClick={() => setIsSearchOpen(true)}
+                        className={`absolute top-6 right-6 z-10 w-12 h-12 bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-2xl flex items-center justify-center text-cyan-500 hover:text-white hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all shadow-[0_8px_32px_rgba(0,0,0,0.5)] ${isSearchOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                    >
+                        <Search size={20} />
+                    </button>
+
+                    {/* Sliding Glassmorphic Panel */}
+                    <div
+                        className={`absolute top-6 bottom-6 right-6 z-20 w-96 bg-[#02040A]/80 backdrop-blur-3xl border border-white/10 rounded-2xl flex flex-col shadow-[0_8px_32px_rgba(0,0,0,0.8)] transition-transform duration-500 ease-out ${isSearchOpen ? 'translate-x-0' : 'translate-x-[120%]'}`}
+                    >
+                        {/* Header & Search */}
+                        <div className="p-6 border-b border-white/5">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-2">
+                                    <Globe className="text-cyan-500" size={18} />
+                                    <h2 className="text-white font-bold tracking-wide text-sm">Active Mesh Database</h2>
+                                </div>
+                                <button
+                                    onClick={() => setIsSearchOpen(false)}
+                                    className="text-gray-500 hover:text-white transition-colors"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-cyan-500/50" size={16} />
+                                <input
+                                    type="text"
+                                    placeholder="Search by satellite designation..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder:text-gray-600 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all font-mono"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Scrolling List */}
+                        <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
+                            {filteredSatrecs.slice(0, 100).map((sat, idx) => (
+                                <div key={idx} className="bg-white/[0.02] border border-white/5 hover:border-cyan-500/30 hover:bg-cyan-500/5 p-3 rounded-lg transition-colors group cursor-pointer group">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <p className="text-white text-xs font-bold truncate group-hover:text-cyan-400 max-w-[200px]">{sat.name || 'UNKNOWN SAT'}</p>
+                                        <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded-sm ${sat.orbitType === 'LEO' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' :
+                                                sat.orbitType === 'GEO' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
+                                                    'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                                            }`}>
+                                            {sat.orbitType}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-4 text-[10px] text-gray-500 font-mono">
+                                        <p>NORAD: <span className="text-gray-300">{sat.satnum}</span></p>
+                                        <p>INCL: <span className="text-gray-300">{(sat.inclo * (180 / Math.PI)).toFixed(1)}°</span></p>
+                                    </div>
+                                </div>
+                            ))}
+                            {filteredSatrecs.length === 0 && (
+                                <div className="text-center py-10">
+                                    <p className="text-gray-500 text-xs font-mono uppercase tracking-widest">No signals found</p>
+                                </div>
+                            )}
+                            {filteredSatrecs.length > 100 && (
+                                <div className="text-center pt-2 pb-4">
+                                    <p className="text-cyan-500/50 text-[10px] font-mono uppercase tracking-widest">+ {filteredSatrecs.length - 100} more nodes hidden</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </>
             )}
         </div>
     );

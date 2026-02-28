@@ -1,69 +1,73 @@
-from reedsolo import RSCodec
+# backend/core/encoder.py
+# Person 1 owns this file completely
+# Responsibility: Take 4 data chunks → generate 2 parity chunks → return 6 total
+
+import uuid
+from copy import deepcopy
+from typing import List
+
+import reedsolo
+
+from backend.core.chunker import Chunk, _compute_hash
 from backend.config import RS_K, RS_M
-from backend.core.chunker import compute_sha256
 
-def encode_rs_shards(data_chunks):
-    """
-    Implements true Reed-Solomon RS(4,2) Erasure Coding block-wise.
-    Transforms K data chunks into K+M shards.
-    """
-    # Pad all chunks to exactly the same length for math matrix operations
-    max_len = max(len(dc["data"]) for dc in data_chunks)
-    padded_data = []
-    for dc in data_chunks:
-        pad_amount = max_len - len(dc["data"])
-        padded = dc["data"] + (b"\x00" * pad_amount)
-        padded_data.append(padded)
-        dc["pad_amount"] = pad_amount  # Store padding info to strip later
-        
-    # We need exactly K chunks. If the file was smaller than K chunks, add empty dummy chunks
-    while len(padded_data) < RS_K:
-        padded_data.append(b"\x00" * max_len)
-        data_chunks.append({
-            "chunk_id": f"dummy-{len(data_chunks)}",
-            "sequence": len(data_chunks),
-            "data": b"",
-            "hash": "",
-            "pad_amount": max_len,
-            "dummy": True
-        })
 
-    # RS Math
-    rsc = RSCodec(RS_M)
-    
-    parity_1_bytes = bytearray(max_len)
-    parity_2_bytes = bytearray(max_len)
-    
-    # Interleave encode block by block (O(N) operation over the chunk size)
-    for i in range(max_len):
-        block = bytearray([padded_data[0][i], padded_data[1][i], padded_data[2][i], padded_data[3][i]])
-        encoded = rsc.encode(block)
-        parity_1_bytes[i] = encoded[4]
-        parity_2_bytes[i] = encoded[5]
-        
-    shards = []
-    # 1. Append formatted Data Shards
-    for dc in data_chunks:
-        if not dc.get("dummy"):
-            shards.append({
-                "shard_id": dc["chunk_id"],
-                "type": "data",
-                "sequence": dc["sequence"],
-                "data": dc["data"],
-                "hash": dc["hash"],
-                "pad_amount": dc["pad_amount"]
-            })
-            
-    # 2. Append the calculated Parity Shards
-    base_seq = RS_K
-    for i, parity_bytes in enumerate([parity_1_bytes, parity_2_bytes]):
-        shards.append({
-            "shard_id": f"parity-{base_seq + i}",
-            "type": "parity",
-            "sequence": base_seq + i,
-            "data": bytes(parity_bytes),
-            "hash": compute_sha256(bytes(parity_bytes)),
-            "pad_amount": 0
-        })
-        
-    return shards
+def _pad_chunks(chunks: List[Chunk]) -> tuple[List[bytes], int]:
+    """
+    Pad all chunks to same length (required by reedsolo).
+    Returns padded data list + the original max size used.
+    """
+    max_size = max(len(c.data) for c in chunks)
+    padded = [c.data.ljust(max_size, b'\x00') for c in chunks]
+    return padded, max_size
+
+
+def encode_chunks(data_chunks: List[Chunk]) -> List[Chunk]:
+    """
+    RS(4,2) encode: 4 data chunks → 6 chunks (4 data + 2 parity).
+
+    Encoding is done byte-by-byte across all chunks (interleaved),
+    so RS math operates on equal-length byte arrays.
+
+    Returns:
+        List of 6 Chunk objects — first 4 are data, last 2 are parity.
+    """
+    if len(data_chunks) != RS_K:
+        raise ValueError(f"Encoder expects exactly {RS_K} data chunks, got {len(data_chunks)}")
+
+    padded_data, pad_size = _pad_chunks(data_chunks)
+
+    # reedsolo RSCodec — nsym = number of parity symbols (bytes per chunk here = RS_M)
+    # We encode across each byte position using RS(4,2) field
+    rsc = reedsolo.RSCodec(RS_M)
+
+    parity_buffers = [bytearray() for _ in range(RS_M)]
+
+    # Encode byte-by-byte across all 4 chunks at each position
+    for i in range(pad_size):
+        byte_row = bytes([buf[i] for buf in padded_data])
+        encoded = rsc.encode(byte_row)
+        # encoded = original bytes + parity bytes at end
+        parity_bytes = encoded[RS_K:]  # last RS_M bytes are parity
+        for p_idx, p_byte in enumerate(parity_bytes):
+            parity_buffers[p_idx].append(p_byte)
+
+    # Build parity Chunk objects
+    parity_chunks: List[Chunk] = []
+    for p_idx, p_buf in enumerate(parity_buffers):
+        p_data = bytes(p_buf)
+        parity_chunks.append(Chunk(
+            chunk_id        = str(uuid.uuid4()),
+            sequence_number = RS_K + p_idx,           # sequence 4 and 5
+            size            = len(p_data),
+            sha256_hash     = _compute_hash(p_data),
+            data            = p_data,
+            is_parity       = True,
+        ))
+
+    # Store pad_size in each chunk for decoder (needed to strip padding)
+    result = deepcopy(data_chunks) + parity_chunks
+    for chunk in result:
+        chunk.__dict__['_pad_size'] = pad_size  # internal metadata for decoder
+
+    return result  # [D0, D1, D2, D3, P0, P1]

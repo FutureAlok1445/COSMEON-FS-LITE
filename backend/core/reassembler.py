@@ -1,79 +1,145 @@
-from backend.config import NODES_DIR, RS_K, RS_M
-from backend.core.chunker import compute_sha256
-from backend.core.decoder import decode_rs_shards
-import asyncio
-from backend.utils.ws_manager import manager
+# backend/core/reassembler.py
+# Person 1 owns this file completely
+# Responsibility: Fetch chunks in sequence → decode if missing → return original file bytes
+# NOTE: get_node_status() is provided by Person 2 via node_manager.py (interface contract)
 
-async def retrieve_file_shards(file_id: str, metadata: dict):
+import os
+from pathlib import Path
+from typing import List, Callable, Optional
+
+from backend.core.chunker import Chunk, _compute_hash, reassemble_chunks
+from backend.core.decoder import decode_chunks
+from backend.core.integrity import verify_read, verify_file
+from backend.config import NODES_BASE_PATH, RS_K
+from backend.intelligence.predictor import log_chunk_request
+
+
+def fetch_and_reassemble(
+    chunk_records: List[dict],          # from metadata: [{chunk_id, sequence_number, sha256_hash, node_id, pad_size}, ...]
+    get_node_status: Callable,          # Person 2 provides: get_node_status(node_id) -> "ONLINE"|"OFFLINE"|...
+    file_hash: str,                     # original full-file SHA-256 from metadata
+) -> bytes:
     """
-    Downloads shards. Validates SHA256. 
-    If nodes are OFFLINE or Bit Rot is detected, routes mathematically through RS Decoder.
+    Main reassembly pipeline:
+    1. Try to fetch each chunk from its assigned satellite node
+    2. Verify SHA-256 on every chunk read
+    3. If chunk unavailable/corrupted → collect remaining chunks + call RS decoder
+    4. Reassemble in sequence order
+    5. Verify full-file SHA-256
+
+    Returns: original file bytes
+
+    Raises:
+        ValueError if fewer than RS_K=4 chunks available (unrecoverable)
+        ValueError if final file hash doesn't match (catastrophic corruption)
     """
-    from backend.metadata.manager import _load_db
-    db = _load_db()
-    node_states = db.get("nodes", {})
-    
-    shards = metadata.get("shards", {})
-    available_shards_map = {}
-    missing_data_sequences = []
-    
-    max_len = 0
-    padded_amounts = {}
-    
-    for seq_str, shard_info in shards.items():
-        seq = int(seq_str)
-        node = shard_info["node"]
-        padded_amounts[seq] = shard_info.get("pad_amount", 0)
-        
-        # Check node status
-        status = node_states.get(node, {}).get("status", "ONLINE")
-        file_path = NODES_DIR / node / f"{file_id}_{seq}.bin"
-        
-        await manager.broadcast("FETCH_ATTEMPT", f"Fetching Shard {seq} from {node}", {"node": node, "seq": seq})
-        
-        if status == "ONLINE" and file_path.exists():
-            with open(file_path, "rb") as f:
-                chunk_bytes = f.read()
-                
-            # Verify Integrity (Bit Rot detection)
-            if compute_sha256(chunk_bytes) == shard_info["hash"]:
-                available_shards_map[seq] = chunk_bytes
-                if len(chunk_bytes) > max_len:
-                    max_len = len(chunk_bytes)
-                await manager.broadcast("FETCH_SUCCESS", f"Shard {seq} OK", {"seq": seq})
+    available_chunks: List[Chunk] = []
+    missing_sequences: List[int] = []
+    pad_size: int = chunk_records[0].get("pad_size", 512 * 1024)  # fallback to CHUNK_SIZE
+
+    for record in sorted(chunk_records, key=lambda r: r["sequence_number"]):
+        seq     = record["sequence_number"]
+        node_id = record["node_id"]
+        c_id    = record["chunk_id"]
+        c_hash  = record["sha256_hash"]
+
+        # Skip parity chunks — we only need data chunks (0–3)
+        if record.get("is_parity", False):
+            continue
+
+        # Check node status via Person 2's interface
+        status = get_node_status(node_id)
+
+        if status == "ONLINE":
+            chunk_path = Path(NODES_BASE_PATH) / node_id / f"{c_id}.bin"
+            if chunk_path.exists():
+                with open(chunk_path, "rb") as f:
+                    data = f.read()
+
+                # Level 2 integrity check
+                if verify_read(data, c_hash):
+                    log_chunk_request(node_id, c_id)
+                    available_chunks.append(Chunk(
+                        chunk_id        = c_id,
+                        sequence_number = seq,
+                        size            = len(data),
+                        sha256_hash     = c_hash,
+                        data            = data,
+                        is_parity       = False,
+                    ))
+                else:
+                    # Hash mismatch — treat as unavailable (corrupted)
+                    missing_sequences.append(seq)
             else:
-                await manager.broadcast("CORRUPTION_DETECTED", f"Bit Rot caught in Shard {seq} on {node}", {"node": node})
-                if shard_info["type"] == "data":
-                    missing_data_sequences.append(seq)
+                missing_sequences.append(seq)
         else:
-            if status != "ONLINE":
-                await manager.broadcast("NODE_OFFLINE", f"Node {node} offline. Shard {seq} unavailable.", {"node": node})
-            if shard_info["type"] == "data":
-                missing_data_sequences.append(seq)
-                
-    # If we have missing data chunks, we MUST decode
-    if missing_data_sequences:
-        await manager.broadcast("RS_RECOVERY_STARTED", f"Missing {len(missing_data_sequences)} data chunk(s). Engaging Reed-Solomon.", {})
-        if len(available_shards_map) < RS_K:
-            raise Exception(f"Catastrophic Data Loss. Only {len(available_shards_map)} shards available, {RS_K} required.")
-            
-        reconstructed_data = decode_rs_shards(available_shards_map, max_len)
-        
-        # Merge the reconstructed data in
-        for i, data_bytes in enumerate(reconstructed_data):
-            if i in missing_data_sequences:
-                available_shards_map[i] = bytes(data_bytes)
-                await manager.broadcast("RS_RECOVERY_SUCCESS", f"Mathematically recovered Shard {i}", {"seq": i})
+            # Node OFFLINE or PARTITIONED — chunk unavailable
+            missing_sequences.append(seq)
 
-    # Concatenate sequence 0 through RS_K
-    final_bytes = bytearray()
-    for seq in range(RS_K):
-        # We might have generated dummy chunks during padding, we just slice them off
-        if seq in available_shards_map:
-            raw_chunk = available_shards_map[seq]
-            pad = padded_amounts.get(seq, 0)
-            if pad > 0:
-                raw_chunk = raw_chunk[:-pad]
-            final_bytes.extend(raw_chunk)
-            
-    return bytes(final_bytes)
+    # If any data chunks missing → attempt RS recovery
+    if missing_sequences:
+        if len(available_chunks) < RS_K:
+            raise ValueError(
+                f"Unrecoverable: only {len(available_chunks)} chunks available, "
+                f"need {RS_K}. Missing sequences: {missing_sequences}"
+            )
+
+        # Include parity chunks for RS recovery
+        all_available = _fetch_all_chunks_for_recovery(chunk_records, get_node_status)
+        recovered = decode_chunks(all_available, pad_size)
+        final_chunks = recovered  # decoder always returns full [D0,D1,D2,D3]
+    else:
+        final_chunks = available_chunks
+
+    # Reassemble bytes
+    file_bytes = reassemble_chunks(final_chunks)
+
+    # Level 3 — full file integrity check
+    if not verify_file(file_bytes, file_hash):
+        raise ValueError(
+            "CRITICAL: Reassembled file SHA-256 does NOT match original. "
+            "Data may be permanently corrupted beyond RS recovery capacity."
+        )
+
+    return file_bytes
+
+
+def _fetch_all_chunks_for_recovery(
+    chunk_records: List[dict],
+    get_node_status: Callable,
+) -> List[Chunk]:
+    """
+    Fetch ALL available chunks (data + parity) for RS recovery.
+    Used when some data chunks are missing and we need parity to reconstruct.
+    """
+    available = []
+
+    for record in chunk_records:
+        node_id = record["node_id"]
+        c_id    = record["chunk_id"]
+        c_hash  = record["sha256_hash"]
+        seq     = record["sequence_number"]
+        is_par  = record.get("is_parity", False)
+
+        status = get_node_status(node_id)
+        if status != "ONLINE":
+            continue
+
+        chunk_path = Path(NODES_BASE_PATH) / node_id / f"{c_id}.bin"
+        if not chunk_path.exists():
+            continue
+
+        with open(chunk_path, "rb") as f:
+            data = f.read()
+
+        if verify_read(data, c_hash):
+            available.append(Chunk(
+                chunk_id        = c_id,
+                sequence_number = seq,
+                size            = len(data),
+                sha256_hash     = c_hash,
+                data            = data,
+                is_parity       = is_par,
+            ))
+
+    return available

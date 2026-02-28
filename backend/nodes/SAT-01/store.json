@@ -1,0 +1,103 @@
+{
+  "files": {},
+  "nodes": {
+    "SAT-01": {
+      "node_id": "SAT-01",
+      "plane": "Alpha",
+      "status": "ONLINE",
+      "health_score": 100,
+      "storage_used": 524288,
+      "chunk_count": 1,
+      "orbit_timer": 100,
+      "dtn_queue_depth": 0
+    },
+    "SAT-02": {
+      "node_id": "SAT-02",
+      "plane": "Alpha",
+      "status": "ONLINE",
+      "health_score": 100,
+      "storage_used": 524288,
+      "chunk_count": 1,
+      "orbit_timer": 100,
+      "dtn_queue_depth": 0
+    },
+    "SAT-03": {
+      "node_id": "SAT-03",
+      "plane": "Beta",
+      "status": "ONLINE",
+      "health_score": 100,
+      "storage_used": 524288,
+      "chunk_count": 1,
+      "orbit_timer": 100,
+      "dtn_queue_depth": 0
+    },
+    "SAT-04": {
+      "node_id": "SAT-04",
+      "plane": "Beta",
+      "status": "ONLINE",
+      "health_score": 100,
+      "storage_used": 524288,
+      "chunk_count": 1,
+      "orbit_timer": 100,
+      "dtn_queue_depth": 0
+    },
+    "SAT-05": {
+      "node_id": "SAT-05",
+      "plane": "Gamma",
+      "status": "ONLINE",
+      "health_score": 100,
+      "storage_used": 524288,
+      "chunk_count": 1,
+      "orbit_timer": 100,
+      "dtn_queue_depth": 0
+    },
+    "SAT-06": {
+      "node_id": "SAT-06",
+      "plane": "Gamma",
+      "status": "ONLINE",
+      "health_score": 100,
+      "storage_used": 524288,
+      "chunk_count": 1,
+      "orbit_timer": 100,
+      "dtn_queue_depth": 0
+    }
+  },
+  "events": [
+    {
+      "event_id": "8aea6607-4195-44a7-adb3-e1dd69c00494",
+      "timestamp": "2026-02-28T10:51:33.814240",
+      "event_type": "NODE_OFFLINE",
+      "message": "SAT-03 is now OFFLINE",
+      "metadata": {
+        "node_id": "SAT-03"
+      }
+    },
+    {
+      "event_id": "3db93649-c57d-4950-bb27-94c1079577f7",
+      "timestamp": "2026-02-28T10:51:33.817719",
+      "event_type": "NODE_OFFLINE",
+      "message": "SAT-04 is now OFFLINE",
+      "metadata": {
+        "node_id": "SAT-04"
+      }
+    },
+    {
+      "event_id": "f2130a22-66c8-4e6b-9ac1-6c492c290d52",
+      "timestamp": "2026-02-28T10:51:33.821200",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-03 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-03"
+      }
+    },
+    {
+      "event_id": "ada49a8b-baf0-45c7-b036-fcc6e28f7122",
+      "timestamp": "2026-02-28T10:51:33.824739",
+      "event_type": "NODE_ONLINE",
+      "message": "SAT-04 is now ONLINE",
+      "metadata": {
+        "node_id": "SAT-04"
+      }
+    }
+  ]
+}
