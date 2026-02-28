@@ -65,20 +65,21 @@ def _read_store() -> StoreModel:
     return StoreModel(**raw)
 
 
-def _write_store(store: StoreModel) -> None:
+def _write_store(store: StoreModel, *, replicate: bool = True) -> None:
     """
     Write StoreModel to store.json.
-    Then auto-replicate to all ONLINE node folders.
+    Then auto-replicate to all ONLINE node folders (skip for high-frequency paths).
     NOT thread-safe alone — always use inside lock.
     """
     path = Path(METADATA_PATH)
     path.parent.mkdir(parents=True, exist_ok=True)
 
     with open(path, "w") as f:
-        json.dump(store.model_dump(), f, indent=2, default=str)
+        json.dump(store.model_dump(), f, default=str)
 
-    # Auto-replicate to every online node folder
-    _replicate_to_nodes(store)
+    # Auto-replicate to every online node folder (skip for timer ticks)
+    if replicate:
+        _replicate_to_nodes(store)
 
 
 def _replicate_to_nodes(store: StoreModel) -> None:
@@ -169,10 +170,15 @@ def delete_file(file_id: str) -> bool:
 # CHUNK LOCATION UPDATE
 # ─────────────────────────────────────────────
 
-def update_chunk_node(file_id: str, chunk_id: str, new_node_id: str) -> bool:
+def update_chunk_node(file_id: str, chunk_id: str, new_node_id: str,
+                      expected_old_node: str = None) -> bool:
     """
     Update which node holds a specific chunk.
     Called by rebalancer and predictive migration (Person 3).
+
+    Idempotency guard: if expected_old_node is provided, the update only
+    proceeds if the chunk is STILL on that node. This prevents split-brain
+    when predictor and rebalancer race on the same chunk.
     """
     with _lock:
         store = _read_store()
@@ -182,6 +188,14 @@ def update_chunk_node(file_id: str, chunk_id: str, new_node_id: str) -> bool:
         for chunk in file_rec.chunks:
             if chunk.chunk_id == chunk_id:
                 old_node = chunk.node_id
+
+                # Idempotency: skip if chunk already moved by another migrator
+                if expected_old_node and old_node != expected_old_node:
+                    return False
+                # Idempotency: no-op if already at destination
+                if old_node == new_node_id:
+                    return True
+
                 chunk.node_id = new_node_id
                 # Update storage counters
                 if old_node in store.nodes:
@@ -191,7 +205,7 @@ def update_chunk_node(file_id: str, chunk_id: str, new_node_id: str) -> bool:
                     store.nodes[new_node_id].storage_used += chunk.size
                     store.nodes[new_node_id].chunk_count  += 1
                 _log_event(store, "CHUNK_MIGRATED",
-                           f"Chunk {chunk_id} moved {old_node} → {new_node_id}", {})
+                           f"Chunk {chunk_id} moved {old_node} -> {new_node_id}", {})
                 _write_store(store)
                 return True
         return False
@@ -251,12 +265,13 @@ def update_node_health(node_id: str, health_score: int) -> None:
 
 
 def update_orbit_timer(node_id: str, seconds_remaining: int) -> None:
-    """Called by Person 3's trajectory.py every second."""
+    """Called by Person 3's trajectory.py every second.
+    High-frequency path: skip replication to avoid 36 shutil.copy2/sec."""
     with _lock:
         store = _read_store()
         if node_id in store.nodes:
             store.nodes[node_id].orbit_timer = seconds_remaining
-            _write_store(store)
+            _write_store(store, replicate=False)
 
 
 def update_dtn_queue_depth(node_id: str, depth: int) -> None:

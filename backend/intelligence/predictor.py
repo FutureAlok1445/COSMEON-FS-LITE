@@ -6,6 +6,7 @@
 import asyncio
 import shutil
 import time
+import threading
 from pathlib import Path
 from collections import defaultdict
 from typing import Dict, List, Optional, Set
@@ -16,27 +17,31 @@ from backend.utils.ws_manager import manager
 from backend.metadata.manager import (
     get_all_files, update_chunk_node, get_all_nodes
 )
+from backend.cache.ground_cache import ground_cache
 
 
 # ─────────────────────────────────────────────
 # ACCESS TRACKING — sliding window (60s)
 # ─────────────────────────────────────────────
 _access_log: Dict[str, List[float]] = defaultdict(list)  # chunk_id → [timestamps]
+_access_lock = threading.Lock()  # protect _access_log from concurrent read/write
 _WINDOW_SECONDS = 60
 
 
 def record_chunk_access(chunk_id: str) -> None:
     """Record a chunk access event. Called by reassembler on every chunk fetch."""
-    _access_log[chunk_id].append(time.time())
+    with _access_lock:
+        _access_log[chunk_id].append(time.time())
 
 
 def _prune_old_accesses() -> None:
     """Remove access records older than 60 seconds."""
     cutoff = time.time() - _WINDOW_SECONDS
-    for chunk_id in list(_access_log.keys()):
-        _access_log[chunk_id] = [t for t in _access_log[chunk_id] if t > cutoff]
-        if not _access_log[chunk_id]:
-            del _access_log[chunk_id]
+    with _access_lock:
+        for chunk_id in list(_access_log.keys()):
+            _access_log[chunk_id] = [t for t in _access_log[chunk_id] if t > cutoff]
+            if not _access_log[chunk_id]:
+                del _access_log[chunk_id]
 
 
 def get_hot_chunks(node_id: str, top_n: int = 3) -> List[dict]:
@@ -133,10 +138,16 @@ async def _migrate_chunk(file_id: str, chunk_id: str, source_node: str, dest_nod
 
     try:
         dst_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(str(src_path), str(dst_path))
+        # shutil.copy2 is blocking disk I/O → offload to thread
+        await asyncio.to_thread(shutil.copy2, str(src_path), str(dst_path))
+        # Delete source file — this is a MOVE, not a copy (zero storage leaks)
+        src_path.unlink(missing_ok=True)
 
         # Update metadata
         update_chunk_node(file_id, chunk_id, dest_node)
+
+        # Evict stale cache entry — chunk is now at a new physical location
+        ground_cache.evict(chunk_id)
 
         await manager.broadcast("MIGRATE_COMPLETE", {
             "chunk_id": chunk_id,
@@ -156,6 +167,10 @@ async def _migrate_chunk(file_id: str, chunk_id: str, source_node: str, dest_nod
 # ─────────────────────────────────────────────
 _running = False
 
+# Circuit breaker: prevent cascading migration storms
+_MAX_MIGRATIONS_PER_CYCLE = 6   # max migrations across ALL nodes per tick
+_MIN_TARGET_TIMER = 45          # never migrate TO a node with < 45s remaining
+
 
 async def start_predictor() -> None:
     """
@@ -163,11 +178,15 @@ async def start_predictor() -> None:
     When any node drops below LOS_THRESHOLD (30s):
     - Find top 3 most-accessed chunks on that node
     - Migrate them to healthiest available node
-    - This is PROACTIVE — node hasn't failed yet
+    - This is PROACTIVE -- node hasn't failed yet
+
+    Circuit breaker:
+    - Cap at _MAX_MIGRATIONS_PER_CYCLE per tick (prevents storm)
+    - Reject target nodes with < _MIN_TARGET_TIMER seconds (prevents cascade)
     """
     global _running
     _running = True
-    print("[PREDICTOR] 🧠 Predictive migration engine started")
+    print("[PREDICTOR] Predictive migration engine started")
 
     # Track which nodes we've already predicted for this cycle
     predicted_this_cycle: set = set()
@@ -175,8 +194,13 @@ async def start_predictor() -> None:
     while _running:
         try:
             timers = get_all_timers()
+            migrations_this_tick = 0  # circuit breaker counter
 
             for node_id, seconds in timers.items():
+                # Circuit breaker: global cap per tick
+                if migrations_this_tick >= _MAX_MIGRATIONS_PER_CYCLE:
+                    break
+
                 # Only trigger once per orbit cycle at threshold
                 if seconds <= LOS_THRESHOLD and node_id not in predicted_this_cycle:
                     predicted_this_cycle.add(node_id)
@@ -193,6 +217,9 @@ async def start_predictor() -> None:
                     })
 
                     for chunk_info in hot_chunks:
+                        if migrations_this_tick >= _MAX_MIGRATIONS_PER_CYCLE:
+                            break
+
                         planes_to_avoid = _get_planes_to_avoid_for_chunk(
                             chunk_info["sequence_number"],
                             chunk_info["is_parity"],
@@ -204,12 +231,19 @@ async def start_predictor() -> None:
                         )
                         if not dest:
                             continue
-                        await _migrate_chunk(
+
+                        # Circuit breaker: reject target if it's also approaching LOS
+                        if timers.get(dest, 0) < _MIN_TARGET_TIMER:
+                            continue
+
+                        success = await _migrate_chunk(
                             chunk_info["file_id"],
                             chunk_info["chunk_id"],
                             node_id,
                             dest,
                         )
+                        if success:
+                            migrations_this_tick += 1
 
                 # Reset tracking when timer resets above threshold
                 if seconds > LOS_THRESHOLD and node_id in predicted_this_cycle:

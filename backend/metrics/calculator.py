@@ -5,6 +5,7 @@
 
 import math
 import time
+import threading
 from typing import List, Dict, Optional
 
 from backend.config import RS_K, RS_M, RS_TOTAL, ALL_NODES
@@ -242,45 +243,52 @@ class IntegrityCounter:
     """
     Tracks integrity verification attempts and passes.
     Across all 3 levels (write, read, file).
-    Thread-safe via simple counters.
+    Thread-safe via threading.Lock.
     """
 
     def __init__(self):
+        self._lock = threading.Lock()
         self._attempts = 0
         self._passes = 0
 
     def record(self, passed: bool) -> None:
-        """Record an integrity check result."""
-        self._attempts += 1
-        if passed:
-            self._passes += 1
+        """Record an integrity check result. Thread-safe."""
+        with self._lock:
+            self._attempts += 1
+            if passed:
+                self._passes += 1
 
     @property
     def pass_rate(self) -> float:
         """Integrity pass rate as percentage (0.0 - 100.0)."""
-        if self._attempts == 0:
-            return 100.0  # no checks = 100% (vacuously true)
-        return round((self._passes / self._attempts) * 100.0, 2)
+        with self._lock:
+            if self._attempts == 0:
+                return 100.0
+            return round((self._passes / self._attempts) * 100.0, 2)
 
     @property
     def attempts(self) -> int:
-        return self._attempts
+        with self._lock:
+            return self._attempts
 
     @property
     def passes(self) -> int:
-        return self._passes
+        with self._lock:
+            return self._passes
 
     def reset(self) -> None:
         """Reset counters (used on chaos restore)."""
-        self._attempts = 0
-        self._passes = 0
+        with self._lock:
+            self._attempts = 0
+            self._passes = 0
 
     def stats(self) -> dict:
-        return {
-            "attempts": self._attempts,
-            "passes": self._passes,
-            "pass_rate": self.pass_rate,
-        }
+        with self._lock:
+            return {
+                "attempts": self._attempts,
+                "passes": self._passes,
+                "pass_rate": self.pass_rate,
+            }
 
 
 # ─────────────────────────────────────────────

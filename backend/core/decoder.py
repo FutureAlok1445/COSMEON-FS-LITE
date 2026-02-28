@@ -9,6 +9,9 @@ import reedsolo
 from backend.core.chunker import Chunk, _compute_hash
 from backend.config import RS_K, RS_M, RS_TOTAL
 
+# Module-level singleton — avoid re-creating RSCodec on every call
+_RSC = reedsolo.RSCodec(RS_M)
+
 
 def decode_chunks(
     available_chunks: List[Chunk],
@@ -18,8 +21,8 @@ def decode_chunks(
     RS(4,2) decode: reconstruct full set of 4 data chunks from any 4 of 6 available.
 
     Args:
-        available_chunks — any subset of chunks (min 4 required)
-        pad_size         — original chunk size used during encoding (for unpadding)
+        available_chunks -- any subset of chunks (min 4 required)
+        pad_size         -- original chunk size used during encoding (for unpadding)
 
     Returns:
         List of 4 reconstructed DATA chunks in sequence order (0,1,2,3).
@@ -33,36 +36,38 @@ def decode_chunks(
             f"only {len(available_chunks)} available."
         )
 
-    rsc = reedsolo.RSCodec(RS_M)
-
-    # Map sequence_number → chunk data for quick lookup
+    # Map sequence_number -> chunk data for quick lookup
     chunk_map: Dict[int, bytes] = {
         c.sequence_number: c.data for c in available_chunks
     }
 
-    # Reconstruct byte-by-byte
-    recovered_buffers = [bytearray() for _ in range(RS_K)]
+    # Pre-compute erasure positions once (they don't change per byte)
+    erasures = [pos for pos in range(RS_TOTAL) if pos not in chunk_map]
+
+    # Pre-allocate recovery buffers (avoid bytearray.append overhead)
+    recovered_buffers = [bytearray(pad_size) for _ in range(RS_K)]
+
+    # Use memoryview for zero-copy slicing
+    mv_map = {seq: memoryview(data) for seq, data in chunk_map.items()}
 
     for i in range(pad_size):
-        # Build erasure-aware byte row (None = missing position)
-        byte_row = []
-        erasures = []
+        # Build byte row: use memoryview for available, 0 for missing
+        byte_row = bytearray(RS_TOTAL)
         for pos in range(RS_TOTAL):
-            if pos in chunk_map:
-                byte_row.append(chunk_map[pos][i] if i < len(chunk_map[pos]) else 0)
-            else:
-                byte_row.append(0)         # placeholder
-                erasures.append(pos)
+            if pos in mv_map:
+                mv = mv_map[pos]
+                byte_row[pos] = mv[i] if i < len(mv) else 0
+            # else: already 0 (placeholder for erasure)
 
         # reedsolo decode with explicit erasure positions
         try:
-            decoded, _, _ = rsc.decode(bytes(byte_row), erase_pos=erasures)
+            decoded, _, _ = _RSC.decode(bytes(byte_row), erase_pos=erasures)
         except reedsolo.ReedSolomonError as e:
             raise ValueError(f"RS decode failed at byte position {i}: {e}")
 
-        # decoded = first RS_K bytes = original data bytes
+        # Write directly into pre-allocated buffers
         for d_idx in range(RS_K):
-            recovered_buffers[d_idx].append(decoded[d_idx])
+            recovered_buffers[d_idx][i] = decoded[d_idx]
 
     # Build recovered Chunk objects
     recovered_chunks: List[Chunk] = []
@@ -70,7 +75,6 @@ def decode_chunks(
         raw = bytes(recovered_buffers[seq])
 
         # Try to preserve original chunk_id if available
-        original = chunk_map.get(seq)
         original_chunk = next(
             (c for c in available_chunks if c.sequence_number == seq), None
         )

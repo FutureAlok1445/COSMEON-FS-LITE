@@ -18,7 +18,7 @@ from backend.config import init_node_folders, RS_K
 # ── Core Engine (Person 1) ──
 from backend.core.chunker import chunk_file, Chunk, _compute_hash
 from backend.core.encoder import encode_chunks
-from backend.core.distributor import distribute_chunks
+from backend.core.distributor import distribute_chunks, verify_topology
 from backend.core.reassembler import fetch_and_reassemble
 
 # ── Metadata & Schemas (Person 2) ──
@@ -141,8 +141,8 @@ async def upload_file(file: UploadFile = File(...)):
             "message": f"Ingesting {file.filename} ({len(content)} bytes)",
         })
 
-        # Step 1: Chunk the file
-        chunks, file_hash = chunk_file(content)
+        # Step 1: Chunk the file (CPU-bound → offload to thread)
+        chunks, file_hash = await asyncio.to_thread(chunk_file, content)
 
         await manager.broadcast("CHUNKING_COMPLETE", {
             "file_id": file_id,
@@ -167,7 +167,8 @@ async def upload_file(file: UploadFile = File(...)):
                 )
                 group.append(pad_chunk)
 
-            encoded = encode_chunks(group)
+            # RS encoding is CPU-bound → offload to thread
+            encoded = await asyncio.to_thread(encode_chunks, group)
             all_encoded.extend(encoded)
 
         await manager.broadcast("ENCODING_COMPLETE", {
@@ -177,16 +178,12 @@ async def upload_file(file: UploadFile = File(...)):
         })
 
         # Step 3: Distribute each segment of 6 chunks (4 data + 2 parity)
+        # Step 3: Distribute (disk I/O-bound → offload to thread)
         all_placements = []
         for seg_idx in range(0, len(all_encoded), RS_K + 2):
             segment = all_encoded[seg_idx:seg_idx + RS_K + 2]
-            if len(segment) == RS_K + 2:  # full segment of 6
-                placements = distribute_chunks(file_id, segment)
-                all_placements.extend(placements)
-            else:
-                # Partial segment (shouldn't happen with proper padding)
-                placements = distribute_chunks(file_id, segment)
-                all_placements.extend(placements)
+            placements = await asyncio.to_thread(distribute_chunks, file_id, segment)
+            all_placements.extend(placements)
 
         # Broadcast per-chunk placement
         for p in all_placements:
@@ -246,6 +243,14 @@ async def upload_file(file: UploadFile = File(...)):
         }
 
     except Exception as e:
+        # Orphan cleanup: remove any .bin files already written to disk
+        from pathlib import Path
+        from backend.config import NODES_BASE_PATH as _NODES_BASE
+        if 'all_placements' in dir():
+            for p in all_placements:
+                if p.get("success") and p.get("node_id"):
+                    orphan = Path(_NODES_BASE) / p["node_id"] / f"{p['chunk_id']}.bin"
+                    orphan.unlink(missing_ok=True)
         log_event("UPLOAD_ERROR", str(e), {"filename": file.filename})
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -281,8 +286,9 @@ async def download_file(file_id: str):
             for c in record.chunks
         ]
 
-        # Call reassembler with node_status callable
-        result = fetch_and_reassemble(
+        # Call reassembler (CPU + disk I/O → offload to thread)
+        result = await asyncio.to_thread(
+            fetch_and_reassemble,
             chunk_records=chunk_records,
             get_node_status=get_node_status,
             file_hash=record.full_sha256,
@@ -337,7 +343,11 @@ async def delete_file_endpoint(file_id: str):
     record = get_file(file_id)
     if not record:
         raise HTTPException(status_code=404, detail="File ID not found")
-        
+
+    # Evict all chunk cache entries before deleting physical files
+    for chunk in record.chunks:
+        ground_cache.evict(chunk.chunk_id)
+
     filename = record.filename
     success = delete_file(file_id)
     
@@ -384,13 +394,16 @@ async def get_tle_data():
     """Proxy CelesTrak TLE data through the backend to avoid browser CORS/403 errors."""
     import urllib.request
     from fastapi.responses import PlainTextResponse
-    
-    url = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle"
-    # Provide a User-Agent to avoid generic scraper blocks
-    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) COSMEON-FS-LITE'})
-    try:
+
+    def _fetch_tle() -> str:
+        """Synchronous TLE fetch — runs in thread to avoid blocking event loop."""
+        url = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle"
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) COSMEON-FS-LITE'})
         with urllib.request.urlopen(req, timeout=10) as response:
-            text = response.read().decode('utf-8')
+            return response.read().decode('utf-8')
+
+    try:
+        text = await asyncio.to_thread(_fetch_tle)
         return PlainTextResponse(content=text)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch TLE data: {str(e)}")
@@ -502,6 +515,23 @@ async def restore():
 @app.get("/api/metrics")
 async def get_metrics():
     return await _build_metrics()
+
+
+# ─────────────────────────────────────────────
+# GET /api/topology/{file_id} — Topology Audit (Judge Defense)
+# ─────────────────────────────────────────────
+
+@app.get("/api/topology/{file_id}")
+async def audit_topology(file_id: str):
+    """
+    Prove that no data chunk shares an orbital plane with its paired parity.
+    This is the hard constraint of the system. Hit this endpoint to verify.
+    """
+    record = get_file(file_id)
+    if not record:
+        raise HTTPException(status_code=404, detail="File ID not found")
+    result = verify_topology(record)
+    return result
 
 
 async def _build_metrics() -> dict:
