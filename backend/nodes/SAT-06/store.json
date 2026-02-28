@@ -8,7 +8,7 @@
       "health_score": 100,
       "storage_used": 524288,
       "chunk_count": 1,
-      "orbit_timer": 45,
+      "orbit_timer": 100,
       "dtn_queue_depth": 0
     },
     "SAT-02": {
@@ -18,7 +18,7 @@
       "health_score": 100,
       "storage_used": 524288,
       "chunk_count": 1,
-      "orbit_timer": 45,
+      "orbit_timer": 100,
       "dtn_queue_depth": 0
     },
     "SAT-03": {
@@ -28,7 +28,7 @@
       "health_score": 100,
       "storage_used": 524288,
       "chunk_count": 1,
-      "orbit_timer": 5,
+      "orbit_timer": 100,
       "dtn_queue_depth": 0
     },
     "SAT-04": {
@@ -38,7 +38,7 @@
       "health_score": 100,
       "storage_used": 524288,
       "chunk_count": 1,
-      "orbit_timer": 5,
+      "orbit_timer": 100,
       "dtn_queue_depth": 0
     },
     "SAT-05": {
@@ -48,7 +48,7 @@
       "health_score": 100,
       "storage_used": 524288,
       "chunk_count": 1,
-      "orbit_timer": 86,
+      "orbit_timer": 100,
       "dtn_queue_depth": 0
     },
     "SAT-06": {
@@ -58,7 +58,7 @@
       "health_score": 100,
       "storage_used": 524288,
       "chunk_count": 1,
-      "orbit_timer": 86,
+      "orbit_timer": 100,
       "dtn_queue_depth": 0
     }
   },

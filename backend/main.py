@@ -1,44 +1,98 @@
+# backend/main.py
+# Person 4 Integration — FastAPI Entry Point
+# Assembles all modules, defines REST + WebSocket endpoints
+# Starts background tasks on startup
+
 import uuid
 import asyncio
 from contextlib import asynccontextmanager
+from typing import Optional
+
 from fastapi import FastAPI, UploadFile, File, HTTPException, WebSocket
-from fastapi.responses import Response
+from fastapi.responses import Response, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.config import CHUNK_SIZE, init_node_folders
-from backend.core.chunker import chunk_file, _compute_hash
+# ── Config & Init ──
+from backend.config import init_node_folders, RS_K
+
+# ── Core Engine (Person 1) ──
+from backend.core.chunker import chunk_file, Chunk
 from backend.core.encoder import encode_chunks
-from backend.core.distributor import distribute_shards
+from backend.core.distributor import distribute_chunks
 from backend.core.reassembler import fetch_and_reassemble
-from backend.metadata.manager import register_file, get_file, init_store
+
+# ── Metadata & Schemas (Person 2) ──
+from backend.metadata.manager import (
+    init_store, register_file, get_file, get_all_files,
+    get_all_nodes, log_event
+)
+from backend.metadata.schemas import (
+    FileRecord, ChunkRecord, UploadResponse
+)
+
+# ── Node Manager (Person 2) ──
+from backend.utils.node_manager import (
+    get_node_status, set_online, set_offline,
+    get_all_statuses, restore_all_nodes
+)
+
+# ── WebSocket Manager (Person 4) ──
 from backend.utils.ws_manager import manager
+
+# ── Intelligence Layer (Person 3) ──
 from backend.intelligence.chaos import router as chaos_router
-from backend.intelligence.dtn_queue import dtn_flush_worker
-from backend.intelligence.trajectory import orbit_timer_worker
-from backend.intelligence.predictor import predictor_worker
-from backend.intelligence.rebalancer import rebalancer_worker
+from backend.intelligence.trajectory import start_all_timers, stop_all_timers
+from backend.intelligence.predictor import start_predictor, stop_predictor
+from backend.intelligence.dtn_queue import start_dtn_worker, stop_dtn_worker, add_to_queue
+from backend.intelligence.rebalancer import check_and_rebalance, compute_entropy, get_chunk_distribution
+
+# ── Metrics (Person 1) ──
+from backend.metrics.calculator import (
+    get_full_metrics_snapshot, integrity_counter,
+    calculate_mttdl, format_mttdl, calculate_storage_efficiency
+)
+from backend.cache.ground_cache import ground_cache
+
+
+# ─────────────────────────────────────────────
+# LIFESPAN — startup + shutdown
+# ─────────────────────────────────────────────
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize the store.json and node folders
+    """Startup: init filesystem, start background tasks."""
     init_node_folders()
     init_store()
-    
-    # Start all Person 3 background workers
-    dtn_task = asyncio.create_task(dtn_flush_worker())
-    orbit_task = asyncio.create_task(orbit_timer_worker())
-    predictor_task = asyncio.create_task(predictor_worker())
-    rebalancer_task = asyncio.create_task(rebalancer_worker())
-    
+
+    # Start Person 3 background tasks
+    orbit_task = asyncio.create_task(start_all_timers())
+    predictor_task = asyncio.create_task(start_predictor())
+    dtn_task = asyncio.create_task(start_dtn_worker())
+
+    print("[MAIN] 🚀 COSMEON FS-LITE Online — All systems nominal")
+
     yield
-    
+
     # Shutdown
-    dtn_task.cancel()
+    stop_all_timers()
+    stop_predictor()
+    stop_dtn_worker()
     orbit_task.cancel()
     predictor_task.cancel()
-    rebalancer_task.cancel()
+    dtn_task.cancel()
+    print("[MAIN] Shutdown complete")
 
-app = FastAPI(title="COSMEON FS-LITE Final Architecture API", lifespan=lifespan)
+
+# ─────────────────────────────────────────────
+# APP SETUP
+# ─────────────────────────────────────────────
+
+app = FastAPI(
+    title="COSMEON FS-LITE — Orbital File System API",
+    description="Reed-Solomon erasure coded distributed file system for satellite constellations",
+    version="2.0.0",
+    lifespan=lifespan,
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -48,7 +102,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Register chaos router (Person 3 endpoints)
 app.include_router(chaos_router)
+
+
+# ─────────────────────────────────────────────
+# WEBSOCKET — /ws
+# ─────────────────────────────────────────────
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -59,70 +119,288 @@ async def websocket_endpoint(websocket: WebSocket):
     except Exception:
         manager.disconnect(websocket)
 
+
+# ─────────────────────────────────────────────
+# POST /api/upload — Main Upload Pipeline
+# ─────────────────────────────────────────────
+
 @app.post("/api/upload")
 async def upload_file(file: UploadFile = File(...)):
-    """Main orbital uplink entry point."""
+    """
+    Main orbital uplink pipeline:
+    1. Read file → chunk → RS encode → distribute → register metadata
+    """
     try:
         content = await file.read()
         file_id = str(uuid.uuid4())
-        full_hash = _compute_hash(content)
-        
-        await manager.broadcast("UPLOAD_START", f"Ingesting {file.filename}")
-        
-        base_chunks, _ = chunk_file(content)
-        shards = encode_chunks(base_chunks)
-        
-        # Note: distribute_shards should return List[ChunkRecord] in the new architecture
-        allocation_ledger = distribute_shards(file_id, shards)
-        
-        from backend.metadata.schemas import FileRecord
+
+        await manager.broadcast("UPLOAD_START", {
+            "file_id": file_id,
+            "filename": file.filename,
+            "size": len(content),
+            "message": f"Ingesting {file.filename} ({len(content)} bytes)",
+        })
+
+        # Step 1: Chunk the file
+        chunks, file_hash = chunk_file(content)
+
+        await manager.broadcast("CHUNKING_COMPLETE", {
+            "file_id": file_id,
+            "chunk_count": len(chunks),
+            "message": f"Split into {len(chunks)} chunks",
+        })
+
+        # Step 2: RS encode each group of K chunks
+        all_encoded = []
+        for i in range(0, len(chunks), RS_K):
+            group = chunks[i:i + RS_K]
+
+            # Pad group to RS_K if needed (last group may be smaller)
+            while len(group) < RS_K:
+                pad_chunk = Chunk(
+                    chunk_id=str(uuid.uuid4()),
+                    sequence_number=len(group),
+                    size=0,
+                    sha256_hash="",
+                    data=b"",
+                    is_parity=False,
+                )
+                group.append(pad_chunk)
+
+            encoded = encode_chunks(group)
+            all_encoded.extend(encoded)
+
+        await manager.broadcast("ENCODING_COMPLETE", {
+            "file_id": file_id,
+            "total_shards": len(all_encoded),
+            "message": f"RS({RS_K},2) encoded → {len(all_encoded)} total shards",
+        })
+
+        # Step 3: Distribute with DTN fallback
+        placements = distribute_chunks(all_encoded, dtn_enqueue=add_to_queue)
+
+        # Broadcast per-chunk placement
+        for p in placements:
+            event = "CHUNK_UPLOADED" if p["success"] else ("DTN_QUEUED" if p.get("queued") else "CHUNK_FAILED")
+            await manager.broadcast(event, {
+                "file_id": file_id,
+                "chunk_id": p["chunk_id"],
+                "node_id": p["node_id"],
+                "plane": p["plane"],
+                "is_parity": p["is_parity"],
+            })
+
+        # Step 4: Build metadata and register
+        chunk_records = []
+        pad_size = getattr(all_encoded[0], '_pad_size', len(all_encoded[0].data)) if all_encoded else 0
+        for p in placements:
+            matching_chunk = next((c for c in all_encoded if c.chunk_id == p["chunk_id"]), None)
+            chunk_records.append(ChunkRecord(
+                chunk_id=p["chunk_id"],
+                sequence_number=p["sequence_number"],
+                size=matching_chunk.size if matching_chunk else 0,
+                sha256_hash=matching_chunk.sha256_hash if matching_chunk else "",
+                node_id=p["node_id"] or "",
+                is_parity=p["is_parity"],
+                pad_size=pad_size,
+            ))
+
         file_record = FileRecord(
             file_id=file_id,
             filename=file.filename,
-            full_sha256=full_hash,
             size=len(content),
-            chunk_count=len(allocation_ledger),
-            chunks=allocation_ledger
+            full_sha256=file_hash,
+            chunk_count=len(chunks),
+            chunks=chunk_records,
         )
         register_file(file_record)
-        
-        await manager.broadcast("UPLOAD_COMPLETE", f"{file.filename} partitioned across orbital mesh.")
-        
-        return {
-            "status": "success",
+
+        await manager.broadcast("UPLOAD_COMPLETE", {
             "file_id": file_id,
+            "filename": file.filename,
+            "message": f"{file.filename} partitioned across orbital mesh",
+        })
+
+        # Post-upload: broadcast metrics
+        await _broadcast_metrics()
+
+        return {
+            "success": True,
+            "file_id": file_id,
+            "filename": file.filename,
+            "chunk_count": len(chunks),
+            "total_shards": len(all_encoded),
+            "message": f"File uploaded and distributed across orbital mesh",
         }
+
     except Exception as e:
+        log_event("UPLOAD_ERROR", str(e), {"filename": file.filename})
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ─────────────────────────────────────────────
+# GET /api/download/{file_id} — Download Pipeline
+# ─────────────────────────────────────────────
 
 @app.get("/api/download/{file_id}")
 async def download_file(file_id: str):
-    """Reconstructs the file from fragments distributed in orbit."""
+    """Reconstruct file from orbital fragments."""
     record = get_file(file_id)
     if not record:
-        raise HTTPException(status_code=404, detail="File ID not found.")
-        
+        raise HTTPException(status_code=404, detail="File ID not found")
+
     try:
-        from backend.metadata.manager import get_node
-        # Adapt retrieve_file_shards to use the new chunk records and get_node_status callback
-        file_bytes = await fetch_and_reassemble(
-            [c.model_dump() for c in record.chunks],
-            lambda node_id: get_node(node_id).status if get_node(node_id) else "OFFLINE",
-            record.full_sha256
+        await manager.broadcast("DOWNLOAD_START", {
+            "file_id": file_id,
+            "filename": record.filename,
+            "message": f"Reconstructing {record.filename}",
+        })
+
+        # Build chunk_records list for reassembler
+        chunk_records = [
+            {
+                "chunk_id": c.chunk_id,
+                "sequence_number": c.sequence_number,
+                "sha256_hash": c.sha256_hash,
+                "node_id": c.node_id,
+                "is_parity": c.is_parity,
+                "pad_size": c.pad_size,
+            }
+            for c in record.chunks
+        ]
+
+        # Call reassembler with node_status callable
+        file_bytes = fetch_and_reassemble(
+            chunk_records=chunk_records,
+            get_node_status=get_node_status,
+            file_hash=record.full_sha256,
         )
-        
-        if _compute_hash(file_bytes) != record.full_sha256:
-            await manager.broadcast("FILE_CORRUPTED", "Catastrophic error: Final hash mismatch.")
-            raise Exception("Final File Integrity Verification FAILED.")
-            
-        await manager.broadcast("DOWNLOAD_COMPLETE", "File reconstructed and verified 100% intact.")
-        
-        # Pass the original filename to the client
-        original_filename = record.filename
-        headers = {
-            "Content-Disposition": f'attachment; filename="{original_filename}"'
-        }
-        return Response(content=file_bytes, media_type="application/octet-stream", headers=headers)
-        
+
+        await manager.broadcast("DOWNLOAD_COMPLETE", {
+            "file_id": file_id,
+            "filename": record.filename,
+            "size": len(file_bytes),
+            "message": f"{record.filename} reconstructed and verified intact",
+        })
+
+        return Response(
+            content=file_bytes,
+            media_type="application/octet-stream",
+            headers={"Content-Disposition": f'attachment; filename="{record.filename}"'},
+        )
+
     except Exception as e:
+        await manager.broadcast("DOWNLOAD_FAILED", {
+            "file_id": file_id,
+            "error": str(e),
+        })
         raise HTTPException(status_code=500, detail=f"Download failed: {str(e)}")
+
+
+# ─────────────────────────────────────────────
+# GET /api/files — List All Files
+# ─────────────────────────────────────────────
+
+@app.get("/api/files")
+async def list_files():
+    files = get_all_files()
+    return {
+        "files": [
+            {
+                "file_id": f.file_id,
+                "filename": f.filename,
+                "size": f.size,
+                "chunk_count": f.chunk_count,
+                "uploaded_at": f.uploaded_at,
+            }
+            for f in files
+        ]
+    }
+
+
+# ─────────────────────────────────────────────
+# GET /api/nodes — List All Node Statuses
+# ─────────────────────────────────────────────
+
+@app.get("/api/nodes")
+async def list_nodes():
+    nodes = get_all_nodes()
+    return {
+        "nodes": [
+            {
+                "node_id": n.node_id,
+                "plane": n.plane,
+                "status": n.status,
+                "health_score": n.health_score,
+                "storage_used": n.storage_used,
+                "chunk_count": n.chunk_count,
+                "orbit_timer": n.orbit_timer,
+                "dtn_queue_depth": n.dtn_queue_depth,
+            }
+            for n in nodes
+        ]
+    }
+
+
+# ─────────────────────────────────────────────
+# POST /api/node/{node_id}/toggle — Toggle Online/Offline
+# ─────────────────────────────────────────────
+
+@app.post("/api/node/{node_id}/toggle")
+async def toggle_node(node_id: str):
+    current = get_node_status(node_id)
+    if current == "ONLINE":
+        set_offline(node_id)
+        new_status = "OFFLINE"
+    else:
+        set_online(node_id)
+        new_status = "ONLINE"
+
+    await manager.broadcast(f"NODE_{new_status}", {
+        "node_id": node_id,
+        "status": new_status,
+        "message": f"{node_id} toggled → {new_status}",
+    })
+
+    return {"node_id": node_id, "status": new_status}
+
+
+# ─────────────────────────────────────────────
+# POST /api/restore — Restore All Nodes
+# ─────────────────────────────────────────────
+
+@app.post("/api/restore")
+async def restore():
+    restore_all_nodes()
+    await manager.broadcast("SYSTEM_RESTORED", {
+        "message": "All nodes restored to ONLINE",
+    })
+    return {"status": "All nodes restored to ONLINE"}
+
+
+# ─────────────────────────────────────────────
+# GET /api/metrics — Full Metrics Snapshot
+# ─────────────────────────────────────────────
+
+@app.get("/api/metrics")
+async def get_metrics():
+    return await _build_metrics()
+
+
+async def _build_metrics() -> dict:
+    """Build complete metrics snapshot."""
+    chunk_counts = get_chunk_distribution()
+    online_count = sum(1 for n in get_all_nodes() if n.status == "ONLINE")
+
+    return get_full_metrics_snapshot(
+        chunk_counts=chunk_counts,
+        integrity_counter=integrity_counter,
+        cache_hit_rate=ground_cache.hit_rate,
+        online_nodes=online_count,
+    )
+
+
+async def _broadcast_metrics() -> None:
+    """Broadcast current metrics to all WebSocket clients."""
+    metrics = await _build_metrics()
+    await manager.broadcast("METRIC_UPDATE", metrics)
