@@ -16,8 +16,18 @@ ORBITAL_PLANES = {
     "Gamma": ["SAT-05", "SAT-06"]
 }
 
+NODE_STATES = {
+    "SAT-01": "ONLINE",
+    "SAT-02": "ONLINE",
+    "SAT-03": "ONLINE",
+    "SAT-04": "ONLINE",
+    "SAT-05": "ONLINE",
+    "SAT-06": "ONLINE"
+}
+
 def init_fs():
     """Initializes the OS-level storage layer."""
+    import json
     for plane, nodes in ORBITAL_PLANES.items():
         for node in nodes:
             (NODES_DIR / node).mkdir(parents=True, exist_ok=True)
@@ -26,12 +36,20 @@ def init_fs():
 
     METADATA_DIR.mkdir(parents=True, exist_ok=True)
     if not METADATA_FILE.exists():
-        import json
         with open(METADATA_FILE, "w") as f:
             json.dump({
                 "files": {}, 
-                "nodes": {n: {"status": "ONLINE", "plane": p} for p, ns in ORBITAL_PLANES.items() for n in ns}, 
+                "nodes": {n: {"status": NODE_STATES[n], "plane": p} for p, ns in ORBITAL_PLANES.items() for n in ns}, 
                 "events": []
-            }, f)
+            }, f, indent=2)
+    else:
+        try:
+            with open(METADATA_FILE, "r") as f:
+                data = json.load(f)
+                for node, info in data.get("nodes", {}).items():
+                    if "status" in info:
+                        NODE_STATES[node] = info["status"]
+        except Exception:
+            pass
 
 init_fs()

@@ -1,15 +1,15 @@
 import random
 import json
-from backend.config import ORBITAL_PLANES, NODES_DIR
-from backend.metadata.manager import _load_db
+from backend.config import ORBITAL_PLANES, NODES_DIR, NODE_STATES
+from backend.metadata.manager import log_event, add_chunk_record
 
 def write_to_node_or_queue(node: str, file_id: str, shard: dict):
     """
     Checks if a node is ONLINE. If yes, writes normally. 
     If OFFLINE, places it in the DTN Store-and-Forward Queue.
     """
-    db = _load_db()
-    status = db.get("nodes", {}).get(node, {}).get("status", "ONLINE")
+    # Maintain memory state dictionary mapping nodes to constraints
+    status = NODE_STATES.get(node, "ONLINE")
     
     filename = f"{file_id}_{shard['sequence']}.bin"
     file_path = NODES_DIR / node / filename
@@ -27,11 +27,11 @@ def write_to_node_or_queue(node: str, file_id: str, shard: dict):
             json.dump({
                 "file_id": file_id,
                 "shard": {
-                    "shard_id": shard["shard_id"],
+                    "shard_id": shard.get("shard_id", f"{file_id}_{shard['sequence']}"),
                     "type": shard["type"],
                     "sequence": shard["sequence"],
                     "data": shard["data"].hex(),
-                    "hash": shard["hash"],
+                    "hash": shard.get("hash", ""),
                     "pad_amount": shard.get("pad_amount", 0)
                 }
             }, f)
@@ -65,13 +65,27 @@ def distribute_shards(file_id: str, shards: list):
         # Write via DTN handler
         delivery_status = write_to_node_or_queue(assigned_node, file_id, shard)
         
-        distribution_ledger[str(shard['sequence'])] = {
+        ledger_entry = {
             "node": assigned_node,
             "plane": assigned_plane,
             "type": shard["type"],
-            "hash": shard["hash"],
+            "hash": shard.get("hash", ""),
             "pad_amount": shard.get("pad_amount", 0),
             "status": delivery_status
         }
         
+        distribution_ledger[str(shard['sequence'])] = ledger_entry
+        
+        # Metadata update - Har action ke baad
+        add_chunk_record(file_id, shard['sequence'], assigned_node, assigned_plane, delivery_status)
+        
+        # Log event in metadata manager
+        log_event("CHUNK_DISTRIBUTION", {
+            "file_id": file_id,
+            "sequence": shard["sequence"],
+            "node": assigned_node,
+            "status": delivery_status
+        })
+        
+    log_event("FILE_DISTRIBUTION_COMPLETE", {"file_id": file_id})
     return distribution_ledger
