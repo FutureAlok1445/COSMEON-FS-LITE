@@ -364,10 +364,52 @@ async def list_nodes():
             for n in nodes
         ]
     }
+# ─────────────────────────────────────────────
+# GET /api/fs/state — Full File System State
+# ─────────────────────────────────────────────
+
+@app.get("/api/fs/state")
+async def get_fs_state():
+    """Return complete state for the Frontend Storage Visualization."""
+    nodes = get_all_nodes()
+    files = get_all_files()
+    
+    # Format chunks for easy frontend consumption
+    formatted_files = []
+    for f in files:
+        formatted_files.append({
+            "file_id": f.file_id,
+            "filename": f.filename,
+            "size": f.size,
+            "chunk_count": f.chunk_count,
+            "chunks": [
+                {
+                    "chunk_id": c.chunk_id,
+                    "node_id": c.node_id,
+                    "is_parity": c.is_parity,
+                    "sequence_number": c.sequence_number
+                } for c in f.chunks
+            ]
+        })
+        
+    return {
+        "nodes": [
+            {
+                "node_id": n.node_id,
+                "plane": n.plane,
+                "status": n.status,
+                "storage_used": n.storage_used,
+            }
+            for n in nodes
+        ],
+        "files": formatted_files,
+        "cache": ground_cache.stats()
+    }
 
 
 # ─────────────────────────────────────────────
 # POST /api/node/{node_id}/toggle — Toggle Online/Offline
+
 # ─────────────────────────────────────────────
 
 @app.post("/api/node/{node_id}/toggle")
