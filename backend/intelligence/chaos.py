@@ -220,6 +220,75 @@ async def overload():
 
 
 # ─────────────────────────────────────────────
+# SCENARIO 5 — Entropy Imbalance 📉
+# Real hazard: Node clears or massive uniform write causing degraded state
+# Action: Dumps 37 dummy chunks onto nodes SAT-01, SAT-02 while leaving others empty
+# ─────────────────────────────────────────────
+
+@router.post("/api/chaos/imbalance")
+async def imbalance():
+    """Simulate a severe entropy imbalance to trigger the Rebalancer."""
+    from backend.metadata.schemas import FileRecord, ChunkRecord
+    from backend.metadata.manager import register_file, update_node_storage
+
+    target_1 = "SAT-01"
+    target_2 = "SAT-02"
+
+    chunks = []
+    total_written = 0
+
+    # Ensure nodes exist
+    for node_id in [target_1, target_2]:
+        node_path = NODES_BASE_PATH / node_id
+        node_path.mkdir(parents=True, exist_ok=True)
+
+    await manager.broadcast("CHAOS_TRIGGERED", {
+        "scenario": "imbalance",
+        "message": "📉 ENTROPY DROP — Unbalanced mass data write to Alpha plane",
+        "target_nodes": [target_1, target_2],
+    })
+
+    # Generate 20 chunks for SAT-01
+    for i in range(20):
+        c_id = str(uuid.uuid4())
+        chunks.append(ChunkRecord(chunk_id=c_id, sequence_number=i, size=1024, sha256_hash="fake", node_id=target_1, is_parity=False, pad_size=512))
+        with open(NODES_BASE_PATH / target_1 / f"{c_id}.bin", "wb") as f:
+            f.write(os.urandom(1024))
+        total_written += 1
+
+    # Generate 17 chunks for SAT-02
+    for i in range(17):
+        c_id = str(uuid.uuid4())
+        chunks.append(ChunkRecord(chunk_id=c_id, sequence_number=i+20, size=1024, sha256_hash="fake", node_id=target_2, is_parity=False, pad_size=512))
+        with open(NODES_BASE_PATH / target_2 / f"{c_id}.bin", "wb") as f:
+            f.write(os.urandom(1024))
+        total_written += 1
+
+    # Register fake file
+    fake_file = FileRecord(
+        file_id=str(uuid.uuid4()), filename="chaos_imbalance_payload.bin", size=1024*37, full_sha256="fake_full", chunk_count=37, chunks=chunks
+    )
+    register_file(fake_file)
+
+    # Update metadata storage
+    update_node_storage(target_1, size_delta=1024*20, chunk_delta=20)
+    update_node_storage(target_2, size_delta=1024*17, chunk_delta=17)
+
+    await manager.broadcast("NODE_OVERLOADED", {
+        "message": f"Entropy collapsed. 37 chunks written uniformly to {target_1} and {target_2}",
+        "dummy_chunks": 37
+    })
+    
+    log_event("CHAOS_IMBALANCE", "Triggered forced entropy drop", {"chunks": 37})
+
+    return {
+        "status": "success",
+        "scenario": "imbalance",
+        "message": f"Imbalance triggered. Wrote 37 dummy chunks."
+    }
+
+
+# ─────────────────────────────────────────────
 # RESTORE — bring everything back to normal
 # ─────────────────────────────────────────────
 

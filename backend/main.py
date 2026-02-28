@@ -347,6 +347,26 @@ async def list_files():
 
 
 # ─────────────────────────────────────────────
+# GET /api/tle — TLE CORS Proxy
+# ─────────────────────────────────────────────
+
+@app.get("/api/tle")
+async def get_tle_data():
+    """Proxy CelesTrak TLE data through the backend to avoid browser CORS/403 errors."""
+    import urllib.request
+    from fastapi.responses import PlainTextResponse
+    
+    url = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle"
+    # Provide a User-Agent to avoid generic scraper blocks
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) COSMEON-FS-LITE'})
+    try:
+        with urllib.request.urlopen(req, timeout=10) as response:
+            text = response.read().decode('utf-8')
+        return PlainTextResponse(content=text)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch TLE data: {str(e)}")
+
+# ─────────────────────────────────────────────
 # GET /api/nodes — List All Node Statuses
 # ─────────────────────────────────────────────
 

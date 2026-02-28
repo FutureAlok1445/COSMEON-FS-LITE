@@ -8,11 +8,11 @@ import RightSidebar from './components/layout/RightSidebar';
 import OrbitalMap3D from './components/orbital/OrbitalMap3D';
 import ResilienceChart from './components/metrics/ResilienceChart';
 import GsUplinkStatus from './components/metrics/GsUplinkStatus';
-import { ChaosPanel } from './components/chaos/ChaosPanel';
 import { MissionLog } from './components/terminal/MissionLog';
 import NetworkMap3D from './components/network/NetworkMap3D';
 import StorageMap from './components/storage/StorageMap';
 import PayloadOps from './components/payload/PayloadOps';
+import ChaosOps from './components/chaos/ChaosOps';
 
 function Dashboard() {
   const { messages, connected } = useWebSocket('ws://localhost:8000/ws');
@@ -75,7 +75,7 @@ function Dashboard() {
           <div className="flex-1 flex flex-col min-w-0 h-full">
 
             {/* 3D Map Section / Main Content Area */}
-            <div className={`flex-1 relative mb-6 min-h-0 ${currentTab !== 'Storage Nodes' && currentTab !== 'Payload Ops' ? 'cursor-grab active:cursor-grabbing rounded-3xl border border-white/5 bg-gradient-to-b from-white/[0.01] to-transparent shadow-[inset_0_0_100px_rgba(0,0,0,0.5)]' : 'rounded-3xl border border-white/5 overflow-hidden'}`}>
+            <div className={`flex-1 relative mb-6 min-h-0 ${currentTab !== 'Storage Nodes' && currentTab !== 'Payload Ops' && currentTab !== 'Chaos Ops' ? 'cursor-grab active:cursor-grabbing rounded-3xl border border-white/5 bg-gradient-to-b from-white/[0.01] to-transparent shadow-[inset_0_0_100px_rgba(0,0,0,0.5)]' : 'rounded-3xl border border-white/5 overflow-hidden'}`}>
 
               {currentTab === 'Orbital Engine' ? (
                 <>
@@ -110,29 +110,28 @@ function Dashboard() {
                 <StorageMap />
               ) : currentTab === 'Payload Ops' ? (
                 <PayloadOps messages={messages} fileId={fileId} onUpload={handleUpload} onDownload={handleDownload} />
+              ) : currentTab === 'Chaos Ops' ? (
+                <ChaosOps messages={messages} />
               ) : (
                 <NetworkMap3D />
               )}
 
               {/* Bottom Fade Mask for Map */}
-              {currentTab !== 'Storage Nodes' && currentTab !== 'Payload Ops' && (
+              {currentTab !== 'Storage Nodes' && currentTab !== 'Payload Ops' && currentTab !== 'Chaos Ops' && (
                 <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-[#02040A] to-transparent pointer-events-none z-20"></div>
               )}
             </div>
 
             {/* Bottom Panels Layout - Hidden on full-height tabs */}
-            {currentTab !== 'Storage Nodes' && currentTab !== 'Payload Ops' && (
+            {currentTab !== 'Storage Nodes' && currentTab !== 'Payload Ops' && currentTab !== 'Chaos Ops' && (
               <div className="h-[260px] shrink-0 grid grid-cols-12 gap-6 relative z-10 w-full overflow-x-hidden">
-                <div className="col-span-3 h-full">
+                <div className="col-span-4 h-full">
                   <ResilienceChart />
                 </div>
-                <div className="col-span-3 h-full">
+                <div className="col-span-4 h-full">
                   <GsUplinkStatus />
                 </div>
-                <div className="col-span-3 h-full">
-                  <ChaosPanel />
-                </div>
-                <div className="col-span-3 h-full flex flex-col">
+                <div className="col-span-4 h-full flex flex-col">
                   <MissionLog messages={messages} />
                 </div>
               </div>
@@ -140,7 +139,7 @@ function Dashboard() {
           </div>
 
           {/* Right Sidebar - Hidden on full-height tabs */}
-          {currentTab !== 'Storage Nodes' && currentTab !== 'Payload Ops' && (
+          {currentTab !== 'Storage Nodes' && currentTab !== 'Payload Ops' && currentTab !== 'Chaos Ops' && (
             <div className="w-80 shrink-0 h-full overflow-y-auto bg-white/[0.01] backdrop-blur-2xl border border-white/5 rounded-3xl p-2 shadow-2xl">
               <RightSidebar
                 messages={messages}

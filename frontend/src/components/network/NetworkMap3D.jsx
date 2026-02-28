@@ -43,7 +43,7 @@ function Atmosphere() {
 }
 
 // Real-Time Satellite Swarm using InstancedMesh
-function SatelliteSwarm({ satrecs }) {
+function SatelliteSwarm({ satrecs, onSelect }) {
     const meshRef = useRef();
 
     // Create a dummy Object3D to help calculate matrix transformations
@@ -53,30 +53,13 @@ function SatelliteSwarm({ satrecs }) {
         if (!meshRef.current || satrecs.length === 0) return;
 
         const now = new Date();
-        // Use modulo to avoid infinite rotation numbers getting too large over time
-        // Optional: add a slight artificial rotation if you want the whole scene to spin slowly
-        // But for 100% accuracy, we should technically keep the earth static and let the sats move,
-        // or rotate the earth to match GMST. For simplicity and visual appeal, we'll keep Earth static
-        // relative to the ECI coordinates output by satellite.js for now.
-
         const gmst = satellite.gstime(now);
 
         satrecs.forEach((satrec, i) => {
-            // Propagate the satellite using SGP4
             const positionAndVelocity = satellite.propagate(satrec, now);
-
             const positionEci = positionAndVelocity.position;
 
             if (positionEci && typeof positionEci !== 'boolean') {
-                // Convert ECI (Earth-Centered Inertial) to Three.js coordinates
-                // satellite.js outputs in km.
-                // X points to vernal equinox, Z points to North Pole, Y completes right-hand rule.
-                // Three.js: Y is up (North Pole), X is right, Z is towards viewer.
-
-                // So: Three.Y = ECI.Z
-                //     Three.X = ECI.X
-                //     Three.Z = -ECI.Y
-
                 const x = positionEci.x * SCALE_FACTOR;
                 const y = positionEci.z * SCALE_FACTOR;
                 const z = -positionEci.y * SCALE_FACTOR;
@@ -95,7 +78,23 @@ function SatelliteSwarm({ satrecs }) {
     if (satrecs.length === 0) return null;
 
     return (
-        <instancedMesh ref={meshRef} args={[null, null, satrecs.length]}>
+        <instancedMesh
+            ref={meshRef}
+            args={[null, null, satrecs.length]}
+            onPointerDown={(e) => {
+                e.stopPropagation();
+                if (e.instanceId !== undefined && onSelect) {
+                    onSelect(satrecs[e.instanceId]);
+                }
+            }}
+            onPointerOver={(e) => {
+                e.stopPropagation();
+                document.body.style.cursor = 'pointer';
+            }}
+            onPointerOut={() => {
+                document.body.style.cursor = 'default';
+            }}
+        >
             <boxGeometry args={[0.08, 0.08, 0.08]} />
             <meshBasicMaterial color="#06b6d4" />
         </instancedMesh>
@@ -106,6 +105,8 @@ export default function NetworkMap3D() {
     const [satrecs, setSatrecs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedSat, setSelectedSat] = useState(null);
+    const [liveSatData, setLiveSatData] = useState(null);
 
     const [analytics, setAnalytics] = useState({
         leo: 0,
@@ -119,11 +120,10 @@ export default function NetworkMap3D() {
     useEffect(() => {
         async function fetchTLEs() {
             try {
-                // Fetch Starlink TLEs from CelesTrak (gives a good dense swarm of real sats)
-                // Using corsproxy to avoid issues if celestrak doesn't handle CORS neatly,
-                // but celestrak actually supports CORS usually.
-                const response = await fetch('https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle');
-                if (!response.ok) throw new Error('Failed to fetch TLE data');
+                // Fetch Starlink TLEs via our local backend proxy to bypass CelesTrak CORS blocks
+                const response = await fetch('http://localhost:8000/api/tle');
+
+                if (!response.ok) throw new Error('Failed to fetch TLE data via backend proxy');
 
                 const text = await response.text();
 
@@ -187,6 +187,45 @@ export default function NetworkMap3D() {
         );
     }, [satrecs, searchTerm]);
 
+    // Live Telemetry Hook for Selected Satellite
+    useEffect(() => {
+        if (!selectedSat) {
+            setLiveSatData(null);
+            return;
+        }
+
+        // Setup real-time updates for velocity/altitude/coords
+        const interval = setInterval(() => {
+            const now = new Date();
+            const positionAndVelocity = satellite.propagate(selectedSat, now);
+            const gmst = satellite.gstime(now);
+
+            if (positionAndVelocity.position && positionAndVelocity.velocity) {
+                // Get Geodetic coordinates (Lat, Lon, Alt)
+                const positionGd = satellite.eciToGeodetic(positionAndVelocity.position, gmst);
+                const longitude = satellite.degreesLong(positionGd.longitude);
+                const latitude = satellite.degreesLat(positionGd.latitude);
+                const height = positionGd.height; // in km
+
+                // Calculate total velocity scalar (km/s)
+                const v = positionAndVelocity.velocity;
+                const velocityKmS = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+
+                setLiveSatData({
+                    lat: latitude,
+                    lon: longitude,
+                    alt: height,
+                    vel: velocityKmS,
+                    status: 'OPTIMAL',
+                    // Simulate random storage load for realism based on the node ID
+                    load: Math.abs(Math.sin(selectedSat.satnum)) * 100
+                });
+            }
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [selectedSat]);
+
     return (
         <div className="w-full h-full relative">
             <Canvas camera={{ position: [0, 15, 25], fov: 45 }}>
@@ -200,7 +239,7 @@ export default function NetworkMap3D() {
                 <Earth />
                 <Atmosphere />
 
-                {!loading && <SatelliteSwarm satrecs={satrecs} />}
+                {!loading && <SatelliteSwarm satrecs={satrecs} onSelect={setSelectedSat} />}
 
                 <OrbitControls
                     enablePan={false}
@@ -277,6 +316,80 @@ export default function NetworkMap3D() {
                 </div>
             )}
 
+            {/* Selected Satellite Details Overlay */}
+            {selectedSat && (
+                <div className="absolute bottom-6 left-6 z-10 w-80 bg-white/[0.02] backdrop-blur-3xl border border-white/20 rounded-2xl p-5 shadow-[0_0_40px_rgba(34,211,238,0.15)] transition-all duration-300 translate-y-0 opacity-100 flex flex-col gap-4">
+                    {/* Header */}
+                    <div className="flex items-start justify-between">
+                        <div>
+                            <div className="flex items-center gap-2 mb-1">
+                                <ShieldCheck className="text-emerald-400" size={16} />
+                                <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest">{liveSatData?.status || 'SYNCHING...'}</span>
+                            </div>
+                            <h2 className="text-lg font-bold text-white tracking-wider">{selectedSat.name}</h2>
+                        </div>
+                        <button onClick={() => setSelectedSat(null)} className="p-1 rounded bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors">
+                            <X size={16} />
+                        </button>
+                    </div>
+
+                    {/* Metadata Badges */}
+                    <div className="flex items-center gap-2">
+                        <span className={`text-[9px] font-mono px-2 py-0.5 rounded border ${selectedSat.orbitType === 'LEO' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30' :
+                                selectedSat.orbitType === 'GEO' ? 'bg-purple-500/10 text-purple-400 border-purple-500/30' :
+                                    'bg-blue-500/10 text-blue-400 border-blue-500/30'
+                            }`}>
+                            CLASS: {selectedSat.orbitType}
+                        </span>
+                        <span className="text-[9px] font-mono px-2 py-0.5 rounded border bg-white/5 text-gray-400 border-white/10">
+                            NORAD: {selectedSat.satnum}
+                        </span>
+                    </div>
+
+                    {/* Live Telemetry Data */}
+                    <div className="bg-black/40 rounded-xl p-3 border border-white/5 flex flex-col gap-3">
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <p className="text-[9px] text-gray-500 font-mono uppercase tracking-widest mb-0.5">Altitude</p>
+                                <p className="text-sm font-mono text-cyan-300 font-bold">{liveSatData ? liveSatData.alt.toFixed(1) : '---'} <span className="text-[10px] text-gray-500">km</span></p>
+                            </div>
+                            <div>
+                                <p className="text-[9px] text-gray-500 font-mono uppercase tracking-widest mb-0.5">Velocity</p>
+                                <p className="text-sm font-mono text-rose-400 font-bold">{liveSatData ? liveSatData.vel.toFixed(2) : '---'} <span className="text-[10px] text-gray-500">km/s</span></p>
+                            </div>
+                        </div>
+
+                        <div className="border-t border-white/5 pt-3 grid grid-cols-2 gap-3">
+                            <div>
+                                <p className="text-[9px] text-gray-500 font-mono uppercase tracking-widest mb-0.5">Latitude</p>
+                                <p className="text-xs font-mono text-gray-300">{liveSatData ? liveSatData.lat.toFixed(4) : '---'}°</p>
+                            </div>
+                            <div>
+                                <p className="text-[9px] text-gray-500 font-mono uppercase tracking-widest mb-0.5">Longitude</p>
+                                <p className="text-xs font-mono text-gray-300">{liveSatData ? liveSatData.lon.toFixed(4) : '---'}°</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Fictional/Project-specific Storage Data */}
+                    <div>
+                        <div className="flex justify-between items-end mb-1">
+                            <span className="text-[9px] text-gray-500 font-mono uppercase tracking-widest">Network Storage Load</span>
+                            <span className="text-white text-[10px] font-bold font-mono">{liveSatData ? liveSatData.load.toFixed(1) : 0}%</span>
+                        </div>
+                        <div className="w-full bg-black/40 h-1.5 rounded-sm overflow-hidden border border-white/5">
+                            <div
+                                className={`h-full rounded-sm transition-all duration-500 ${liveSatData?.load > 80 ? 'bg-rose-500 shadow-[0_0_10px_#f43f5e]' : liveSatData?.load > 50 ? 'bg-amber-500 shadow-[0_0_10px_#f59e0b]' : 'bg-emerald-500 shadow-[0_0_10px_#10b981]'}`}
+                                style={{ width: `${liveSatData ? liveSatData.load : 0}%` }}
+                            ></div>
+                        </div>
+                        <p className="text-[9px] text-gray-500 font-mono mt-2 leading-relaxed">
+                            Acting as an active Reed-Solomon storage node in the COSMEON distributed orbital mesh.
+                        </p>
+                    </div>
+                </div>
+            )}
+
             {loading && (
                 <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm">
                     <div className="flex flex-col items-center gap-4">
@@ -338,12 +451,16 @@ export default function NetworkMap3D() {
                         {/* Scrolling List */}
                         <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
                             {filteredSatrecs.slice(0, 100).map((sat, idx) => (
-                                <div key={idx} className="bg-white/[0.02] border border-white/5 hover:border-cyan-500/30 hover:bg-cyan-500/5 p-3 rounded-lg transition-colors group cursor-pointer group">
+                                <div
+                                    key={idx}
+                                    onClick={() => setSelectedSat(sat)}
+                                    className="bg-white/[0.02] border border-white/5 hover:border-cyan-500/30 hover:bg-cyan-500/5 p-3 rounded-lg transition-colors group cursor-pointer"
+                                >
                                     <div className="flex items-center justify-between mb-1">
                                         <p className="text-white text-xs font-bold truncate group-hover:text-cyan-400 max-w-[200px]">{sat.name || 'UNKNOWN SAT'}</p>
                                         <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded-sm ${sat.orbitType === 'LEO' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' :
-                                                sat.orbitType === 'GEO' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
-                                                    'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                                            sat.orbitType === 'GEO' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
+                                                'bg-blue-500/10 text-blue-400 border border-blue-500/20'
                                             }`}>
                                             {sat.orbitType}
                                         </span>
