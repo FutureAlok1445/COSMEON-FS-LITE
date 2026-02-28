@@ -1,55 +1,67 @@
+# backend/config.py
+# Person 2 owns this file
+# All system-wide constants + orbital plane definitions
+
 import os
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent
-NODES_DIR = BASE_DIR / "nodes"
-METADATA_DIR = BASE_DIR / "metadata"
-METADATA_FILE = METADATA_DIR / "store.json"
+# ─────────────────────────────────────────────
+# Reed-Solomon Parameters
+# ─────────────────────────────────────────────
+CHUNK_SIZE  = 512 * 1024   # 512KB per chunk
+RS_K        = 4            # data chunks
+RS_M        = 2            # parity chunks
+RS_TOTAL    = RS_K + RS_M  # 6 total
 
-CHUNK_SIZE = 512000  # 512KB
-RS_K = 4
-RS_M = 2
+# ─────────────────────────────────────────────
+# Orbital Parameters
+# ─────────────────────────────────────────────
+ORBIT_PERIOD    = 120   # seconds — full orbit countdown
+LOS_THRESHOLD   = 30    # seconds — trigger predictive migration
+CACHE_SIZE      = 10    # LRU cache max chunks
 
+# ─────────────────────────────────────────────
+# Hash Algorithm (quantum-ready flag)
+# ─────────────────────────────────────────────
+HASH_ALGORITHM = os.getenv("HASH_ALGORITHM", "sha256")  # or "sha3_256"
+
+# ─────────────────────────────────────────────
+# Orbital Plane Assignments
+# RULE: Data chunk + its Parity chunk NEVER on same plane
+# ─────────────────────────────────────────────
 ORBITAL_PLANES = {
     "Alpha": ["SAT-01", "SAT-02"],
     "Beta":  ["SAT-03", "SAT-04"],
-    "Gamma": ["SAT-05", "SAT-06"]
+    "Gamma": ["SAT-05", "SAT-06"],
 }
 
-NODE_STATES = {
-    "SAT-01": "ONLINE",
-    "SAT-02": "ONLINE",
-    "SAT-03": "ONLINE",
-    "SAT-04": "ONLINE",
-    "SAT-05": "ONLINE",
-    "SAT-06": "ONLINE"
+# Reverse map: node → plane
+NODE_TO_PLANE = {
+    node: plane
+    for plane, nodes in ORBITAL_PLANES.items()
+    for node in nodes
 }
 
-def init_fs():
-    """Initializes the OS-level storage layer."""
-    import json
-    for plane, nodes in ORBITAL_PLANES.items():
-        for node in nodes:
-            (NODES_DIR / node).mkdir(parents=True, exist_ok=True)
-            # DTN Queue storage per node
-            (NODES_DIR / node / "dtn_queue").mkdir(parents=True, exist_ok=True)
+ALL_NODES = ["SAT-01", "SAT-02", "SAT-03", "SAT-04", "SAT-05", "SAT-06"]
 
-    METADATA_DIR.mkdir(parents=True, exist_ok=True)
-    if not METADATA_FILE.exists():
-        with open(METADATA_FILE, "w") as f:
-            json.dump({
-                "files": {}, 
-                "nodes": {n: {"status": NODE_STATES[n], "plane": p} for p, ns in ORBITAL_PLANES.items() for n in ns}, 
-                "events": []
-            }, f, indent=2)
-    else:
-        try:
-            with open(METADATA_FILE, "r") as f:
-                data = json.load(f)
-                for node, info in data.get("nodes", {}).items():
-                    if "status" in info:
-                        NODE_STATES[node] = info["status"]
-        except Exception:
-            pass
+# ─────────────────────────────────────────────
+# File System Paths
+# ─────────────────────────────────────────────
+BASE_DIR        = Path(__file__).parent
+NODES_BASE_PATH = BASE_DIR / "nodes"
+DTN_QUEUE_PATH  = BASE_DIR / "dtn_queue"
+METADATA_PATH   = BASE_DIR / "metadata" / "store.json"
 
-init_fs()
+
+def init_node_folders():
+    """
+    Create all 6 satellite folders on startup if they don't exist.
+    Called once from main.py on app startup.
+    """
+    for node_id in ALL_NODES:
+        node_path = NODES_BASE_PATH / node_id
+        node_path.mkdir(parents=True, exist_ok=True)
+
+    DTN_QUEUE_PATH.mkdir(parents=True, exist_ok=True)
+    METADATA_PATH.parent.mkdir(parents=True, exist_ok=True)
+    print(f"[CONFIG] ✅ Node folders initialized: {ALL_NODES}")
