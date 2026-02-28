@@ -1,55 +1,26 @@
-import os
-from pathlib import Path
+# backend/config.py
+# Person 2 will expand this — Person 1 only reads from here
 
-BASE_DIR = Path(__file__).resolve().parent
-NODES_DIR = BASE_DIR / "nodes"
-METADATA_DIR = BASE_DIR / "metadata"
-METADATA_FILE = METADATA_DIR / "store.json"
+CHUNK_SIZE = 512 * 1024       # 512KB per chunk
+RS_K = 4                       # data chunks
+RS_M = 2                       # parity chunks
+RS_TOTAL = RS_K + RS_M         # 6 total chunks
+ORBIT_PERIOD = 120             # seconds per orbit
+LOS_THRESHOLD = 30             # seconds — trigger migration
+CACHE_SIZE = 10                # LRU cache max chunks
+HASH_ALGORITHM = "sha256"      # or "sha3_256" for quantum-ready
 
-CHUNK_SIZE = 512000  # 512KB
-RS_K = 4
-RS_M = 2
-
+# Orbital plane assignments (Person 2 owns this mapping)
 ORBITAL_PLANES = {
     "Alpha": ["SAT-01", "SAT-02"],
     "Beta":  ["SAT-03", "SAT-04"],
-    "Gamma": ["SAT-05", "SAT-06"]
+    "Gamma": ["SAT-05", "SAT-06"],
 }
 
-NODE_STATES = {
-    "SAT-01": "ONLINE",
-    "SAT-02": "ONLINE",
-    "SAT-03": "ONLINE",
-    "SAT-04": "ONLINE",
-    "SAT-05": "ONLINE",
-    "SAT-06": "ONLINE"
-}
+# Flat node list
+ALL_NODES = ["SAT-01", "SAT-02", "SAT-03", "SAT-04", "SAT-05", "SAT-06"]
 
-def init_fs():
-    """Initializes the OS-level storage layer."""
-    import json
-    for plane, nodes in ORBITAL_PLANES.items():
-        for node in nodes:
-            (NODES_DIR / node).mkdir(parents=True, exist_ok=True)
-            # DTN Queue storage per node
-            (NODES_DIR / node / "dtn_queue").mkdir(parents=True, exist_ok=True)
-
-    METADATA_DIR.mkdir(parents=True, exist_ok=True)
-    if not METADATA_FILE.exists():
-        with open(METADATA_FILE, "w") as f:
-            json.dump({
-                "files": {}, 
-                "nodes": {n: {"status": NODE_STATES[n], "plane": p} for p, ns in ORBITAL_PLANES.items() for n in ns}, 
-                "events": []
-            }, f, indent=2)
-    else:
-        try:
-            with open(METADATA_FILE, "r") as f:
-                data = json.load(f)
-                for node, info in data.get("nodes", {}).items():
-                    if "status" in info:
-                        NODE_STATES[node] = info["status"]
-        except Exception:
-            pass
-
-init_fs()
+# Node folder base path
+NODES_BASE_PATH = "backend/nodes"
+DTN_QUEUE_PATH  = "backend/dtn_queue"
+METADATA_PATH   = "backend/metadata/store.json"
