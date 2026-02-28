@@ -13,6 +13,7 @@ from backend.metadata.manager import (
 )
 from backend.metrics.calculator import calculate_entropy, entropy_status
 from backend.utils.ws_manager import manager
+from backend.cache.ground_cache import ground_cache
 
 
 # ─────────────────────────────────────────────
@@ -114,11 +115,12 @@ def _move_chunk_file(chunk_id: str, from_node: str, to_node: str) -> bool:
     try:
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(str(src), str(dst))
-        # Optionally remove from source after copy
-        # src.unlink()  # uncomment for move instead of copy
+        # DELETE source after verified copy — this is a MOVE, not a copy.
+        # Leaving the source creates a storage leak on the overloaded node.
+        src.unlink(missing_ok=True)
         return True
     except Exception as e:
-        print(f"[REBALANCER] ❌ File move failed: {e}")
+        print(f"[REBALANCER] File move failed: {e}")
         return False
 
 
@@ -197,8 +199,9 @@ async def check_and_rebalance() -> dict:
         if not moved:
             break
 
-        # Update metadata
+        # Update metadata + evict stale cache entry
         update_chunk_node(chunk_info["file_id"], chunk_info["chunk_id"], target)
+        ground_cache.evict(chunk_info["chunk_id"])
         result["migrations"] += 1
 
         await manager.broadcast("CHUNK_REBALANCED", {

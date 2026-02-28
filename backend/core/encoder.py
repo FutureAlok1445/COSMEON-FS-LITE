@@ -3,13 +3,15 @@
 # Responsibility: Take 4 data chunks → generate 2 parity chunks → return 6 total
 
 import uuid
-from copy import deepcopy
 from typing import List
 
 import reedsolo
 
 from backend.core.chunker import Chunk, _compute_hash
 from backend.config import RS_K, RS_M
+
+# MODULE-LEVEL RSCodec — avoid re-instantiating GF tables on every encode call
+_RSC = reedsolo.RSCodec(RS_M)
 
 
 def _pad_chunks(chunks: List[Chunk]) -> tuple[List[bytes], int]:
@@ -29,6 +31,12 @@ def encode_chunks(data_chunks: List[Chunk]) -> List[Chunk]:
     Encoding is done byte-by-byte across all chunks (interleaved),
     so RS math operates on equal-length byte arrays.
 
+    OPTIMIZATIONS vs. original:
+    - Removed deepcopy() — saves copying megabytes of raw chunk bytes
+    - Module-level RSCodec — avoids rebuilding GF tables per call
+    - Pre-allocated bytearray with known size — avoids dynamic growth
+    - Direct indexing instead of list comprehension per byte
+
     Returns:
         List of 6 Chunk objects — first 4 are data, last 2 are parity.
     """
@@ -37,20 +45,20 @@ def encode_chunks(data_chunks: List[Chunk]) -> List[Chunk]:
 
     padded_data, pad_size = _pad_chunks(data_chunks)
 
-    # reedsolo RSCodec — nsym = number of parity symbols (bytes per chunk here = RS_M)
-    # We encode across each byte position using RS(4,2) field
-    rsc = reedsolo.RSCodec(RS_M)
+    # Pre-allocate parity buffers with known size (avoids dynamic resizing)
+    parity_buffers = [bytearray(pad_size) for _ in range(RS_M)]
 
-    parity_buffers = [bytearray() for _ in range(RS_M)]
+    # Local reference to encode method — avoids attribute lookup in hot loop
+    _encode = _RSC.encode
 
     # Encode byte-by-byte across all 4 chunks at each position
     for i in range(pad_size):
-        byte_row = bytes([buf[i] for buf in padded_data])
-        encoded = rsc.encode(byte_row)
+        byte_row = bytes([padded_data[0][i], padded_data[1][i],
+                          padded_data[2][i], padded_data[3][i]])
+        encoded = _encode(byte_row)
         # encoded = original bytes + parity bytes at end
-        parity_bytes = encoded[RS_K:]  # last RS_M bytes are parity
-        for p_idx, p_byte in enumerate(parity_bytes):
-            parity_buffers[p_idx].append(p_byte)
+        parity_buffers[0][i] = encoded[RS_K]
+        parity_buffers[1][i] = encoded[RS_K + 1]
 
     # Build parity Chunk objects
     parity_chunks: List[Chunk] = []
@@ -65,9 +73,10 @@ def encode_chunks(data_chunks: List[Chunk]) -> List[Chunk]:
             is_parity       = True,
         ))
 
-    # Store pad_size in each chunk for decoder (needed to strip padding)
-    result = deepcopy(data_chunks) + parity_chunks
+    # NO deepcopy — original data_chunks are immutable in this pipeline.
+    # Store pad_size as internal metadata for decoder.
+    result = list(data_chunks) + parity_chunks
     for chunk in result:
-        chunk.__dict__['_pad_size'] = pad_size  # internal metadata for decoder
+        chunk.__dict__['_pad_size'] = pad_size
 
     return result  # [D0, D1, D2, D3, P0, P1]

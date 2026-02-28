@@ -5,6 +5,7 @@
 
 import asyncio
 import shutil
+import threading
 import time
 from pathlib import Path
 from collections import defaultdict
@@ -16,27 +17,31 @@ from backend.utils.ws_manager import manager
 from backend.metadata.manager import (
     get_all_files, update_chunk_node, get_all_nodes
 )
+from backend.cache.ground_cache import ground_cache
 
 
 # ─────────────────────────────────────────────
-# ACCESS TRACKING — sliding window (60s)
+# ACCESS TRACKING — sliding window (60s), thread-safe
 # ─────────────────────────────────────────────
 _access_log: Dict[str, List[float]] = defaultdict(list)  # chunk_id → [timestamps]
+_access_lock = threading.Lock()  # Protects _access_log from concurrent access
 _WINDOW_SECONDS = 60
 
 
 def record_chunk_access(chunk_id: str) -> None:
-    """Record a chunk access event. Called by reassembler on every chunk fetch."""
-    _access_log[chunk_id].append(time.time())
+    """Record a chunk access event. Called by reassembler on every chunk fetch (from thread)."""
+    with _access_lock:
+        _access_log[chunk_id].append(time.time())
 
 
 def _prune_old_accesses() -> None:
     """Remove access records older than 60 seconds."""
     cutoff = time.time() - _WINDOW_SECONDS
-    for chunk_id in list(_access_log.keys()):
-        _access_log[chunk_id] = [t for t in _access_log[chunk_id] if t > cutoff]
-        if not _access_log[chunk_id]:
-            del _access_log[chunk_id]
+    with _access_lock:
+        for chunk_id in list(_access_log.keys()):
+            _access_log[chunk_id] = [t for t in _access_log[chunk_id] if t > cutoff]
+            if not _access_log[chunk_id]:
+                del _access_log[chunk_id]
 
 
 def get_hot_chunks(node_id: str, top_n: int = 3) -> List[dict]:
@@ -97,15 +102,24 @@ def _get_planes_to_avoid_for_chunk(
 def _find_healthiest_node(
     exclude_node: str, exclude_planes: Optional[Set[str]] = None
 ) -> Optional[str]:
-    """Find the node with the most orbit time remaining (safest target)."""
+    """
+    Find the node with the most orbit time remaining (safest target).
+    DEFENSE: Reject any candidate whose timer is ALSO below 2x LOS_THRESHOLD.
+    This prevents cascading migrations where we migrate TO a node that will
+    itself need evacuation within 60 seconds (one orbit cycle).
+    """
     timers = get_all_timers()
     nodes = get_all_nodes()
     exclude_planes = exclude_planes or set()
+    # HARDENING: candidate must have > 2x LOS_THRESHOLD remaining
+    # to prevent cascading migration storms
+    min_safe_timer = LOS_THRESHOLD * 2
     online_nodes = [
         n for n in nodes
         if n.status == "ONLINE"
         and n.node_id != exclude_node
         and NODE_TO_PLANE.get(n.node_id) not in exclude_planes
+        and timers.get(n.node_id, 0) > min_safe_timer  # CIRCUIT BREAKER
     ]
 
     if not online_nodes:
@@ -124,7 +138,10 @@ async def _migrate_chunk(file_id: str, chunk_id: str, source_node: str, dest_nod
     """
     Copy .bin file from source to destination node folder.
     Update metadata to reflect new location.
+    shutil.copy2 and metadata I/O offloaded to thread to avoid blocking the event loop.
     """
+    import asyncio
+
     src_path = Path(NODES_BASE_PATH) / source_node / f"{chunk_id}.bin"
     dst_path = Path(NODES_BASE_PATH) / dest_node / f"{chunk_id}.bin"
 
@@ -132,22 +149,28 @@ async def _migrate_chunk(file_id: str, chunk_id: str, source_node: str, dest_nod
         return False
 
     try:
-        dst_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(str(src_path), str(dst_path))
+        def _do_copy():
+            dst_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(str(src_path), str(dst_path))
+            # DELETE source after copy — prevent storage leak on evacuated node
+            src_path.unlink(missing_ok=True)
+            update_chunk_node(file_id, chunk_id, dest_node)
+            # Evict from ground cache — old node_id mapping is now stale
+            ground_cache.evict(chunk_id)
 
-        # Update metadata
-        update_chunk_node(file_id, chunk_id, dest_node)
+        # Offload blocking disk I/O + metadata write to thread
+        await asyncio.to_thread(_do_copy)
 
         await manager.broadcast("MIGRATE_COMPLETE", {
             "chunk_id": chunk_id,
             "from": source_node,
             "to": dest_node,
-            "message": f"Chunk {chunk_id[:8]}... migrated {source_node} → {dest_node}",
+            "message": f"Chunk {chunk_id[:8]}... migrated {source_node} -> {dest_node}",
         })
         return True
 
     except Exception as e:
-        print(f"[PREDICTOR] ❌ Migration failed: {e}")
+        print(f"[PREDICTOR] Migration failed: {e}")
         return False
 
 

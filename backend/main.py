@@ -5,7 +5,9 @@
 
 import uuid
 import asyncio
+from functools import partial
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, UploadFile, File, HTTPException, WebSocket
@@ -13,12 +15,12 @@ from fastapi.responses import Response, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 # ── Config & Init ──
-from backend.config import init_node_folders, RS_K
+from backend.config import init_node_folders, RS_K, NODES_BASE_PATH
 
 # ── Core Engine (Person 1) ──
 from backend.core.chunker import chunk_file, Chunk, _compute_hash
 from backend.core.encoder import encode_chunks
-from backend.core.distributor import distribute_chunks
+from backend.core.distributor import distribute_chunks, verify_topology
 from backend.core.reassembler import fetch_and_reassemble
 
 # ── Metadata & Schemas (Person 2) ──
@@ -141,8 +143,8 @@ async def upload_file(file: UploadFile = File(...)):
             "message": f"Ingesting {file.filename} ({len(content)} bytes)",
         })
 
-        # Step 1: Chunk the file
-        chunks, file_hash = chunk_file(content)
+        # Step 1: Chunk the file (CPU-bound — offload to thread to avoid blocking event loop)
+        chunks, file_hash = await asyncio.to_thread(chunk_file, content)
 
         await manager.broadcast("CHUNKING_COMPLETE", {
             "file_id": file_id,
@@ -150,25 +152,27 @@ async def upload_file(file: UploadFile = File(...)):
             "message": f"Split into {len(chunks)} chunks",
         })
 
-        # Step 2: RS encode each group of K chunks
-        all_encoded = []
-        for i in range(0, len(chunks), RS_K):
-            group = chunks[i:i + RS_K]
+        # Step 2: RS encode each group of K chunks (CPU-bound — offload to thread)
+        def _encode_all_groups():
+            all_enc = []
+            for i in range(0, len(chunks), RS_K):
+                group = chunks[i:i + RS_K]
+                # Pad group to RS_K if needed (last group may be smaller)
+                while len(group) < RS_K:
+                    pad_chunk = Chunk(
+                        chunk_id=str(uuid.uuid4()),
+                        sequence_number=i + len(group),
+                        size=0,
+                        sha256_hash=_compute_hash(b""),
+                        data=b"",
+                        is_parity=False,
+                    )
+                    group.append(pad_chunk)
+                encoded = encode_chunks(group)
+                all_enc.extend(encoded)
+            return all_enc
 
-            # Pad group to RS_K if needed (last group may be smaller)
-            while len(group) < RS_K:
-                pad_chunk = Chunk(
-                    chunk_id=str(uuid.uuid4()),
-                    sequence_number=i + len(group),  # globally correct sequence
-                    size=0,
-                    sha256_hash=_compute_hash(b""),
-                    data=b"",
-                    is_parity=False,
-                )
-                group.append(pad_chunk)
-
-            encoded = encode_chunks(group)
-            all_encoded.extend(encoded)
+        all_encoded = await asyncio.to_thread(_encode_all_groups)
 
         await manager.broadcast("ENCODING_COMPLETE", {
             "file_id": file_id,
@@ -176,17 +180,16 @@ async def upload_file(file: UploadFile = File(...)):
             "message": f"RS({RS_K},2) encoded → {len(all_encoded)} total shards",
         })
 
-        # Step 3: Distribute each segment of 6 chunks (4 data + 2 parity)
-        all_placements = []
-        for seg_idx in range(0, len(all_encoded), RS_K + 2):
-            segment = all_encoded[seg_idx:seg_idx + RS_K + 2]
-            if len(segment) == RS_K + 2:  # full segment of 6
-                placements = distribute_chunks(file_id, segment)
-                all_placements.extend(placements)
-            else:
-                # Partial segment (shouldn't happen with proper padding)
-                placements = distribute_chunks(file_id, segment)
-                all_placements.extend(placements)
+        # Step 3: Distribute each segment of 6 chunks (disk I/O — offload to thread)
+        def _distribute_all_segments():
+            _placements = []
+            for seg_idx in range(0, len(all_encoded), RS_K + 2):
+                segment = all_encoded[seg_idx:seg_idx + RS_K + 2]
+                placed = distribute_chunks(file_id, segment)
+                _placements.extend(placed)
+            return _placements
+
+        all_placements = await asyncio.to_thread(_distribute_all_segments)
 
         # Broadcast per-chunk placement
         for p in all_placements:
@@ -246,6 +249,18 @@ async def upload_file(file: UploadFile = File(...)):
         }
 
     except Exception as e:
+        # ORPHAN CLEANUP: if distribution wrote .bin files before the error,
+        # delete them all to prevent storage leaks. Zero orphans permitted.
+        if 'all_placements' in locals():
+            for p in all_placements:
+                if p.get("success") and p.get("node_id"):
+                    orphan_path = Path(NODES_BASE_PATH) / p["node_id"] / f"{p['chunk_id']}.bin"
+                    orphan_path.unlink(missing_ok=True)
+                    # Roll back storage counters
+                    matching = next((c for c in all_encoded if c.chunk_id == p["chunk_id"]), None)
+                    if matching:
+                        from backend.metadata.manager import update_node_storage
+                        update_node_storage(p["node_id"], size_delta=-matching.size, chunk_delta=-1)
         log_event("UPLOAD_ERROR", str(e), {"filename": file.filename})
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -281,8 +296,9 @@ async def download_file(file_id: str):
             for c in record.chunks
         ]
 
-        # Call reassembler with node_status callable
-        result = fetch_and_reassemble(
+        # Call reassembler with node_status callable (CPU+I/O bound — offload)
+        result = await asyncio.to_thread(
+            fetch_and_reassemble,
             chunk_records=chunk_records,
             get_node_status=get_node_status,
             file_hash=record.full_sha256,
@@ -337,7 +353,11 @@ async def delete_file_endpoint(file_id: str):
     record = get_file(file_id)
     if not record:
         raise HTTPException(status_code=404, detail="File ID not found")
-        
+
+    # Evict ALL chunk entries from ground cache before deleting physical files
+    for chunk in record.chunks:
+        ground_cache.evict(chunk.chunk_id)
+
     filename = record.filename
     success = delete_file(file_id)
     
@@ -384,13 +404,16 @@ async def get_tle_data():
     """Proxy CelesTrak TLE data through the backend to avoid browser CORS/403 errors."""
     import urllib.request
     from fastapi.responses import PlainTextResponse
-    
-    url = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle"
-    # Provide a User-Agent to avoid generic scraper blocks
-    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) COSMEON-FS-LITE'})
-    try:
+
+    def _fetch_tle():
+        url = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle"
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) COSMEON-FS-LITE'})
         with urllib.request.urlopen(req, timeout=10) as response:
-            text = response.read().decode('utf-8')
+            return response.read().decode('utf-8')
+
+    try:
+        # Blocking network I/O — offload to thread so event loop stays free
+        text = await asyncio.to_thread(_fetch_tle)
         return PlainTextResponse(content=text)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch TLE data: {str(e)}")
@@ -521,3 +544,42 @@ async def _broadcast_metrics() -> None:
     """Broadcast current metrics to all WebSocket clients."""
     metrics = await _build_metrics()
     await manager.broadcast("METRIC_UPDATE", metrics)
+
+
+# ─────────────────────────────────────────────
+# GET /api/topology/audit — Judge-Proof Topology Verification
+# ─────────────────────────────────────────────
+
+@app.get("/api/topology/audit")
+async def topology_audit():
+    """
+    Audits ALL stored files and verifies the hard topology constraint:
+    No data chunk and its paired parity chunk share an orbital plane.
+    Judges can hit this endpoint to verify correctness.
+    """
+    files = get_all_files()
+    results = []
+    for f in files:
+        placements = [
+            {
+                "chunk_id": c.chunk_id,
+                "node_id": c.node_id,
+                "sequence_number": c.sequence_number,
+                "is_parity": c.is_parity,
+            }
+            for c in f.chunks
+        ]
+        audit = verify_topology(placements)
+        results.append({
+            "file_id": f.file_id,
+            "filename": f.filename,
+            "topology_valid": audit["valid"],
+            "violations": audit["violations"],
+        })
+
+    all_valid = all(r["topology_valid"] for r in results)
+    return {
+        "all_valid": all_valid,
+        "file_count": len(results),
+        "results": results,
+    }

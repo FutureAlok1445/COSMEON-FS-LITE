@@ -173,6 +173,8 @@ def update_chunk_node(file_id: str, chunk_id: str, new_node_id: str) -> bool:
     """
     Update which node holds a specific chunk.
     Called by rebalancer and predictive migration (Person 3).
+    DEFENSE: Idempotency guard — if chunk already points to new_node_id,
+    skip the update to prevent double-counting storage in split-brain scenarios.
     """
     with _lock:
         store = _read_store()
@@ -182,6 +184,9 @@ def update_chunk_node(file_id: str, chunk_id: str, new_node_id: str) -> bool:
         for chunk in file_rec.chunks:
             if chunk.chunk_id == chunk_id:
                 old_node = chunk.node_id
+                # IDEMPOTENCY: if chunk already at destination, no-op
+                if old_node == new_node_id:
+                    return True
                 chunk.node_id = new_node_id
                 # Update storage counters
                 if old_node in store.nodes:
@@ -191,7 +196,7 @@ def update_chunk_node(file_id: str, chunk_id: str, new_node_id: str) -> bool:
                     store.nodes[new_node_id].storage_used += chunk.size
                     store.nodes[new_node_id].chunk_count  += 1
                 _log_event(store, "CHUNK_MIGRATED",
-                           f"Chunk {chunk_id} moved {old_node} → {new_node_id}", {})
+                           f"Chunk {chunk_id} moved {old_node} -> {new_node_id}", {})
                 _write_store(store)
                 return True
         return False
@@ -251,12 +256,20 @@ def update_node_health(node_id: str, health_score: int) -> None:
 
 
 def update_orbit_timer(node_id: str, seconds_remaining: int) -> None:
-    """Called by Person 3's trajectory.py every second."""
+    """
+    Called by Person 3's trajectory.py every ~10 seconds.
+    OPTIMIZATION: Skip replication on timer-only updates to avoid 6x shutil.copy2
+    every 10 seconds per node. Timer data is ephemeral and does not need replication.
+    """
     with _lock:
         store = _read_store()
         if node_id in store.nodes:
             store.nodes[node_id].orbit_timer = seconds_remaining
-            _write_store(store)
+            # Write store WITHOUT replication — timer is ephemeral telemetry
+            path = Path(METADATA_PATH)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with open(path, "w") as f:
+                json.dump(store.model_dump(), f, indent=2, default=str)
 
 
 def update_dtn_queue_depth(node_id: str, depth: int) -> None:

@@ -242,18 +242,21 @@ class IntegrityCounter:
     """
     Tracks integrity verification attempts and passes.
     Across all 3 levels (write, read, file).
-    Thread-safe via simple counters.
+    Thread-safe via threading.Lock — record() is called from worker threads.
     """
 
     def __init__(self):
+        import threading
+        self._lock = threading.Lock()
         self._attempts = 0
         self._passes = 0
 
     def record(self, passed: bool) -> None:
-        """Record an integrity check result."""
-        self._attempts += 1
-        if passed:
-            self._passes += 1
+        """Record an integrity check result. Thread-safe."""
+        with self._lock:
+            self._attempts += 1
+            if passed:
+                self._passes += 1
 
     @property
     def pass_rate(self) -> float:
