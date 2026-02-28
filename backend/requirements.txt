@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+reedsolo
+python-multipart
+aiofiles
+websockets

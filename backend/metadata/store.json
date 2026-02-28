@@ -1,0 +1,115 @@
+{
+  "files": {
+    "c54f945e-a7b9-4479-8d61-bdee636d58f8": {
+      "filename": "COSMEON_FS_LITE_Master_Solution.docx.pdf",
+      "hash": "9df74abad2c637eb58131a4512c1c857d632e811c51ba7c42ec143e819c7311f",
+      "size_bytes": 536610,
+      "shards": {
+        "0": {
+          "node": "SAT-01",
+          "plane": "Alpha",
+          "type": "data",
+          "hash": "20cc5d88ba678cebcd4d97e63b5c50b79fd4a9f2ac4f079461c99802ffeef9ba",
+          "pad_amount": 0,
+          "status": "DELIVERED"
+        },
+        "1": {
+          "node": "SAT-04",
+          "plane": "Beta",
+          "type": "data",
+          "hash": "50106b4ba8bbb16fa92f3dccde79481eac62ef42ccb5345677f11f23f37e18d3",
+          "pad_amount": 487390,
+          "status": "DELIVERED"
+        },
+        "4": {
+          "node": "SAT-06",
+          "plane": "Gamma",
+          "type": "parity",
+          "hash": "bd9539203d34845974d71ea136dd746a0614cfb9cd72c935bf255a057db1534e",
+          "pad_amount": 0,
+          "status": "DELIVERED"
+        },
+        "5": {
+          "node": "SAT-05",
+          "plane": "Gamma",
+          "type": "parity",
+          "hash": "6cae7f75e9223e14da4daa8f494fb9f069361e51695c9e8b47cd59a3978d4e27",
+          "pad_amount": 0,
+          "status": "DELIVERED"
+        }
+      }
+    },
+    "daa512e5-4e20-4acf-bc5d-e1776f9e9bd3": {
+      "filename": "COSMEON_FS_LITE_Master_Solution.docx.pdf",
+      "hash": "9df74abad2c637eb58131a4512c1c857d632e811c51ba7c42ec143e819c7311f",
+      "size_bytes": 536610,
+      "shards": {
+        "0": {
+          "node": "SAT-02",
+          "plane": "Alpha",
+          "type": "data",
+          "hash": "20cc5d88ba678cebcd4d97e63b5c50b79fd4a9f2ac4f079461c99802ffeef9ba",
+          "pad_amount": 0,
+          "status": "DELIVERED"
+        },
+        "1": {
+          "node": "SAT-03",
+          "plane": "Beta",
+          "type": "data",
+          "hash": "50106b4ba8bbb16fa92f3dccde79481eac62ef42ccb5345677f11f23f37e18d3",
+          "pad_amount": 487390,
+          "status": "DELIVERED"
+        },
+        "4": {
+          "node": "SAT-06",
+          "plane": "Gamma",
+          "type": "parity",
+          "hash": "bd9539203d34845974d71ea136dd746a0614cfb9cd72c935bf255a057db1534e",
+          "pad_amount": 0,
+          "status": "DELIVERED"
+        },
+        "5": {
+          "node": "SAT-06",
+          "plane": "Gamma",
+          "type": "parity",
+          "hash": "6cae7f75e9223e14da4daa8f494fb9f069361e51695c9e8b47cd59a3978d4e27",
+          "pad_amount": 0,
+          "status": "DELIVERED"
+        }
+      }
+    },
+    "1fe8c02b-bf33-4e73-9a4f-9709d305e5fd": {
+      "filename": "COSMEON_FS_LITE_Master_Plan.pdf",
+      "hash": "c2f00fd933cf93557a78db4e1965cbe0827266604f202f078c1d42a7a01c4a5c",
+      "size_bytes": 83866,
+      "shards": {
+        "0": {
+          "node": "SAT-02",
+          "plane": "Alpha",
+          "type": "data",
+          "hash": "c2f00fd933cf93557a78db4e1965cbe0827266604f202f078c1d42a7a01c4a5c",
+          "pad_amount": 0,
+          "status": "DELIVERED"
+        },
+        "4": {
+          "node": "SAT-06",
+          "plane": "Gamma",
+          "type": "parity",
+          "hash": "351cef15f74fd6ffa925027dc6bf610305f5adca88587e0ecafad16f3e235d5a",
+          "pad_amount": 0,
+          "status": "DELIVERED"
+        },
+        "5": {
+          "node": "SAT-05",
+          "plane": "Gamma",
+          "type": "parity",
+          "hash": "5b75e7386419a52f02f3468f95b5b16bdefc470b70968cf118868049317770f5",
+          "pad_amount": 0,
+          "status": "DELIVERED"
+        }
+      }
+    }
+  },
+  "nodes": {},
+  "events": []
+}
