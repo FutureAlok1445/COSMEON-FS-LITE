@@ -16,6 +16,7 @@ import ChaosOps from './components/chaos/ChaosOps';
 import SatelliteTrackerPage from './pages/SatelliteTrackerPage';
 import StorageMap from './components/storage/StorageMap';
 import DataTransferDemo from './components/demo/DataTransferDemo';
+import SurvivabilityPanel from './components/metrics/SurvivabilityPanel';
 
 function Dashboard() {
   const { messages, connected } = useWebSocket('ws://localhost:8000/ws');
@@ -167,6 +168,14 @@ function Dashboard() {
                 <div className="absolute inset-0 z-20 pointer-events-auto overflow-hidden">
                   <div className="w-full h-full p-2">
                     <DataTransferDemo messages={messages} />
+                  </div>
+                </div>
+              )}
+
+              {currentTab === 'Reliability Model' && (
+                <div className="absolute inset-0 z-20 pointer-events-auto">
+                  <div className="w-full h-full flex items-center justify-center p-4">
+                    <SurvivabilityPanel messages={messages} />
                   </div>
                 </div>
               )}

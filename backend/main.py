@@ -41,6 +41,7 @@ from backend.utils.ws_manager import manager
 
 # ── Intelligence Layer (Person 3) ──
 from backend.intelligence.chaos import router as chaos_router
+from backend.api.survivability_routes import router as survivability_router
 from backend.intelligence.trajectory import start_all_timers, stop_all_timers
 from backend.intelligence.predictor import start_predictor, stop_predictor
 from backend.intelligence.dtn_queue import start_dtn_worker, stop_dtn_worker, add_to_queue
@@ -110,6 +111,7 @@ app.add_middleware(
 
 # Register chaos router (Person 3 endpoints)
 app.include_router(chaos_router)
+app.include_router(survivability_router)
 
 
 # ─────────────────────────────────────────────

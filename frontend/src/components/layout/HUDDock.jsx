@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Network, Database, UploadCloud, Zap, Satellite, Binary } from 'lucide-react';
+import { Network, Database, UploadCloud, Zap, Satellite, Binary, Shield } from 'lucide-react';
 
 export default function HUDDock({ currentTab, setCurrentTab, onViewSatellite }) {
     const navItems = [
@@ -8,6 +8,7 @@ export default function HUDDock({ currentTab, setCurrentTab, onViewSatellite }) 
         { id: 'Orbit Tracking', icon: Satellite, label: 'Orbit Track' },
         { id: 'Payload Ops', icon: UploadCloud, label: 'Payload Ops' },
         { id: 'Data Demo', icon: Binary, label: 'Data Demo' },
+        { id: 'Reliability Model', icon: Shield, label: 'Reliability' },
         { id: 'Chaos Ops', icon: Zap, label: 'Chaos Eng.' },
     ];
 

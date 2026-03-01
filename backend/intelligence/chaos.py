@@ -22,6 +22,7 @@ from backend.utils.node_manager import (
 from backend.metadata.manager import (
     get_all_files, update_node_storage, log_event
 )
+from backend.metrics.survivability_cache import cache
 
 router = APIRouter()
 
@@ -52,6 +53,9 @@ async def solar_flare():
         })
 
     log_event("CHAOS_SOLAR_FLARE", "Plane Beta destroyed", {"nodes": beta_nodes})
+    
+    # Recalculate and broadcast survivability
+    await cache.invalidate_and_rerun("SOLAR_FLARE")
 
     return {
         "status": "success",
@@ -124,6 +128,9 @@ async def bit_rot():
 
     log_event("CHAOS_BIT_ROT", f"Corrupted {len(corrupted)} chunks", {"corrupted": corrupted})
 
+    # Recalculate survivability, assume bit rot trigger is custom config update
+    await cache.invalidate_and_rerun("BIT_ROT", {"corruption_prob_per_chunk": cache.config.corruption_prob_per_chunk + 0.005})
+
     return {
         "status": "success",
         "scenario": "bit_rot",
@@ -158,6 +165,8 @@ async def partition():
         })
 
     log_event("CHAOS_PARTITION", "Plane Beta partitioned", {"nodes": beta_nodes})
+
+    await cache.invalidate_and_rerun("PLANE_FAILURE")
 
     return {
         "status": "success",
@@ -210,6 +219,8 @@ async def overload():
 
     log_event("CHAOS_OVERLOAD", f"Wrote {total_written} dummy chunks to Alpha",
               {"nodes": target_nodes, "chunks": total_written})
+
+    await cache.invalidate_and_rerun("NODE_FAILURE") # Map overload slightly
 
     return {
         "status": "success",
@@ -281,6 +292,8 @@ async def imbalance():
     
     log_event("CHAOS_IMBALANCE", "Triggered forced entropy drop", {"chunks": 37})
 
+    await cache.invalidate_and_rerun("NODE_FAILURE")
+
     return {
         "status": "success",
         "scenario": "imbalance",
@@ -309,6 +322,8 @@ async def restore():
         rebalance_result = await check_and_rebalance()
     except Exception as e:
         rebalance_result = {"error": str(e)}
+
+    await cache.invalidate_and_rerun("NODE_RESTORE")
 
     return {
         "status": "success",
