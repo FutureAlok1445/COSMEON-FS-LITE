@@ -27,13 +27,36 @@ def _compute_hash(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+async def chunk_stream(file_bytes: bytes):
+    """
+    [PHASE 3.3: ASYNC GENERATION]
+    Streams file bytes iteratively instead of loading the entire matrix into RAM.
+    Yields 1 chunk at a time, drastically reducing memory pressure.
+    """
+    if not file_bytes:
+        raise ValueError("Cannot chunk empty file.")
+
+    total_size = len(file_bytes)
+    sequence = 0
+
+    for offset in range(0, total_size, CHUNK_SIZE):
+        raw = file_bytes[offset : offset + CHUNK_SIZE]
+
+        chunk = Chunk(
+            chunk_id       = str(uuid.uuid4()),
+            sequence_number= sequence,
+            size           = len(raw),
+            sha256_hash    = _compute_hash(raw),
+            data           = raw,
+            is_parity      = False,
+        )
+        yield chunk
+        sequence += 1
+
+
 def chunk_file(file_bytes: bytes) -> tuple[List[Chunk], str]:
     """
-    Split file bytes into fixed 512KB chunks.
-
-    Returns:
-        chunks       — ordered list of Chunk objects
-        file_hash    — SHA-256 of the FULL original file (for end-to-end verify)
+    [LEGACY] Split file bytes into fixed 512KB chunks.
     """
     if not file_bytes:
         raise ValueError("Cannot chunk empty file.")

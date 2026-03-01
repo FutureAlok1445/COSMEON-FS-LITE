@@ -37,31 +37,42 @@ def encode_chunks(data_chunks: List[Chunk]) -> List[Chunk]:
 
     padded_data, pad_size = _pad_chunks(data_chunks)
 
-    # reedsolo RSCodec — nsym = number of parity symbols (bytes per chunk here = RS_M)
-    # We encode across each byte position using RS(4,2) field
-    rsc = reedsolo.RSCodec(RS_M)
-
-    parity_buffers = [bytearray() for _ in range(RS_M)]
-
-    # Encode byte-by-byte across all 4 chunks at each position
-    for i in range(pad_size):
-        byte_row = bytes([buf[i] for buf in padded_data])
-        encoded = rsc.encode(byte_row)
-        # encoded = original bytes + parity bytes at end
-        parity_bytes = encoded[RS_K:]  # last RS_M bytes are parity
-        for p_idx, p_byte in enumerate(parity_bytes):
-            parity_buffers[p_idx].append(p_byte)
+    parity_buffers = []
+    
+    # ── PHASE 3.2: HARDWARE ACCELERATION ──
+    try:
+        from backend.core.rs_engine import cosmeon_rs_engine
+        # print("[RS-ENGINE] 🚀 Native Rust PyO3 matrix acceleration initialized.")
+        
+        # Convert List[bytes] to what Rust expects
+        raw_shards = [bytes(pad) for pad in padded_data]
+        
+        # The Rust engine returns all 6 shards. We just want the last 2 (parity)
+        encoded_shards = cosmeon_rs_engine.encode_shards(raw_shards, RS_K, RS_M)
+        parity_buffers = encoded_shards[RS_K:]
+        
+    except ImportError:
+        # ── LEGACY FALLBACK ──
+        print("[RS-ENGINE] ⚠️ Native Rust binary not found! Falling back to SLOW pure-Python matrix.")
+        rsc = reedsolo.RSCodec(RS_M)
+        parity_buffers = [bytearray() for _ in range(RS_M)]
+        for i in range(pad_size):
+            byte_row = bytes([buf[i] for buf in padded_data])
+            encoded = rsc.encode(byte_row)
+            parity_bytes = encoded[RS_K:] 
+            for p_idx, p_byte in enumerate(parity_bytes):
+                parity_buffers[p_idx].append(p_byte)
 
     # Build parity Chunk objects
     parity_chunks: List[Chunk] = []
-    for p_idx, p_buf in enumerate(parity_buffers):
-        p_data = bytes(p_buf)
+    for p_idx, p_data in enumerate(parity_buffers):
+        p_bytes = bytes(p_data)
         parity_chunks.append(Chunk(
             chunk_id        = str(uuid.uuid4()),
-            sequence_number = RS_K + p_idx,           # sequence 4 and 5
-            size            = len(p_data),
-            sha256_hash     = _compute_hash(p_data),
-            data            = p_data,
+            sequence_number = RS_K + p_idx,
+            size            = len(p_bytes),
+            sha256_hash     = _compute_hash(p_bytes),
+            data            = p_bytes,
             is_parity       = True,
         ))
 

@@ -47,7 +47,7 @@ def calculate_mttdl(
     denominator = combinations * (node_failure_rate ** simultaneous_failures_needed)
 
     if denominator == 0:
-        return float('inf')
+        return -1.0
 
     # Factor in recovery time — faster recovery = higher MTTDL
     recovery_factor = recovery_time_hours ** m
@@ -62,14 +62,17 @@ def format_mttdl(mttdl_hours: float) -> str:
     Format MTTDL in scientific notation for dashboard display.
     Example: 1.2 x10^14 hours
     """
-    if mttdl_hours == float('inf'):
+    if mttdl_hours < 0:
         return "∞ hours"
-    if mttdl_hours <= 0:
+    if mttdl_hours == 0:
         return "0 hours"
 
-    exponent = int(math.log10(mttdl_hours))
-    mantissa = mttdl_hours / (10 ** exponent)
-    return f"{mantissa:.1f} × 10^{exponent} hours"
+    try:
+        exponent = int(math.log10(max(1e-10, mttdl_hours)))
+        mantissa = mttdl_hours / (10 ** exponent)
+        return f"{mantissa:.1f} × 10^{exponent} hours"
+    except ValueError:
+        return "0 hours"
 
 
 # ─────────────────────────────────────────────

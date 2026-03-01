@@ -172,12 +172,23 @@ distribute_chunks = distribute_shards
 # WRITE + VERIFY
 # ─────────────────────────────────────────────
 
-def _write_chunk_to_node(chunk: Chunk, node_id: str) -> bool:
+def _write_chunk_grpc_stub(chunk: Chunk, node_id: str) -> bool:
     """
-    Write chunk .bin file to satellite node folder.
-    Runs Level 1 integrity check (write verify) after writing.
-    Updates metadata storage counters.
+    [FUTURE SCOPE: PHASE 1.4 - gRPC Streams]
+    This stub represents the transition away from the Ground Station directly
+    modifying a satellite's filesystem. 
+    In FS-PRO, this will open a bidirectional gRPC channel to the containerized node.
     """
+    # TODO (Phase 1.4):
+    # channel = grpc.aio.insecure_channel(f'{node_id}:50051')
+    # stub = p2p_pb2_grpc.OrbitalMeshStub(channel)
+    # response = await stub.StreamChunk(chunk_data)
+    # return response.success
+
+    # --- Phase 1.1 Transition Fallback ---
+    # While container subnetworks are booting up, we emulate the gRPC success
+    # by performing the legacy centralized disk write.
+    
     node_path  = Path(NODES_BASE_PATH) / node_id
     node_path.mkdir(parents=True, exist_ok=True)
     chunk_path = node_path / f"{chunk.chunk_id}.bin"
@@ -185,22 +196,30 @@ def _write_chunk_to_node(chunk: Chunk, node_id: str) -> bool:
     try:
         with open(chunk_path, "wb") as f:
             f.write(chunk.data)
-
-        # Level 1 integrity check — read back and verify SHA-256
+        
+        # Verify write (In FS-PRO, the satellite handles this locally)
         write_ok = verify_write(str(chunk_path), chunk.sha256_hash)
-
-        if write_ok:
-            # Update metadata storage counters
-            meta.update_node_storage(node_id, size_delta=chunk.size, chunk_delta=1)
-            return True
-        else:
-            # Write verification failed — delete corrupted file
-            chunk_path.unlink(missing_ok=True)
-            print(f"[DISTRIBUTOR] ❌ Write verify FAILED for {chunk.chunk_id} on {node_id}")
-            return False
-
+        return write_ok
     except Exception as e:
-        print(f"[DISTRIBUTOR] ❌ Error writing {chunk.chunk_id} to {node_id}: {e}")
+        print(f"[gRPC EMULATOR] ❌ Connection/Write to {node_id} failed: {e}")
+        return False
+
+
+def _write_chunk_to_node(chunk: Chunk, node_id: str) -> bool:
+    """
+    [DEPRECATED - Phase 1.2] 
+    Centralized file writes are deprecated. The Ground Station must negotiate
+    via Libp2p and stream via gRPC. 
+    """
+    write_ok = _write_chunk_grpc_stub(chunk, node_id)
+
+    if write_ok:
+        # Update metadata storage counters
+        meta.update_node_storage(node_id, size_delta=chunk.size, chunk_delta=1)
+        return True
+    else:
+        # Emulate failed gRPC network push
+        print(f"[DISTRIBUTOR] ❌ Network rejection for {chunk.chunk_id} to {node_id}")
         return False
 
 

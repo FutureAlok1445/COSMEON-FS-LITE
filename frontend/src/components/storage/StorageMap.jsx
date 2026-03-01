@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { UploadCloud, Download, Trash2, Power, WifiOff, File as FileIcon, HardDrive, Zap, RefreshCw } from 'lucide-react';
 
-const API_URL = 'http://localhost:8000/api';
+const API_URL = `http://${window.location.hostname}:8000/api`;
 
 export default function StorageMap() {
     const [state, setState] = useState(null);
@@ -57,20 +57,19 @@ export default function StorageMap() {
     const handleDownload = async (fileId, filename) => {
         try {
             const res = await fetch(`${API_URL}/download/${fileId}`);
-            if (res.ok) {
-                const blob = await res.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-            } else {
-                const errData = await res.json();
-                alert(`Download failed: ${errData.detail}`);
-            }
+            if (!res.ok) throw new Error('Download failed');
+
+            const blob = await res.blob();
+            const safeName = filename || `download-${fileId}`;
+
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = safeName;
+            document.body.appendChild(link);
+            link.click();
+            window.URL.revokeObjectURL(url);
+            link.remove();
         } catch (err) {
             alert(`Download failed: ${err.message}`);
         }

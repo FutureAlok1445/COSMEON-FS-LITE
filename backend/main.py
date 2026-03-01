@@ -27,7 +27,7 @@ from backend.metadata.manager import (
     get_all_nodes, log_event
 )
 from backend.metadata.schemas import (
-    FileRecord, ChunkRecord, UploadResponse
+    FileRecord, ChunkRecord, NodeRecord, UploadResponse
 )
 
 # ── Node Manager (Person 2) ──
@@ -45,6 +45,8 @@ from backend.intelligence.trajectory import start_all_timers, stop_all_timers
 from backend.intelligence.predictor import start_predictor, stop_predictor
 from backend.intelligence.dtn_queue import start_dtn_worker, stop_dtn_worker, add_to_queue
 from backend.intelligence.rebalancer import check_and_rebalance, compute_entropy, get_chunk_distribution
+from backend.intelligence.raft_consensus import init_raft_clusters, raft_daemon, raft_state
+from backend.intelligence.zkp_audit import ZKPAuditor
 
 # ── Metrics (Person 1) ──
 from backend.metrics.calculator import (
@@ -63,11 +65,13 @@ async def lifespan(app: FastAPI):
     """Startup: init filesystem, start background tasks."""
     init_node_folders()
     init_store()
+    init_raft_clusters()
 
     # Start Person 3 background tasks
     orbit_task = asyncio.create_task(start_all_timers())
     predictor_task = asyncio.create_task(start_predictor())
     dtn_task = asyncio.create_task(start_dtn_worker())
+    raft_task = asyncio.create_task(raft_daemon())
 
     print("[MAIN] 🚀 COSMEON FS-LITE Online — All systems nominal")
 
@@ -80,6 +84,7 @@ async def lifespan(app: FastAPI):
     orbit_task.cancel()
     predictor_task.cancel()
     dtn_task.cancel()
+    raft_task.cancel()
     print("[MAIN] Shutdown complete")
 
 
@@ -100,6 +105,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Content-Disposition"],
 )
 
 # Register chaos router (Person 3 endpoints)
@@ -207,6 +213,10 @@ async def upload_file(file: UploadFile = File(...)):
                 getattr(matching_chunk, "_pad_size", len(matching_chunk.data) if matching_chunk else 0)
                 if matching_chunk else 512 * 1024
             )
+            
+            # Phase 5.1: Cryptographic Tether Generation
+            zk_anchor = ZKPAuditor.generate_commitment(matching_chunk.data) if matching_chunk else ""
+            
             chunk_records.append(ChunkRecord(
                 chunk_id=p["chunk_id"],
                 sequence_number=p["sequence_number"],
@@ -215,6 +225,7 @@ async def upload_file(file: UploadFile = File(...)):
                 node_id=p["node_id"] or "",
                 is_parity=p["is_parity"],
                 pad_size=pad_size,
+                zk_commitment=zk_anchor,
             ))
 
         file_record = FileRecord(
@@ -255,8 +266,9 @@ async def upload_file(file: UploadFile = File(...)):
 # ─────────────────────────────────────────────
 
 @app.get("/api/download/{file_id}")
-async def download_file(file_id: str):
-    """Reconstruct file from orbital fragments."""
+@app.get("/api/download/{file_id}/{filename}")
+async def download_file_named(file_id: str, filename: str = None):
+    """Reconstruct file from orbital fragments (filename in URL for Chrome compatibility)."""
     record = get_file(file_id)
     if not record:
         raise HTTPException(status_code=404, detail="File ID not found")
@@ -308,11 +320,14 @@ async def download_file(file_id: str):
             "rs_recovery": rs_used,
         })
 
+        from urllib.parse import quote
+        safe_filename = quote(record.filename)
+        
         return Response(
             content=file_bytes,
             media_type="application/octet-stream",
             headers={
-                "Content-Disposition": f'attachment; filename="{record.filename}"',
+                "Content-Disposition": f'attachment; filename="{record.filename}"; filename*=UTF-8\'\'{safe_filename}',
                 "Access-Control-Expose-Headers": "Content-Disposition"
             },
         )
@@ -333,12 +348,32 @@ async def download_file(file_id: str):
 async def delete_file_endpoint(file_id: str):
     """Delete a file and its shards from the orbital grid."""
     from backend.metadata.manager import delete_file, get_file
+    from backend.config import NODE_TO_PLANE
     
     record = get_file(file_id)
     if not record:
         raise HTTPException(status_code=404, detail="File ID not found")
         
     filename = record.filename
+    
+    # Phase 4.3: Destructive writes must pass through the Raft WAL
+    # Pick the leader of the chunk's primary plane (or any plane holding chunks)
+    # FS-PRO would dynamically route to the Kademlia DHT key holder's plane
+    primary_node = record.chunks[0].node_id if record.chunks else "SAT-01"
+    plane = NODE_TO_PLANE.get(primary_node, "Alpha")
+    
+    raft_node = raft_state[plane].get(primary_node)
+    
+    if not raft_node:
+        raise HTTPException(status_code=500, detail="Raft Consensus engine offline")
+        
+    # Demand Quorum via the Leader
+    quorum_reached = raft_node.append_entry(f"DELETE {file_id}", file_id)
+    
+    if not quorum_reached:
+        raise HTTPException(status_code=409, detail="Raft Quorum Failed. Network partition preventing safe deletion.")
+    
+    # Quorum succeeded: Execute physical deletion
     success = delete_file(file_id)
     
     if success:
@@ -350,7 +385,7 @@ async def delete_file_endpoint(file_id: str):
         # Post-delete: broadcast metrics
         await _broadcast_metrics()
         
-        return {"success": True, "message": f"{filename} deleted successfully"}
+        return {"success": True, "message": f"{filename} deleted successfully after WAL Confirmed"}
     else:
         raise HTTPException(status_code=500, detail="Internal error during file deletion")
 
@@ -399,24 +434,10 @@ async def get_tle_data():
 # GET /api/nodes — List All Node Statuses
 # ─────────────────────────────────────────────
 
-@app.get("/api/nodes")
+
+@app.get("/api/nodes", response_model=list[NodeRecord])
 async def list_nodes():
-    nodes = get_all_nodes()
-    return {
-        "nodes": [
-            {
-                "node_id": n.node_id,
-                "plane": n.plane,
-                "status": n.status,
-                "health_score": n.health_score,
-                "storage_used": n.storage_used,
-                "chunk_count": n.chunk_count,
-                "orbit_timer": n.orbit_timer,
-                "dtn_queue_depth": n.dtn_queue_depth,
-            }
-            for n in nodes
-        ]
-    }
+    return get_all_nodes()
 # ─────────────────────────────────────────────
 # GET /api/fs/state — Full File System State
 # ─────────────────────────────────────────────
@@ -426,6 +447,13 @@ async def get_fs_state():
     """Return complete state for the Frontend Storage Visualization."""
     nodes = get_all_nodes()
     files = get_all_files()
+    # Fallback/Hydration check if nodes are empty
+    if not nodes:
+        print("[DEBUG get_fs_state] nodes empty! Hydrating...")
+        from backend.metadata.manager import init_store
+        init_store()
+        nodes = get_all_nodes()
+        print(f"[DEBUG get_fs_state] After hydration, found {len(nodes)} nodes")
     
     # Format chunks for easy frontend consumption
     formatted_files = []
@@ -461,9 +489,30 @@ async def get_fs_state():
 
 
 # ─────────────────────────────────────────────
-# POST /api/node/{node_id}/toggle — Toggle Online/Offline
+# GET /api/dtn/events — DTN Event History
+# ─────────────────────────────────────────────
+
+@app.get("/api/dtn/events")
+async def get_dtn_history(limit: int = 50):
+    """Retrieve recent DTN and node events to seed the frontend log."""
+    from backend.metadata.manager import get_recent_events
+    events = get_recent_events(limit=limit)
+    
+    # Filter for relevant DTN/Node types or return all
+    return [
+        {
+            "id": i,
+            "type": e.event_type,
+            "message": e.message,
+            "timestamp": e.timestamp,
+            "metadata": e.metadata
+        }
+        for i, e in enumerate(events)
+    ]
+
 
 # ─────────────────────────────────────────────
+# POST /api/node/{node_id}/toggle — Toggle Online/Offline
 
 @app.post("/api/node/{node_id}/toggle")
 async def toggle_node(node_id: str):

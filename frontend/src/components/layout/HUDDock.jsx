@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Network, Database, UploadCloud, Zap } from 'lucide-react';
+import { Network, Database, UploadCloud, Zap, Satellite, Binary } from 'lucide-react';
 
-export default function HUDDock({ currentTab, setCurrentTab }) {
+export default function HUDDock({ currentTab, setCurrentTab, onViewSatellite }) {
     const navItems = [
         { id: 'Orbital Engine', icon: Network, label: 'Main Engine' },
         { id: 'Storage Nodes', icon: Database, label: 'Storage Mesh' },
+        { id: 'Orbit Tracking', icon: Satellite, label: 'Orbit Track' },
         { id: 'Payload Ops', icon: UploadCloud, label: 'Payload Ops' },
+        { id: 'Data Demo', icon: Binary, label: 'Data Demo' },
         { id: 'Chaos Ops', icon: Zap, label: 'Chaos Eng.' },
     ];
 
@@ -23,7 +25,13 @@ export default function HUDDock({ currentTab, setCurrentTab }) {
                     return (
                         <button
                             key={item.id}
-                            onClick={() => setCurrentTab(item.id)}
+                            onClick={() => {
+                                if (item.id === 'Orbit Tracking') {
+                                    onViewSatellite();
+                                } else {
+                                    setCurrentTab(item.id);
+                                }
+                            }}
                             onMouseEnter={() => setHovered(item.id)}
                             onMouseLeave={() => setHovered(null)}
                             className="relative group transition-all duration-300 outline-none"

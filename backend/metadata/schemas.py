@@ -19,6 +19,7 @@ class ChunkRecord(BaseModel):
     node_id:         str   # which satellite holds this chunk
     is_parity:       bool  = False
     pad_size:        int   = 0  # original padding size (for decoder)
+    zk_commitment:   str   = "" # Phase 5: Cryptographic Anchor used by Ground Station to Verify ZK Proofs
 
 
 # ─────────────────────────────────────────────
@@ -30,6 +31,7 @@ class FileRecord(BaseModel):
     size:            int
     full_sha256:     str
     chunk_count:     int
+    vector_clock:    Dict[str, int] = Field(default_factory=dict)
     uploaded_at:     str = Field(default_factory=lambda: datetime.utcnow().isoformat())
     chunks:          List[ChunkRecord] = []
 

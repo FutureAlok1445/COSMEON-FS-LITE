@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package cosmeon.p2p;
+
+// ─────────────────────────────────────────────
+// ROLE: PHASE 1.4 (gRPC Streams & Protocol)
+// Defines the pure peer-to-peer communication format for FS-PRO.
+// Replaces FastAPI endpoints for inter-node communication.
+// ─────────────────────────────────────────────
+
+service OrbitalMesh {
+  // 1. GossipSub Handshake
+  // Ground Station or Satellites broadcast state (Storage, CPU, Battery)
+  rpc AnnouncePresence (NodeTelemetry) returns (Ack) {}
+
+  // 2. High-Throughput Binary Stream (OOM Preventer)
+  // Replaces the Python RAM buffering. Streams raw 4MB byte chunks directly.
+  rpc StreamChunk (stream ChunkPayload) returns (TransferReceipt) {}
+
+  // 3. Kademlia DHT Lookup
+  // Asks a peer "Who holds the chunks for File X?"
+  rpc LookupRoutingTable (DHTQuery) returns (DHTResponse) {}
+
+  // 4. Consensus & Audits (Phase 4 & 5)
+  // Raft Write-Ahead-Log sync and zk-SNARK integrity challenge
+  rpc AppendEntries (RaftWAL) returns (RaftResponse) {}
+  rpc AuditChunk (ZKChallenge) returns (ZKProof) {}
+}
+
+// -- Payloads --
+
+message NodeTelemetry {
+  string node_id = 1;
+  string current_plane = 2; // Alpha, Beta, Gamma
+  float storage_available_gb = 3;
+  int64 vector_clock = 4;
+}
+
+message ChunkPayload {
+  string file_id = 1;
+  string chunk_id = 2;
+  int32 sequence_number = 3;
+  bool is_parity = 4;
+  bytes raw_data = 5;       // Streaming binary data format
+  string hash_commitment = 6;  // For zk-SNARK L2 audits
+}
+
+message TransferReceipt {
+  bool success = 1;
+  string error_message = 2;
+  int64 bytes_written = 3;
+}
+
+message DHTQuery {
+  string file_hash_id = 1;
+}
+
+message DHTResponse {
+  repeated string holding_node_ids = 1;
+}
+
+// -- Consensus & Proof Definitions --
+
+message RaftWAL {
+  int32 term = 1;
+  string leader_id = 2;
+  string intent = 3; // e.g. "DELETE FILE X"
+}
+
+message RaftResponse {
+  bool term_accepted = 1;
+  bool quorum_reached = 2;
+}
+
+message ZKChallenge {
+  string chunk_id = 1;
+  bytes matrix_seed = 2; // Challenge multiplier
+}
+
+message ZKProof {
+  bytes zksnark_proof = 1; // The 256-byte zero-knowledge math proof
+}
+
+message Ack {
+  bool received = 1;
+}

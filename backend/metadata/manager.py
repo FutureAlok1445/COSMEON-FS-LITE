@@ -36,22 +36,39 @@ def init_store() -> None:
     Create fresh store.json on startup if it doesn't exist.
     Also initializes all 6 node records with default state.
     """
-    if Path(METADATA_PATH).exists():
-        return  # already exists, don't overwrite
+    with _lock:
+        if Path(METADATA_PATH).exists():
+            try:
+                with open(METADATA_PATH, "r") as f:
+                    raw = json.load(f)
+                store = StoreModel(**raw)
+            except json.JSONDecodeError:
+                print("[WARNING] init_store JSONDecodeError, resetting store.")
+                store = StoreModel()
+            except PermissionError:
+                print("[WARNING] init_store PermissionError, skipping reset to avoid wiping data.")
+                return
+        else:
+            store = StoreModel()
 
-    store = StoreModel()
+        # Hydrate missing nodes
+        dirty = False
+        print(f"[DEBUG init_store] BEFORE hydration: store.nodes={len(store.nodes)}")
+        for plane, nodes in ORBITAL_PLANES.items():
+            for node_id in nodes:
+                if node_id not in store.nodes:
+                    print(f"[DEBUG init_store] Hydrating missing node {node_id}")
+                    store.nodes[node_id] = NodeRecord(
+                        node_id=node_id,
+                        plane=plane,
+                        status="ONLINE",
+                    )
+                    dirty = True
 
-    # Initialize all 6 nodes
-    for plane, nodes in ORBITAL_PLANES.items():
-        for node_id in nodes:
-            store.nodes[node_id] = NodeRecord(
-                node_id=node_id,
-                plane=plane,
-                status="ONLINE",
-            )
-
-    _write_store(store)
-    print("[METADATA] ✅ store.json initialized with 6 nodes")
+        print(f"[DEBUG init_store] AFTER hydration: store.nodes={len(store.nodes)}, dirty={dirty}")
+        if dirty or not Path(METADATA_PATH).exists():
+            _write_store(store)
+            print("[METADATA] ✅ store.json initialized/hydrated with 6 nodes")
 
 
 # ─────────────────────────────────────────────
@@ -60,29 +77,75 @@ def init_store() -> None:
 
 def _read_store() -> StoreModel:
     """Read store.json and return StoreModel. NOT thread-safe alone — always use inside lock."""
-    with open(METADATA_PATH, "r") as f:
-        raw = json.load(f)
-    return StoreModel(**raw)
+    import time
+    for _ in range(5):
+        try:
+            with open(METADATA_PATH, "r") as f:
+                raw = json.load(f)
+            return StoreModel(**raw)
+        except (json.JSONDecodeError, PermissionError):
+            time.sleep(0.05) # Wait for write flush
+    
+    # Fallback if truly corrupted
+    print("[WARNING] store.json highly corrupted or locked. Falling back to fresh store.")
+    store = StoreModel()
+    from backend.config import ORBITAL_PLANES
+    from backend.metadata.schemas import NodeRecord
+    for plane, nodes in ORBITAL_PLANES.items():
+        for node_id in nodes:
+            store.nodes[node_id] = NodeRecord(node_id=node_id, plane=plane)
+    return store
 
 
 def _write_store(store: StoreModel) -> None:
     """
-    Write StoreModel to store.json.
-    Then auto-replicate to all ONLINE node folders.
-    NOT thread-safe alone — always use inside lock.
+    Atomic write to store.json — write to .tmp file first, then rename.
+    Prevents corruption from concurrent background task writes.
     """
     path = Path(METADATA_PATH)
     path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # SAFEGUARD: Never wipe nodes
+    if len(store.nodes) == 0:
+        import traceback
+        traceback.print_stack()
+        print("[CRITICAL] Attempted to write 0 nodes to store.json! Halting write.")
+        return
 
-    with open(path, "w") as f:
-        json.dump(store.model_dump(), f, indent=2, default=str)
+    # Atomic write: dump to temp file, then rename over original
+    tmp_path = path.with_suffix(".tmp")
+    try:
+        data = json.dumps(store.model_dump(), indent=2, default=str)
+        with open(tmp_path, "w") as f:
+            f.write(data)
+            f.flush()
+            import os as _os
+            _os.fsync(f.fileno())
+        # Atomic rename (on Windows, need to remove target first)
+        if path.exists():
+            path.unlink()
+        tmp_path.rename(path)
+    except Exception as e:
+        print(f"[ERROR _write_store] Failed atomic write: {e}")
+        # Fallback: direct write
+        with open(path, "w") as f:
+            json.dump(store.model_dump(), f, indent=2, default=str)
 
-    # Auto-replicate to every online node folder
-    _replicate_to_nodes(store)
+    _kademlia_publish_stub(store)
 
 
-def _replicate_to_nodes(store: StoreModel) -> None:
-    """Copy store.json to each online satellite node folder."""
+def _kademlia_publish_stub(store: StoreModel) -> None:
+    """
+    [FUTURE SCOPE: PHASE 2.1 - Kademlia Routing]
+    Instead of copying a flat JSON file, this stub represents pushing the 
+    updated FileRecord (with its new VectorClock) into the P2P Mesh DHT.
+    
+    # TODO:
+    # dht_node = libp2p.KademliaDHT(app.host)
+    # for file_id, record in store.files.items():
+    #     dht_node.put(hash(file_id), record.model_dump())
+    """
+    # Emulate the legacy auto-replicate while containers boot
     for node_id, node_record in store.nodes.items():
         if node_record.status == "ONLINE":
             node_folder = Path(NODES_BASE_PATH) / node_id
@@ -93,8 +156,9 @@ def _replicate_to_nodes(store: StoreModel) -> None:
 
 def replicate_to_node(node_id: str) -> None:
     """
-    Push current primary store.json to a specific node folder.
-    Call when bringing a node ONLINE so it receives latest metadata.
+    [DEPRECATED - PHASE 2.2]
+    In FS-PRO, nodes synchronize automatically when coming online via the 
+    Libp2p gossip networks and DHT polling. We do not push state arbitrarily.
     """
     with _lock:
         if not Path(METADATA_PATH).exists():
@@ -102,7 +166,11 @@ def replicate_to_node(node_id: str) -> None:
         node_folder = Path(NODES_BASE_PATH) / node_id
         node_folder.mkdir(parents=True, exist_ok=True)
         dest = node_folder / "store.json"
-        shutil.copy2(METADATA_PATH, dest)
+        
+        try:
+            shutil.copy2(METADATA_PATH, dest)
+        except FileNotFoundError:
+            pass
 
 
 # ─────────────────────────────────────────────

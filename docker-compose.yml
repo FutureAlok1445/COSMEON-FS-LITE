@@ -1,10 +1,142 @@
 version: '3.8'
+
+# ─────────────────────────────────────────────
+# ORBITAL NETWORKS (Subnets)
+# ─────────────────────────────────────────────
+networks:
+  alpha_plane:
+    driver: bridge
+  beta_plane:
+    driver: bridge
+  gamma_plane:
+    driver: bridge
+  ground_link:
+    driver: bridge
+
+# ─────────────────────────────────────────────
+# PERSISTENT STORAGE
+# ─────────────────────────────────────────────
+volumes:
+  orbit_mesh_data:
+
+# ─────────────────────────────────────────────
+# BASE SATELLITE TEMPLATE
+# ─────────────────────────────────────────────
+x-sat-template: &sat-template
+  build: ./backend
+  environment:
+    - PYTHONUNBUFFERED=1
+    # Base port for intra-node GossipSub/gRPC later
+  volumes:
+    - orbit_mesh_data:/app/backend/nodes
+  restart: unless-stopped
+
 services:
-  backend:
+
+  # ==========================================================
+  # THE GROUND STATION (Earth)
+  # ==========================================================
+  ground-station:
     build: ./backend
+    container_name: cosmeon-ground-station
     ports:
-      - '8000:8000'
+      - "8000:8000"
+    networks:
+      - ground_link
+    environment:
+      - ROLE=GROUND_STATION
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - orbit_mesh_data:/app/backend/nodes
+    restart: always
+
   frontend:
     build: ./frontend
+    container_name: cosmeon-frontend
     ports:
-      - '5173:5173'
+      - "5173:5173"
+    networks:
+      - ground_link
+    depends_on:
+      - ground-station
+
+  # ==========================================================
+  # PLANE ALPHA SATELLITES
+  # ==========================================================
+  sat-01:
+    <<: *sat-template
+    container_name: cosmeon-sat-01
+    networks:
+      - alpha_plane
+      - ground_link
+    environment:
+      - NODE_ID=SAT-01
+      - PLANE=Alpha
+    depends_on:
+      - ground-station
+
+  sat-02:
+    <<: *sat-template
+    container_name: cosmeon-sat-02
+    networks:
+      - alpha_plane
+      - ground_link
+    environment:
+      - NODE_ID=SAT-02
+      - PLANE=Alpha
+    depends_on:
+      - ground-station
+
+  # ==========================================================
+  # PLANE BETA SATELLITES
+  # ==========================================================
+  sat-03:
+    <<: *sat-template
+    container_name: cosmeon-sat-03
+    networks:
+      - beta_plane
+      - ground_link
+    environment:
+      - NODE_ID=SAT-03
+      - PLANE=Beta
+    depends_on:
+      - ground-station
+
+  sat-04:
+    <<: *sat-template
+    container_name: cosmeon-sat-04
+    networks:
+      - beta_plane
+      - ground_link
+    environment:
+      - NODE_ID=SAT-04
+      - PLANE=Beta
+    depends_on:
+      - ground-station
+
+  # ==========================================================
+  # PLANE GAMMA SATELLITES
+  # ==========================================================
+  sat-05:
+    <<: *sat-template
+    container_name: cosmeon-sat-05
+    networks:
+      - gamma_plane
+      - ground_link
+    environment:
+      - NODE_ID=SAT-05
+      - PLANE=Gamma
+    depends_on:
+      - ground-station
+
+  sat-06:
+    <<: *sat-template
+    container_name: cosmeon-sat-06
+    networks:
+      - gamma_plane
+      - ground_link
+    environment:
+      - NODE_ID=SAT-06
+      - PLANE=Gamma
+    depends_on:
+      - ground-station

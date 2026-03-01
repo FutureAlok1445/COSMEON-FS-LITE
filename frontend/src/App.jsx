@@ -11,15 +11,44 @@ import GsUplinkStatus from './components/metrics/GsUplinkStatus';
 import { MissionLog } from './components/terminal/MissionLog';
 import MissionTerminal from './components/terminal/MissionTerminal';
 import NetworkMap3D from './components/network/NetworkMap3D';
-import StorageMap from './components/storage/StorageMap';
 import PayloadOps from './components/payload/PayloadOps';
 import ChaosOps from './components/chaos/ChaosOps';
+import SatelliteTrackerPage from './pages/SatelliteTrackerPage';
+import StorageMap from './components/storage/StorageMap';
+import DataTransferDemo from './components/demo/DataTransferDemo';
 
 function Dashboard() {
   const { messages, connected } = useWebSocket('ws://localhost:8000/ws');
   const [fileId, setFileId] = useState(null);
   const [currentTab, setCurrentTab] = useState('Payload Ops');
+  const [view, setView] = useState('dashboard'); // 'dashboard' or 'satellite'
   const [booting, setBooting] = useState(true);
+  const [nodes, setNodes] = useState([]);
+
+  // Fetch initial node state
+  React.useEffect(() => {
+    fetch('http://localhost:8000/api/nodes')
+      .then(res => res.json())
+      .then(data => setNodes(data.nodes || data))
+      .catch(err => console.error("Failed to fetch nodes", err));
+  }, []);
+
+  // Update nodes from websocket messages
+  React.useEffect(() => {
+    if (!messages || messages.length === 0) return;
+    const lastMsg = messages[messages.length - 1];
+
+    if (lastMsg.type === 'METRIC_UPDATE' && lastMsg.data.nodes) {
+      // Handle full updates if available (though build_metrics doesn't include full node records by default)
+    }
+
+    if (lastMsg.type === 'NODE_ONLINE' || lastMsg.type === 'NODE_OFFLINE' || lastMsg.type === 'DTN_QUEUED') {
+      // Re-fetch or update local state
+      fetch('http://localhost:8000/api/nodes')
+        .then(res => res.json())
+        .then(data => setNodes(data.nodes || data));
+    }
+  }, [messages]);
 
   const handleUpload = async (formData) => {
     try {
@@ -34,26 +63,23 @@ function Dashboard() {
     }
   };
 
-  const handleDownload = async (uuid) => {
+  const handleDownload = async (uuid, originalName = null) => {
     try {
       const res = await fetch(`http://localhost:8000/api/download/${uuid}`);
       if (!res.ok) throw new Error('Download failed');
 
       const blob = await res.blob();
-      let filename = `download-${uuid}`;
-      const disposition = res.headers.get('content-disposition');
-      if (disposition && disposition.includes('filename=')) {
-        filename = disposition.split('filename=')[1].replace(/["']/g, '');
-      }
+      const filename = originalName || `download-${uuid}`;
 
+      // Trigger actual download in the browser using Blob URL
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
       window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      link.remove();
     } catch (err) {
       console.error('Failed to download file:', err);
     }
@@ -61,6 +87,17 @@ function Dashboard() {
 
   if (booting) {
     return <CinematicBoot onComplete={() => setBooting(false)} />;
+  }
+
+  // Handle Satellite View separately
+  if (view === 'satellite') {
+    return (
+      <SatelliteTrackerPage
+        nodes={nodes}
+        messages={messages}
+        onBack={() => setView('dashboard')}
+      />
+    );
   }
 
   // Determine which background map to show
@@ -77,7 +114,11 @@ function Dashboard() {
       <div className="fixed top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-blue-600/5 blur-[120px] rounded-full pointer-events-none z-0"></div>
 
       {/* New Floating Dock Navigation */}
-      <HUDDock currentTab={currentTab} setCurrentTab={setCurrentTab} />
+      <HUDDock
+        currentTab={currentTab}
+        setCurrentTab={setCurrentTab}
+        onViewSatellite={() => setView('satellite')}
+      />
 
       {/* 2. Glass UI Layer Stack overlay */}
       <div className="relative z-10 flex h-full w-full pointer-events-none p-6 pb-28">
@@ -119,6 +160,13 @@ function Dashboard() {
                 <div className="absolute inset-0 z-20 pointer-events-auto flex items-center justify-center">
                   <div className="w-full max-w-6xl h-full pb-10">
                     <PayloadOps messages={messages} fileId={fileId} onUpload={handleUpload} onDownload={handleDownload} />
+                  </div>
+                </div>
+              )}
+              {currentTab === 'Data Demo' && (
+                <div className="absolute inset-0 z-20 pointer-events-auto overflow-hidden">
+                  <div className="w-full h-full p-2">
+                    <DataTransferDemo messages={messages} />
                   </div>
                 </div>
               )}
