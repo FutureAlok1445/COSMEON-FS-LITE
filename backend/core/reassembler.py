@@ -13,6 +13,8 @@ from backend.core.integrity import verify_read, verify_file
 from backend.config import NODES_BASE_PATH, RS_K, RS_TOTAL
 from backend.intelligence.predictor import record_chunk_access
 from backend.cache.ground_cache import ground_cache
+from backend.intelligence.harvest_manager import harvest_manager
+from backend.intelligence.isl_manager import find_relay_path, isl_fetch
 from backend.metrics.calculator import LatencyTracker
 
 
@@ -21,6 +23,7 @@ def fetch_and_reassemble(
     get_node_status: Callable,          # Person 2 provides: get_node_status(node_id) -> "ONLINE"|"OFFLINE"|...
     file_hash: str,                     # original full-file SHA-256 from metadata
     original_file_size: int,
+    file_id: str = "",                  # file_id for harvest cache lookup
 ) -> dict:
     """
     Main reassembly pipeline:
@@ -81,6 +84,22 @@ def fetch_and_reassemble(
                 # Cache data corrupted — evict and fall through to node fetch
                 ground_cache.evict(c_id)
 
+        # ── Check Harvest Cache (Opportunistic collection) ──
+        harvest_path = harvest_manager.get_shard_path(file_id, c_id)
+        if harvest_path and harvest_path.exists():
+            with open(harvest_path, "rb") as f:
+                data = f.read()
+            if verify_read(data, c_hash):
+                available_chunks.append(Chunk(
+                    chunk_id        = c_id,
+                    sequence_number = seq,
+                    size            = len(data),
+                    sha256_hash     = c_hash,
+                    data            = data,
+                    is_parity       = False,
+                ))
+                continue
+
         # ── Fetch from satellite node ──
         status = get_node_status(node_id)
 
@@ -111,7 +130,24 @@ def fetch_and_reassemble(
             else:
                 missing_sequences.append(seq)
         else:
-            # Node OFFLINE or PARTITIONED — chunk unavailable
+            # Node OFFLINE or PARTITIONED — try ISL relay for PARTITIONED
+            if status == "PARTITIONED":
+                relay_path = find_relay_path(node_id, get_node_status)
+                if relay_path:
+                    relay_data = isl_fetch(node_id, c_id, relay_path)
+                    if relay_data and verify_read(relay_data, c_hash):
+                        record_chunk_access(c_id)
+                        ground_cache.put(c_id, relay_data)
+                        available_chunks.append(Chunk(
+                            chunk_id        = c_id,
+                            sequence_number = seq,
+                            size            = len(relay_data),
+                            sha256_hash     = c_hash,
+                            data            = relay_data,
+                            is_parity       = False,
+                        ))
+                        continue
+            # Truly unavailable
             missing_sequences.append(seq)
 
     tracker.end_phase("fetch")
@@ -209,6 +245,22 @@ def _fetch_chunks_for_segment(
                 is_parity=is_par,
             ))
             continue
+        
+        harvest_path = harvest_manager.get_shard_path(record.get("file_id", ""), c_id)
+        if harvest_path and harvest_path.exists():
+            with open(harvest_path, "rb") as f:
+                data = f.read()
+            if verify_read(data, c_hash):
+                available.append(Chunk(
+                    chunk_id=c_id,
+                    sequence_number=seq,
+                    size=len(data),
+                    sha256_hash=c_hash,
+                    data=data,
+                    is_parity=is_par,
+                ))
+                continue
+
         if get_node_status(node_id) != "ONLINE":
             continue
         chunk_path = Path(NODES_BASE_PATH) / node_id / f"{c_id}.bin"

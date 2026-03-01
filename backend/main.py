@@ -47,6 +47,8 @@ from backend.intelligence.predictor import start_predictor, stop_predictor
 from backend.intelligence.dtn_queue import start_dtn_worker, stop_dtn_worker, add_to_queue
 from backend.intelligence.rebalancer import check_and_rebalance, compute_entropy, get_chunk_distribution
 from backend.intelligence.raft_consensus import init_raft_clusters, raft_daemon, raft_state
+from backend.intelligence.harvest_manager import harvest_manager
+from backend.intelligence.isl_manager import get_isl_topology
 from backend.intelligence.zkp_audit import ZKPAuditor
 
 # ── Metrics (Person 1) ──
@@ -73,6 +75,7 @@ async def lifespan(app: FastAPI):
     predictor_task = asyncio.create_task(start_predictor())
     dtn_task = asyncio.create_task(start_dtn_worker())
     raft_task = asyncio.create_task(raft_daemon())
+    harvest_task = asyncio.create_task(harvest_manager.run_worker())
 
     print("[MAIN] 🚀 COSMEON FS-LITE Online — All systems nominal")
 
@@ -301,6 +304,7 @@ async def download_file_named(file_id: str, filename: str = None):
             get_node_status=get_node_status,
             file_hash=record.full_sha256,
             original_file_size=record.size,
+            file_id=file_id,
         )
 
         file_bytes = result["data"]
@@ -410,6 +414,35 @@ async def list_files():
             for f in files
         ]
     }
+
+
+# ─────────────────────────────────────────────
+# HARVEST — /api/harvest
+# ─────────────────────────────────────────────
+
+@app.post("/api/harvest/start/{file_id}")
+async def start_harvest(file_id: str):
+    status = harvest_manager.start_mission(file_id)
+    if not status:
+        raise HTTPException(status_code=404, detail="File not found")
+    return status
+
+@app.get("/api/harvest/status/{file_id}")
+async def get_harvest_status(file_id: str):
+    status = harvest_manager.get_status(file_id)
+    if not status:
+        return {"status": "none"}
+    return status
+
+
+# ─────────────────────────────────────────────
+# ISL — /api/isl
+# ─────────────────────────────────────────────
+
+@app.get("/api/isl/topology")
+async def isl_topology():
+    """Return current ISL link topology with active/inactive status."""
+    return get_isl_topology(get_node_status)
 
 
 # ─────────────────────────────────────────────

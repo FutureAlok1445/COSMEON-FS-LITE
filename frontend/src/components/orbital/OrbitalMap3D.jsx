@@ -10,10 +10,18 @@ import { useDrag } from '@use-gesture/react';
 
 // Specific scales defined by SpaceScope Standards
 const SCALES = {
-    '/mercury.glb': 0.003,
+    '/satellite.glb': 0.45, // Adjusted scale for a generic satellite
     '/earth.glb': 0.0005,
-    '/mars.glb': 0.05,
-    '/realistic_jupiter.glb': 0.004
+};
+
+// Global Store for tracking satellite positions
+const satellitePositions = {
+    'Alpha-A': new THREE.Vector3(),
+    'Alpha-B': new THREE.Vector3(),
+    'Beta-A': new THREE.Vector3(),
+    'Beta-B': new THREE.Vector3(),
+    'Gamma-A': new THREE.Vector3(),
+    'Gamma-B': new THREE.Vector3(),
 };
 
 // Standardized Planet Renderer
@@ -65,6 +73,13 @@ function DraggableSatellite({ color, label, position, modelUrl }) {
     }, {
         pointerEvents: true,
         from: () => [pos.get()[0] * aspect, pos.get()[2] * aspect]
+    });
+
+    // Update global store with true world position
+    useFrame(() => {
+        if (meshRef.current) {
+            meshRef.current.getWorldPosition(satellitePositions[label]);
+        }
     });
 
     useFrame((state, delta) => {
@@ -243,15 +258,119 @@ function Loader() {
     )
 }
 
+function DataBeam({ start, end, color }) {
+    const lineRef = useRef();
+    const [points, setPoints] = useState(() => [start, start]);
+
+    useLayoutEffect(() => {
+        // Animate the beam from start to end
+        const proxy = { t: 0 };
+        gsap.to(proxy, {
+            t: 1,
+            duration: 0.6,
+            ease: "power2.out",
+            onUpdate: () => {
+                const currentEnd = new THREE.Vector3().lerpVectors(start, end, proxy.t);
+                setPoints([start, currentEnd]);
+            }
+        });
+
+        // Beam lifetime is exactly 1 second, then disappears
+    }, [start, end]);
+
+    return (
+        <Line
+            ref={lineRef}
+            points={points}
+            color={color || "#ffffff"}
+            lineWidth={4}
+            transparent
+            opacity={0.8}
+        />
+    );
+}
+
+function EventOrchestrator({ messages, setBeams, setUploadCompleteRing }) {
+    useEffect(() => {
+        if (!messages || messages.length === 0) return;
+        const msg = messages[messages.length - 1];
+
+        if (msg.type === "CHUNK_UPLOADED") {
+            const nodeInfo = msg.data.node_id;
+            // Map node_id (e.g., SAT-01) to a logical orbit
+            let targetLabel = "Alpha-A";
+            if (nodeInfo.includes("01")) targetLabel = "Alpha-A";
+            else if (nodeInfo.includes("02")) targetLabel = "Alpha-B";
+            else if (nodeInfo.includes("03")) targetLabel = "Beta-A";
+            else if (nodeInfo.includes("04")) targetLabel = "Beta-B";
+            else if (nodeInfo.includes("05")) targetLabel = "Gamma-A";
+            else if (nodeInfo.includes("06")) targetLabel = "Gamma-B";
+
+            // Spawn a beam
+            const targetPos = satellitePositions[targetLabel].clone();
+            const newBeam = {
+                id: Math.random().toString(),
+                start: new THREE.Vector3(0, 0, 0),
+                end: targetPos,
+                color: "#ffffff"
+            };
+
+            setBeams(prev => [...prev, newBeam]);
+
+            // Remove beam after 1 second
+            setTimeout(() => {
+                setBeams(prev => prev.filter(b => b.id !== newBeam.id));
+            }, 1000);
+        }
+
+        if (msg.type === "UPLOAD_COMPLETE") {
+            // Trigger a satisfying ping animation from Earth
+            setUploadCompleteRing(true);
+            setTimeout(() => setUploadCompleteRing(false), 2000);
+        }
+
+    }, [messages]);
+
+    return null;
+}
+
+function EarthPulseRing({ active }) {
+    const ringRef = useRef();
+
+    useLayoutEffect(() => {
+        if (active && ringRef.current) {
+            gsap.fromTo(ringRef.current.scale,
+                { x: 1, y: 1, z: 1 },
+                { x: 15, y: 15, z: 15, duration: 1.5, ease: "power2.out" }
+            );
+            gsap.fromTo(ringRef.current.material,
+                { opacity: 0.8 },
+                { opacity: 0, duration: 1.5, ease: "power2.out" }
+            );
+        }
+    }, [active]);
+
+    if (!active) return null;
+
+    return (
+        <mesh ref={ringRef} rotation={[-Math.PI / 2, 0, 0]}>
+            <ringGeometry args={[1, 1.05, 64]} />
+            <meshBasicMaterial color="#4ade80" transparent opacity={0.8} side={THREE.DoubleSide} />
+        </mesh>
+    );
+}
+
 // Prefetch models
 useGLTF.preload('/earth.glb');
-useGLTF.preload('/mars.glb');
-useGLTF.preload('/realistic_jupiter.glb');
-useGLTF.preload('/mercury.glb');
+useGLTF.preload('/satellite.glb');
 
-export default function OrbitalMap3D() {
+export default function OrbitalMap3D({ messages }) {
+    const [beams, setBeams] = useState([]);
+    const [uploadCompleteRing, setUploadCompleteRing] = useState(false);
+
     return (
         <Canvas shadows camera={{ position: [0, 8, 20], fov: 35 }} gl={{ alpha: true }}>
+            <EventOrchestrator messages={messages} setBeams={setBeams} setUploadCompleteRing={setUploadCompleteRing} />
             <ambientLight intensity={0.1} color="#4facfe" />
             <directionalLight position={[30, 40, 30]} intensity={2.5} castShadow shadow-mapSize={[2048, 2048]} />
             <pointLight position={[-30, -10, -30]} color="#3b82f6" intensity={1} />
@@ -271,9 +390,15 @@ export default function OrbitalMap3D() {
 
             <Suspense fallback={<Loader />}>
                 <MainEarth />
-                <OrbitSystem radius={3} speed={0.4} color="#22d3ee" label="Alpha" modelA="/mars.glb" modelB="/mars.glb" />
-                <OrbitSystem radius={5} speed={0.25} direction={-1} color="#c084fc" tiltZ={Math.PI / 10} label="Beta" modelA="/realistic_jupiter.glb" modelB="/realistic_jupiter.glb" />
-                <OrbitSystem radius={7} speed={0.15} color="#4ade80" tiltX={Math.PI / 8} label="Gamma" modelA="/mercury.glb" modelB="/mercury.glb" />
+                <EarthPulseRing active={uploadCompleteRing} />
+
+                {beams.map(beam => (
+                    <DataBeam key={beam.id} start={beam.start} end={beam.end} color={beam.color} />
+                ))}
+
+                <OrbitSystem radius={3} speed={0.4} color="#22d3ee" label="Alpha" modelA="/satellite.glb" modelB="/satellite.glb" />
+                <OrbitSystem radius={5} speed={0.25} direction={-1} color="#c084fc" tiltZ={Math.PI / 10} label="Beta" modelA="/satellite.glb" modelB="/satellite.glb" />
+                <OrbitSystem radius={7} speed={0.15} color="#4ade80" tiltX={Math.PI / 8} label="Gamma" modelA="/satellite.glb" modelB="/satellite.glb" />
                 <ContactShadows resolution={1024} scale={50} blur={3} opacity={0.2} far={30} color="#000000" />
             </Suspense>
 

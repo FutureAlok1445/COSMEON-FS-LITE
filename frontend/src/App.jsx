@@ -108,7 +108,7 @@ function Dashboard() {
   return (
     <div className="h-screen w-screen bg-[#02040A] text-gray-200 overflow-hidden font-sans relative">
       <div className="fixed inset-0 z-0 pointer-events-auto">
-        {isNetworkMap ? <NetworkMap3D messages={messages} /> : <OrbitalMap3D />}
+        {isNetworkMap ? <NetworkMap3D messages={messages} /> : <OrbitalMap3D messages={messages} />}
       </div>
 
       {/* Subtle Ambient Glow Behind Main Content */}

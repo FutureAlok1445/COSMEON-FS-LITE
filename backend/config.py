@@ -19,6 +19,7 @@ RS_TOTAL    = RS_K + RS_M  # 6 total
 ORBIT_PERIOD    = 120   # seconds — full orbit countdown
 LOS_THRESHOLD   = 30    # seconds — trigger predictive migration
 CACHE_SIZE      = 10    # LRU cache max chunks
+ISL_HOP_LATENCY_MS = 50 # simulated inter-satellite link latency per hop (ms)
 
 # ─────────────────────────────────────────────
 # Hash Algorithm (quantum-ready flag)
@@ -45,12 +46,27 @@ NODE_TO_PLANE = {
 ALL_NODES = ["SAT-01", "SAT-02", "SAT-03", "SAT-04", "SAT-05", "SAT-06"]
 
 # ─────────────────────────────────────────────
+# Inter-Satellite Link (ISL) Adjacency
+# Intra-plane = permanent link (same orbital shell)
+# Inter-plane = cross-link to adjacent planes
+# ─────────────────────────────────────────────
+ISL_ADJACENCY = {
+    "SAT-01": ["SAT-02", "SAT-03", "SAT-05"],  # Alpha↔Beta, Alpha↔Gamma
+    "SAT-02": ["SAT-01", "SAT-04", "SAT-06"],
+    "SAT-03": ["SAT-04", "SAT-01", "SAT-05"],  # Beta↔Alpha, Beta↔Gamma
+    "SAT-04": ["SAT-03", "SAT-02", "SAT-06"],
+    "SAT-05": ["SAT-06", "SAT-01", "SAT-03"],  # Gamma↔Alpha, Gamma↔Beta
+    "SAT-06": ["SAT-05", "SAT-02", "SAT-04"],
+}
+
+# ─────────────────────────────────────────────
 # File System Paths
 # ─────────────────────────────────────────────
 BASE_DIR        = Path(__file__).parent
 NODES_BASE_PATH = BASE_DIR / "nodes"
 DTN_QUEUE_PATH  = BASE_DIR / "dtn_queue"
 METADATA_PATH   = BASE_DIR / "metadata" / "store.json"
+HARVEST_CACHE_PATH = BASE_DIR / "harvest_cache"
 
 
 def init_node_folders():
@@ -64,4 +80,5 @@ def init_node_folders():
 
     DTN_QUEUE_PATH.mkdir(parents=True, exist_ok=True)
     METADATA_PATH.parent.mkdir(parents=True, exist_ok=True)
+    HARVEST_CACHE_PATH.mkdir(parents=True, exist_ok=True)
     print(f"[CONFIG] [SUCCESS] Node folders initialized: {ALL_NODES}")

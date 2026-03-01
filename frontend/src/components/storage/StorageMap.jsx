@@ -1,20 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { UploadCloud, Download, Trash2, Power, WifiOff, File as FileIcon, HardDrive, Zap, RefreshCw } from 'lucide-react';
+import { UploadCloud, Download, Trash2, Power, WifiOff, File as FileIcon, HardDrive, Zap, RefreshCw, Radio, Satellite } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const API_URL = `http://${window.location.hostname}:9000/api`;
 
 export default function StorageMap() {
     const [state, setState] = useState(null);
     const [uploading, setUploading] = useState(false);
+    const [harvestingStates, setHarvestingStates] = useState({}); // { fileId: statusObject }
+    const [transmittingNodes, setTransmittingNodes] = useState({}); // { nodeId: timestamp }
+    const [islLinks, setIslLinks] = useState([]); // ISL topology links
     const [error, setError] = useState(null);
     const fileInputRef = useRef(null);
+    const socketRef = useRef(null);
 
     const fetchState = async () => {
         try {
-            const res = await fetch(`${API_URL}/fs/state`);
-            if (res.ok) {
-                const data = await res.json();
+            const [stateRes, islRes] = await Promise.all([
+                fetch(`${API_URL}/fs/state`),
+                fetch(`${API_URL}/isl/topology`)
+            ]);
+            if (stateRes.ok) {
+                const data = await stateRes.json();
                 setState(data);
+            }
+            if (islRes.ok) {
+                const islData = await islRes.json();
+                setIslLinks(islData.links || []);
             }
         } catch (err) {
             console.error("Failed to fetch state:", err);
@@ -23,9 +35,77 @@ export default function StorageMap() {
 
     useEffect(() => {
         fetchState();
-        const interval = setInterval(fetchState, 2000);
-        return () => clearInterval(interval);
-    }, []);
+
+        // Setup WebSocket for real-time harvest bursts
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const ws = new WebSocket(`${protocol}//${window.location.hostname}:9000/ws`);
+
+        ws.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.type === 'HARVEST_PROGRESS') {
+                    // Use node_id directly from payload if available
+                    const nodeId = data.payload.node_id;
+                    if (nodeId) {
+                        setTransmittingNodes(prev => ({ ...prev, [nodeId]: Date.now() }));
+                        // Clear after 1.5s
+                        setTimeout(() => {
+                            setTransmittingNodes(prev => {
+                                const next = { ...prev };
+                                delete next[nodeId];
+                                return next;
+                            });
+                        }, 1500);
+                    }
+                    // Also update harvest state immediately
+                    updateHarvestStatus(data.payload.file_id);
+                }
+            } catch (e) {
+                console.error("WS error:", e);
+            }
+        };
+
+        socketRef.current = ws;
+
+        const interval = setInterval(() => {
+            fetchState();
+            // Poll harvesting status if any are active
+            Object.keys(harvestingStates).forEach(fileId => {
+                if (harvestingStates[fileId]?.status === 'active') {
+                    updateHarvestStatus(fileId);
+                }
+            });
+        }, 2000);
+
+        return () => {
+            clearInterval(interval);
+            ws.close();
+        };
+    }, [harvestingStates, state]);
+
+    const updateHarvestStatus = async (fileId) => {
+        try {
+            const res = await fetch(`${API_URL}/harvest/status/${fileId}`);
+            if (res.ok) {
+                const data = await res.json();
+                setHarvestingStates(prev => ({ ...prev, [fileId]: data }));
+            }
+        } catch (err) {
+            console.error("Failed to fetch harvest status:", err);
+        }
+    };
+
+    const handleHarvest = async (fileId) => {
+        try {
+            const res = await fetch(`${API_URL}/harvest/start/${fileId}`, { method: 'POST' });
+            if (res.ok) {
+                const data = await res.json();
+                setHarvestingStates(prev => ({ ...prev, [fileId]: data }));
+            }
+        } catch (err) {
+            alert(`Harvest failed: ${err.message}`);
+        }
+    };
 
     const handleUpload = async (e) => {
         const file = e.target.files[0];
@@ -163,6 +243,22 @@ export default function StorageMap() {
                                         <span>{(file.size / 1024).toFixed(1)} KB</span>
                                         <span className="bg-cyan-500/10 text-cyan-400 px-1.5 py-0.5 rounded uppercase tracking-wider">{file.chunk_count} Chunks</span>
                                     </div>
+
+                                    {harvestingStates[file.file_id] && harvestingStates[file.file_id].status !== 'none' && (
+                                        <div className="mb-3">
+                                            <div className="flex justify-between text-[9px] uppercase tracking-widest text-emerald-400 mb-1">
+                                                <span>Harvesting...</span>
+                                                <span>{harvestingStates[file.file_id].collected_shards.length} / {file.chunk_count}</span>
+                                            </div>
+                                            <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                                                <div
+                                                    className="h-full bg-emerald-500 transition-all duration-500"
+                                                    style={{ width: `${(harvestingStates[file.file_id].collected_shards.length / file.chunk_count) * 100}%` }}
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <div className="flex items-center gap-2">
                                         <button
                                             onClick={() => handleDownload(file.file_id, file.filename)}
@@ -170,6 +266,15 @@ export default function StorageMap() {
                                         >
                                             <Download size={12} /> Fetch
                                         </button>
+                                        {!harvestingStates[file.file_id] || harvestingStates[file.file_id].status === 'none' ? (
+                                            <button
+                                                onClick={() => handleHarvest(file.file_id)}
+                                                className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded p-1.5 transition-colors"
+                                                title="Initiate Ground Harvest"
+                                            >
+                                                <RefreshCw size={12} />
+                                            </button>
+                                        ) : null}
                                         <button
                                             onClick={() => handleDelete(file.file_id)}
                                             className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded p-1.5 transition-colors"
@@ -200,6 +305,32 @@ export default function StorageMap() {
                         </div>
                     </div>
                 </div>
+
+                {/* ISL Link Status */}
+                <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-2xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+                    <div className="flex items-center gap-2 border-b border-white/5 pb-3 mb-4">
+                        <Satellite className="text-amber-400" size={18} />
+                        <h2 className="text-white font-bold tracking-widest text-xs uppercase">ISL Mesh Links</h2>
+                    </div>
+                    <div className="space-y-1.5 max-h-[120px] overflow-y-auto custom-scrollbar">
+                        {islLinks.map((link, i) => (
+                            <div key={i} className="flex items-center justify-between text-[10px]">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-white font-bold">{link.from}</span>
+                                    <motion.div
+                                        animate={link.active ? { opacity: [0.3, 1, 0.3] } : {}}
+                                        transition={{ duration: 1.5, repeat: Infinity }}
+                                        className={`w-6 h-[2px] rounded ${link.active ? 'bg-amber-500 shadow-[0_0_6px_#f59e0b]' : 'bg-gray-700'}`}
+                                    />
+                                    <span className="text-white font-bold">{link.to}</span>
+                                </div>
+                                <span className={`uppercase tracking-widest text-[8px] font-bold ${link.active ? 'text-amber-400' : 'text-gray-600'}`}>
+                                    {link.active ? 'ACTIVE' : 'DOWN'}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
 
             {/* Right Panel: The Orbital Mesh Grid */}
@@ -213,6 +344,7 @@ export default function StorageMap() {
                         <div className="flex gap-4 items-center text-[10px] uppercase tracking-widest font-bold">
                             <span className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-cyan-500 shadow-[0_0_8px_#06b6d4]"></div> Data Chunk</span>
                             <span className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-purple-500 shadow-[0_0_8px_#a855f7]"></div> RS Parity</span>
+                            <span className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-amber-500 shadow-[0_0_8px_#f59e0b]"></div> ISL Link</span>
                         </div>
                     </div>
 
@@ -232,14 +364,29 @@ export default function StorageMap() {
                             });
 
                             const isOnline = node.status === 'ONLINE';
+                            const isPartitioned = node.status === 'PARTITIONED';
+                            const hasISL = isPartitioned && islLinks.some(l =>
+                                (l.from === node.node_id || l.to === node.node_id) && l.active
+                            );
 
                             return (
-                                <div key={node.node_id} className={`relative rounded-2xl border transition-colors flex flex-col overflow-hidden ${isOnline ? 'bg-black/40 border-cyan-500/20 shadow-[0_0_30px_rgba(6,182,212,0.05)]' : 'bg-red-950/20 border-red-500/30'}`}>
+                                <div key={node.node_id} className={`relative rounded-2xl border transition-colors flex flex-col overflow-hidden ${isOnline ? 'bg-black/40 border-cyan-500/20 shadow-[0_0_30px_rgba(6,182,212,0.05)]'
+                                        : isPartitioned ? 'bg-amber-950/20 border-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.05)]'
+                                            : 'bg-red-950/20 border-red-500/30'
+                                    }`}>
                                     {/* Plane Header */}
-                                    <div className={`p-3 border-b flex justify-between items-center ${isOnline ? 'bg-cyan-950/30 border-cyan-500/10' : 'bg-red-900/30 border-red-500/20'}`}>
+                                    <div className={`p-3 border-b flex justify-between items-center ${isOnline ? 'bg-cyan-950/30 border-cyan-500/10'
+                                            : isPartitioned ? 'bg-amber-900/30 border-amber-500/20'
+                                                : 'bg-red-900/30 border-red-500/20'
+                                        }`}>
                                         <div>
                                             <p className="font-bold text-white text-sm">{node.node_id}</p>
-                                            <p className={`text-[9px] uppercase tracking-widest ${isOnline ? 'text-cyan-500' : 'text-red-400'}`}>Plane {node.plane}</p>
+                                            <p className={`text-[9px] uppercase tracking-widest ${isOnline ? 'text-cyan-500'
+                                                    : isPartitioned ? 'text-amber-400'
+                                                        : 'text-red-400'
+                                                }`}>
+                                                {isPartitioned ? `Plane ${node.plane} • ISL ${hasISL ? 'RELAY' : 'DOWN'}` : `Plane ${node.plane}`}
+                                            </p>
                                         </div>
                                         <button
                                             onClick={() => toggleNodeStatus(node.node_id)}
@@ -252,21 +399,65 @@ export default function StorageMap() {
 
                                     {/* Chunk Visualization Area */}
                                     <div className="flex-1 p-4 min-h-[250px] relative">
-                                        {!isOnline && (
-                                            <div className="absolute inset-0 bg-red-950/40 backdrop-blur-[2px] z-10 flex items-center justify-center flex-col gap-2">
-                                                <WifiOff size={24} className="text-red-500 opacity-50" />
-                                                <p className="text-red-400 font-bold uppercase tracking-widest text-[10px]">Node Offline</p>
-                                            </div>
-                                        )}
+                                        <AnimatePresence>
+                                            {!isOnline && (
+                                                <motion.div
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    exit={{ opacity: 0 }}
+                                                    className="absolute inset-0 bg-red-950/40 backdrop-blur-[2px] z-10 flex items-center justify-center flex-col gap-2"
+                                                >
+                                                    {/* Check if node is part of an active harvest */}
+                                                    {Object.values(harvestingStates).some(m =>
+                                                        m.status === 'active' &&
+                                                        state.files.find(f => f.file_id === m.file_id)?.chunks.some(c => c.node_id === node.node_id && !m.collected_shards.includes(c.chunk_id))
+                                                    ) ? (
+                                                        <div className="relative">
+                                                            <motion.div
+                                                                animate={{ scale: [1, 2, 1], opacity: [0.3, 0.1, 0.3] }}
+                                                                transition={{ duration: 2, repeat: Infinity }}
+                                                                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-emerald-500 rounded-full blur-xl"
+                                                            />
+                                                            <Radio size={32} className="text-emerald-400 animate-pulse relative z-10" />
+                                                            <p className="text-emerald-400 font-bold uppercase tracking-[0.2em] text-[8px] mt-2 whitespace-nowrap">Waiting for Signal...</p>
+                                                        </div>
+                                                    ) : (
+                                                        <>
+                                                            <WifiOff size={24} className="text-red-500 opacity-50" />
+                                                            <p className="text-red-400 font-bold uppercase tracking-widest text-[10px]">Node Offline</p>
+                                                        </>
+                                                    )}
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+
+                                        {/* Transmission Effect */}
+                                        <AnimatePresence>
+                                            {transmittingNodes[node.node_id] && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, scale: 0.8 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    exit={{ opacity: 0, scale: 1.2 }}
+                                                    className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center"
+                                                >
+                                                    <div className="w-full h-full bg-emerald-500/10 border-2 border-emerald-500/50 rounded-2xl animate-ping" />
+                                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+                                                        <Zap size={40} className="text-emerald-400 filter drop-shadow-[0_0_10px_#10b981]" />
+                                                        <span className="text-emerald-400 font-bold text-[8px] uppercase tracking-widest mt-2 overflow-hidden block">Downlink Active</span>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
 
                                         <div className="flex flex-wrap gap-2">
                                             {myChunks.length === 0 ? (
                                                 <div className="w-full text-center text-[10px] text-slate-600 uppercase tracking-widest mt-10">Empty Buffer</div>
                                             ) : (
                                                 myChunks.map((chunk, i) => (
-                                                    <div
+                                                    <motion.div
+                                                        layout
                                                         key={`${chunk.chunk_id}-${i}`}
-                                                        className={`w-[calc(50%-4px)] p-2 rounded border flex flex-col justify-center animate-in zoom-in duration-300 ${chunk.is_parity
+                                                        className={`w-[calc(50%-4px)] p-2 rounded border flex flex-col justify-center ${chunk.is_parity
                                                             ? 'bg-purple-500/10 border-purple-500/30 text-purple-200 shadow-[0_0_15px_rgba(168,85,247,0.15)]'
                                                             : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.15)]'
                                                             }`}
@@ -277,14 +468,22 @@ export default function StorageMap() {
                                                             <p className="text-[8px] uppercase tracking-wider opacity-60">Seq {chunk.sequence_number}</p>
                                                             {chunk.is_parity && <span className="text-[8px] font-bold text-purple-400">PRTY</span>}
                                                         </div>
-                                                    </div>
+                                                    </motion.div>
                                                 ))
                                             )}
                                         </div>
                                     </div>
 
-                                    <div className="bg-black/50 p-2 text-center text-[9px] uppercase tracking-widest text-slate-500 border-t border-white/5">
+                                    <div className="bg-black/50 p-2 text-center text-[9px] uppercase tracking-widest text-slate-500 border-t border-white/5 relative overflow-hidden">
                                         {(node.storage_used / 1024).toFixed(1)} KB Used
+                                        {/* Activity Scanner Line */}
+                                        {isOnline && (
+                                            <motion.div
+                                                animate={{ x: ['-100%', '100%'] }}
+                                                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                                                className="absolute bottom-0 left-0 h-[1px] w-1/2 bg-cyan-500/50 blur-sm"
+                                            />
+                                        )}
                                     </div>
                                 </div>
                             );
