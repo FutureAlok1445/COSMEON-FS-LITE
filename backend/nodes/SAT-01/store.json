@@ -104,7 +104,7 @@
           "sequence_number": 7,
           "size": 524288,
           "sha256_hash": "ab1a043ae6af94ec8cd6e9f87edb96afba357ee5c522566a25901cc464f459e6",
-          "node_id": "SAT-01",
+          "node_id": "SAT-03",
           "is_parity": false,
           "pad_size": 524288,
           "zk_commitment": "2c5a59c87878e17b0f72883a1d1b020e9ead10004af9ee8739f8a60c93f2a497"
@@ -164,7 +164,7 @@
           "sequence_number": 11,
           "size": 0,
           "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "node_id": "SAT-02",
+          "node_id": "SAT-03",
           "is_parity": false,
           "pad_size": 235558,
           "zk_commitment": "5df6e0e2761359d30a8275058e299fcc0381534545f55cf43e41983f5d4c9456"
@@ -198,9 +198,9 @@
       "plane": "Alpha",
       "status": "ONLINE",
       "health_score": 100,
-      "storage_used": 2621440,
-      "chunk_count": 6,
-      "orbit_timer": 120,
+      "storage_used": 2097152,
+      "chunk_count": 5,
+      "orbit_timer": 0,
       "dtn_queue_depth": 0
     },
     "SAT-02": {
@@ -209,8 +209,8 @@
       "status": "ONLINE",
       "health_score": 100,
       "storage_used": 0,
-      "chunk_count": 1,
-      "orbit_timer": 120,
+      "chunk_count": 0,
+      "orbit_timer": 1,
       "dtn_queue_depth": 0
     },
     "SAT-03": {
@@ -218,9 +218,9 @@
       "plane": "Beta",
       "status": "ONLINE",
       "health_score": 100,
-      "storage_used": 4376690,
-      "chunk_count": 11,
-      "orbit_timer": 120,
+      "storage_used": 4900978,
+      "chunk_count": 13,
+      "orbit_timer": 1,
       "dtn_queue_depth": 0
     },
     "SAT-04": {
@@ -230,7 +230,7 @@
       "health_score": 100,
       "storage_used": 0,
       "chunk_count": 0,
-      "orbit_timer": 120,
+      "orbit_timer": 1,
       "dtn_queue_depth": 0
     },
     "SAT-05": {
@@ -240,7 +240,7 @@
       "health_score": 100,
       "storage_used": 0,
       "chunk_count": 0,
-      "orbit_timer": 120,
+      "orbit_timer": 1,
       "dtn_queue_depth": 0
     },
     "SAT-06": {
@@ -250,7 +250,7 @@
       "health_score": 100,
       "storage_used": 0,
       "chunk_count": 0,
-      "orbit_timer": 120,
+      "orbit_timer": 1,
       "dtn_queue_depth": 0
     }
   },
@@ -1253,6 +1253,90 @@
       "metadata": {
         "node_id": "SAT-06"
       }
+    },
+    {
+      "event_id": "48c74080-9dcf-4910-a304-5996c3580993",
+      "timestamp": "2026-03-01T01:16:42.011583",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk f828cedb-3c45-4713-8aac-6481501a81c4 moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "1164bba3-e791-42d2-93fe-f16813b6195e",
+      "timestamp": "2026-03-01T01:16:42.029861",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk da482cc7-2bc2-483a-b08e-014530e9867f moved SAT-01 \u2192 SAT-02",
+      "metadata": {}
+    },
+    {
+      "event_id": "33ab7ea4-8e98-4d5d-88ff-6b87203a0140",
+      "timestamp": "2026-03-01T01:16:42.048720",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 900d18ef-a818-4be1-a251-ac2c41ebea3a moved SAT-01 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "ffc527fa-5f4a-47ca-a577-3fe6f54d09ec",
+      "timestamp": "2026-03-01T01:16:42.066963",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk f828cedb-3c45-4713-8aac-6481501a81c4 moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "b8f028fb-b334-478c-b26e-143e05afe1ec",
+      "timestamp": "2026-03-01T01:16:42.084591",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk da482cc7-2bc2-483a-b08e-014530e9867f moved SAT-02 \u2192 SAT-01",
+      "metadata": {}
+    },
+    {
+      "event_id": "f3169e9c-d937-42df-a9fb-086dc4fcf483",
+      "timestamp": "2026-03-01T01:16:42.101230",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk a95c76ff-31a9-4dca-b18a-b73ec2ef9648 moved SAT-02 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "67a5de97-9c20-47bc-b464-a3eb302ade59",
+      "timestamp": "2026-03-01T01:16:42.119906",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 11ee5e04-a12f-4fee-a2eb-d06442273a4b moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "19aefb00-1daf-4cb8-ab5e-4f6f48a72a9a",
+      "timestamp": "2026-03-01T01:16:42.136464",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 36e11cb0-4ad9-4350-8950-6348e8535896 moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "6df9805f-6499-4382-9ac7-007fdfd0890c",
+      "timestamp": "2026-03-01T01:16:42.152695",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 8234e41e-aba7-4327-9345-7754b27350f0 moved SAT-03 \u2192 SAT-04",
+      "metadata": {}
+    },
+    {
+      "event_id": "f93da94c-9e89-455d-a922-779b4ddd1796",
+      "timestamp": "2026-03-01T01:16:42.169958",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 11ee5e04-a12f-4fee-a2eb-d06442273a4b moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "13e46b71-d346-4fbe-a090-4cf2840713d2",
+      "timestamp": "2026-03-01T01:16:42.186176",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 36e11cb0-4ad9-4350-8950-6348e8535896 moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
+    },
+    {
+      "event_id": "57aa4a98-d6f9-46c8-9244-f8a715f030ee",
+      "timestamp": "2026-03-01T01:16:42.202791",
+      "event_type": "CHUNK_MIGRATED",
+      "message": "Chunk 8234e41e-aba7-4327-9345-7754b27350f0 moved SAT-04 \u2192 SAT-03",
+      "metadata": {}
     }
   ]
 }
