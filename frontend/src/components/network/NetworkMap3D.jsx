@@ -134,7 +134,7 @@ export default function NetworkMap3D({ messages }) {
         async function fetchTLEs() {
             try {
                 // Fetch Starlink TLEs via our local backend proxy to bypass CelesTrak CORS blocks
-                const response = await fetch('http://localhost:8000/api/tle');
+                const response = await fetch(`http://${window.location.hostname}:9000/api/tle`);
 
                 if (!response.ok) throw new Error('Failed to fetch TLE data via backend proxy');
 

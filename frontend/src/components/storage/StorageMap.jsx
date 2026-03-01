@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { UploadCloud, Download, Trash2, Power, WifiOff, File as FileIcon, HardDrive, Zap, RefreshCw } from 'lucide-react';
 
-const API_URL = `http://${window.location.hostname}:8000/api`;
+const API_URL = `http://${window.location.hostname}:9000/api`;
 
 export default function StorageMap() {
     const [state, setState] = useState(null);

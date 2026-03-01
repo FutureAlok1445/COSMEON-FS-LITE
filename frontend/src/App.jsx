@@ -19,7 +19,7 @@ import DataTransferDemo from './components/demo/DataTransferDemo';
 import SurvivabilityPanel from './components/metrics/SurvivabilityPanel';
 
 function Dashboard() {
-  const { messages, connected } = useWebSocket('ws://localhost:8000/ws');
+  const { messages, connected } = useWebSocket(`ws://${window.location.hostname}:9000/ws`);
   const [fileId, setFileId] = useState(null);
   const [currentTab, setCurrentTab] = useState('Payload Ops');
   const [view, setView] = useState('dashboard'); // 'dashboard' or 'satellite'
@@ -28,7 +28,7 @@ function Dashboard() {
 
   // Fetch initial node state
   React.useEffect(() => {
-    fetch('http://localhost:8000/api/nodes')
+    fetch(`http://${window.location.hostname}:9000/api/nodes`)
       .then(res => res.json())
       .then(data => setNodes(data.nodes || data))
       .catch(err => console.error("Failed to fetch nodes", err));
@@ -45,7 +45,7 @@ function Dashboard() {
 
     if (lastMsg.type === 'NODE_ONLINE' || lastMsg.type === 'NODE_OFFLINE' || lastMsg.type === 'DTN_QUEUED') {
       // Re-fetch or update local state
-      fetch('http://localhost:8000/api/nodes')
+      fetch(`http://${window.location.hostname}:9000/api/nodes`)
         .then(res => res.json())
         .then(data => setNodes(data.nodes || data));
     }
@@ -53,7 +53,7 @@ function Dashboard() {
 
   const handleUpload = async (formData) => {
     try {
-      const res = await fetch('http://localhost:8000/api/upload', {
+      const res = await fetch(`http://${window.location.hostname}:9000/api/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -66,7 +66,7 @@ function Dashboard() {
 
   const handleDownload = async (uuid, originalName = null) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/download/${uuid}`);
+      const res = await fetch(`http://${window.location.hostname}:9000/api/download/${uuid}`);
       if (!res.ok) throw new Error('Download failed');
 
       const blob = await res.blob();

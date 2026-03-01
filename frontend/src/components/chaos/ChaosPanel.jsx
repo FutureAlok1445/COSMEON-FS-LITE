@@ -7,7 +7,7 @@ export function ChaosPanel() {
     const triggerChaos = async (scenario) => {
         setActive(scenario);
         try {
-            await fetch(`http://localhost:8000/api/chaos/${scenario}`, { method: 'POST' });
+            await fetch(`http://${window.location.hostname}:9000/api/chaos/${scenario}`, { method: 'POST' });
         } catch (err) {
             console.error(err);
         }
@@ -15,7 +15,7 @@ export function ChaosPanel() {
 
     const resetAll = async () => {
         try {
-            await fetch(`http://localhost:8000/api/chaos/restore`, { method: 'POST' });
+            await fetch(`http://${window.location.hostname}:9000/api/chaos/restore`, { method: 'POST' });
             setActive(null);
         } catch (err) {
             console.error(err);

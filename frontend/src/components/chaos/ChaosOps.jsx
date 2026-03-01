@@ -107,7 +107,7 @@ export default function ChaosOps({ messages }) {
         await new Promise(r => setTimeout(r, 500));
 
         try {
-            const res = await fetch(`http://localhost:8000/api/chaos/${scenario.id}`, { method: 'POST' });
+            const res = await fetch(`http://${window.location.hostname}:9000/api/chaos/${scenario.id}`, { method: 'POST' });
             if (!res.ok) throw new Error('Failed to trigger chaos');
         } catch (err) {
             console.error(err);
@@ -180,7 +180,7 @@ export default function ChaosOps({ messages }) {
                     <button
                         onClick={() => {
                             pushLog('Initiating System Heal...', 'info');
-                            fetch('http://localhost:8000/api/chaos/restore', { method: 'POST' }).catch(e => console.error(e));
+                            fetch(`http://${window.location.hostname}:9000/api/chaos/restore`, { method: 'POST' }).catch(e => console.error(e));
                         }}
                         className="flex items-center gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 px-6 py-3 rounded-xl font-bold tracking-[0.2em] uppercase transition-all shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:shadow-[0_0_30px_rgba(16,185,129,0.3)]"
                     >

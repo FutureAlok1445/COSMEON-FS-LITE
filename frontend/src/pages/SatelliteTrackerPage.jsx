@@ -37,7 +37,7 @@ export default function SatelliteTrackerPage({ nodes, messages, onBack }) {
             setLoading(true);
             try {
                 // Fetch TLE
-                const tleRes = await fetch(`http://localhost:8000/api/tle`);
+                const tleRes = await fetch(`http://${window.location.hostname}:9000/api/tle`);
                 const tleData = await tleRes.text();
                 const lines = tleData.split('\n');
                 const newAllTle = {};
@@ -64,7 +64,7 @@ export default function SatelliteTrackerPage({ nodes, messages, onBack }) {
                 setAllOrbitPaths(newAllPaths);
 
                 // Fetch DTN History
-                const eventRes = await fetch(`http://localhost:8000/api/dtn/events?limit=30`);
+                const eventRes = await fetch(`http://${window.location.hostname}:9000/api/dtn/events?limit=30`);
                 if (eventRes.ok) {
                     const eventData = await eventRes.json();
                     const initialEvents = eventData.map(e => ({
@@ -126,7 +126,7 @@ export default function SatelliteTrackerPage({ nodes, messages, onBack }) {
 
     const handleToggleNode = async (nodeId) => {
         try {
-            await fetch(`http://localhost:8000/api/node/${nodeId}/toggle`, { method: 'POST' });
+            await fetch(`http://${window.location.hostname}:9000/api/node/${nodeId}/toggle`, { method: 'POST' });
         } catch (err) {
             console.error("Failed to toggle node", err);
         }
