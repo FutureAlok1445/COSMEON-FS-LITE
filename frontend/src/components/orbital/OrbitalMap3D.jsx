@@ -200,15 +200,15 @@ function MainEarth() {
         <group ref={earthGroupRef}>
             <Float speed={1} rotationIntensity={0.1} floatIntensity={0.1}>
                 {/* Specific scaling is handled by PlanetActor internally using SpaceScope standards */}
-                <PlanetActor url="/earth.glb" envMapIntensity={1.2} />
+                <PlanetActor url="/earth.glb" envMapIntensity={2.4} />
 
                 {/* Atmospheric glow */}
-                <mesh scale={[1.15, 1.15, 1.15]}>
-                    <sphereGeometry args={[0.005 * 200, 32, 32]} /> {/* Rough size matching Earth */}
+                <mesh scale={[1.18, 1.18, 1.18]}>
+                    <sphereGeometry args={[0.005 * 200, 64, 64]} />
                     <meshBasicMaterial
                         color="#3b82f6"
                         transparent
-                        opacity={0.08}
+                        opacity={0.12}
                         side={THREE.BackSide}
                     />
                 </mesh>
@@ -260,10 +260,10 @@ function Loader() {
 
 function DataBeam({ start, end, color }) {
     const lineRef = useRef();
+    const blockRef = useRef();
     const [points, setPoints] = useState(() => [start, start]);
 
     useLayoutEffect(() => {
-        // Animate the beam from start to end
         const proxy = { t: 0 };
         gsap.to(proxy, {
             t: 1,
@@ -272,25 +272,51 @@ function DataBeam({ start, end, color }) {
             onUpdate: () => {
                 const currentEnd = new THREE.Vector3().lerpVectors(start, end, proxy.t);
                 setPoints([start, currentEnd]);
+                if (blockRef.current) {
+                    blockRef.current.position.copy(currentEnd);
+                }
             }
         });
-
-        // Beam lifetime is exactly 1 second, then disappears
     }, [start, end]);
 
     return (
-        <Line
-            ref={lineRef}
-            points={points}
-            color={color || "#ffffff"}
-            lineWidth={4}
-            transparent
-            opacity={0.8}
-        />
+        <group>
+            <Line
+                ref={lineRef}
+                points={points}
+                color={color || "#3b82f6"}
+                lineWidth={3}
+                transparent
+                opacity={0.6}
+            />
+            {/* 3D Chunk traversing the beam */}
+            <mesh ref={blockRef} position={start}>
+                <boxGeometry args={[0.25, 0.25, 0.25]} />
+                <meshStandardMaterial color={color || "#60a5fa"} emissive={color || "#3b82f6"} emissiveIntensity={2} />
+                <pointLight distance={4} intensity={2} color={color || "#60a5fa"} />
+            </mesh>
+        </group>
     );
 }
 
-function EventOrchestrator({ messages, setBeams, setUploadCompleteRing }) {
+function DataImpact({ position, color }) {
+    const meshRef = useRef();
+    useLayoutEffect(() => {
+        if (meshRef.current) {
+            gsap.fromTo(meshRef.current.scale, { x: 0, y: 0, z: 0 }, { x: 3, y: 3, z: 3, duration: 0.5, ease: "power2.out" });
+            gsap.fromTo(meshRef.current.material, { opacity: 0.8 }, { opacity: 0, duration: 0.5, ease: "power2.out" });
+        }
+    }, []);
+
+    return (
+        <mesh ref={meshRef} position={position}>
+            <sphereGeometry args={[0.3, 16, 16]} />
+            <meshBasicMaterial color={color || "#3b82f6"} transparent opacity={0.8} />
+        </mesh>
+    );
+}
+
+function EventOrchestrator({ messages, setBeams, setImpacts, setUploadCompleteRing }) {
     useEffect(() => {
         if (!messages || messages.length === 0) return;
         const msg = messages[messages.length - 1];
@@ -308,18 +334,34 @@ function EventOrchestrator({ messages, setBeams, setUploadCompleteRing }) {
 
             // Spawn a beam
             const targetPos = satellitePositions[targetLabel].clone();
+            const beamId = Math.random().toString();
+
+            // Alternating colors based on data vs parity can be added if backend sent type. Default to cyan/blue
+            const isParity = Math.random() > 0.6; // Simulating parity visual mix
+            const color = isParity ? "#c084fc" : "#3b82f6"; // purple for parity, blue for data
+
             const newBeam = {
-                id: Math.random().toString(),
+                id: beamId,
                 start: new THREE.Vector3(0, 0, 0),
                 end: targetPos,
-                color: "#ffffff"
+                color: color
             };
 
             setBeams(prev => [...prev, newBeam]);
 
-            // Remove beam after 1 second
+            // Add impact burst exactly when the chunk arrives (600ms)
             setTimeout(() => {
-                setBeams(prev => prev.filter(b => b.id !== newBeam.id));
+                setImpacts(prev => [...prev, { id: beamId, position: targetPos, color: color }]);
+
+                // Discard impact after animation completes
+                setTimeout(() => {
+                    setImpacts(prev => prev.filter(i => i.id !== beamId));
+                }, 500);
+            }, 600);
+
+            // Remove beam line soon after impact
+            setTimeout(() => {
+                setBeams(prev => prev.filter(b => b.id !== beamId));
             }, 1000);
         }
 
@@ -355,9 +397,32 @@ function EarthPulseRing({ active }) {
     return (
         <mesh ref={ringRef} rotation={[-Math.PI / 2, 0, 0]}>
             <ringGeometry args={[1, 1.05, 64]} />
-            <meshBasicMaterial color="#4ade80" transparent opacity={0.8} side={THREE.DoubleSide} />
+            <meshBasicMaterial color="#10b981" transparent opacity={0.8} side={THREE.DoubleSide} />
         </mesh>
     );
+}
+
+function CameraRig({ messages, controlsRef }) {
+    const { camera } = useThree();
+
+    useEffect(() => {
+        if (!messages || messages.length === 0) return;
+        const msg = messages[messages.length - 1];
+
+        if (msg.type === "UPLOAD_START" || msg.type === "DOWNLOAD_START") {
+            // Swoop in dramatically
+            gsap.to(camera.position, { x: 0, y: 3, z: 12, duration: 2, ease: "power2.inOut" });
+            if (controlsRef.current) gsap.to(controlsRef.current.target, { y: 2, duration: 2 });
+        }
+
+        if (msg.type === "UPLOAD_COMPLETE" || msg.type === "DOWNLOAD_COMPLETE" || msg.type === "UPLOAD_ERROR" || msg.type === "DOWNLOAD_FAILED") {
+            // Return to master view
+            gsap.to(camera.position, { x: 0, y: 8, z: 20, duration: 3, ease: "power3.inOut" });
+            if (controlsRef.current) gsap.to(controlsRef.current.target, { y: 0, duration: 3 });
+        }
+    }, [messages, camera, controlsRef]);
+
+    return null;
 }
 
 // Prefetch models
@@ -366,19 +431,40 @@ useGLTF.preload('/satellite.glb');
 
 export default function OrbitalMap3D({ messages }) {
     const [beams, setBeams] = useState([]);
+    const [impacts, setImpacts] = useState([]);
     const [uploadCompleteRing, setUploadCompleteRing] = useState(false);
+    const controlsRef = useRef();
 
     return (
         <Canvas shadows camera={{ position: [0, 8, 20], fov: 35 }} gl={{ alpha: true }}>
-            <EventOrchestrator messages={messages} setBeams={setBeams} setUploadCompleteRing={setUploadCompleteRing} />
-            <ambientLight intensity={0.1} color="#4facfe" />
-            <directionalLight position={[30, 40, 30]} intensity={2.5} castShadow shadow-mapSize={[2048, 2048]} />
-            <pointLight position={[-30, -10, -30]} color="#3b82f6" intensity={1} />
-            <pointLight position={[0, -10, 0]} color="#c084fc" intensity={0.5} />
+            <CameraRig messages={messages} controlsRef={controlsRef} />
+            <EventOrchestrator messages={messages} setBeams={setBeams} setImpacts={setImpacts} setUploadCompleteRing={setUploadCompleteRing} />
 
-            <Stars radius={200} depth={50} count={8000} factor={6} saturation={1} fade speed={1} />
+            {/* ENHANCED GLOBAL LIGHTING */}
+            <ambientLight intensity={0.5} color="#dbeafe" />
+            <directionalLight
+                position={[50, 40, 50]}
+                intensity={4}
+                castShadow
+                shadow-mapSize={[2048, 2048]}
+                color="#ffffff"
+            />
+            <pointLight position={[-30, -10, -30]} color="#3b82f6" intensity={1.5} />
+            <pointLight position={[0, -10, 0]} color="#c084fc" intensity={0.8} />
+
+            {/* REALISTIC BACKGROUND */}
+            <Stars
+                radius={300}
+                depth={100}
+                count={15000}
+                factor={4}
+                saturation={1}
+                fade
+                speed={0.4}
+            />
 
             <OrbitControls
+                ref={controlsRef}
                 makeDefault
                 enablePan={false}
                 autoRotate
@@ -396,18 +482,27 @@ export default function OrbitalMap3D({ messages }) {
                     <DataBeam key={beam.id} start={beam.start} end={beam.end} color={beam.color} />
                 ))}
 
+                {impacts.map(impact => (
+                    <DataImpact key={impact.id} position={impact.position} color={impact.color} />
+                ))}
+
                 <OrbitSystem radius={3} speed={0.4} color="#22d3ee" label="Alpha" modelA="/satellite.glb" modelB="/satellite.glb" />
                 <OrbitSystem radius={5} speed={0.25} direction={-1} color="#c084fc" tiltZ={Math.PI / 10} label="Beta" modelA="/satellite.glb" modelB="/satellite.glb" />
                 <OrbitSystem radius={7} speed={0.15} color="#4ade80" tiltX={Math.PI / 8} label="Gamma" modelA="/satellite.glb" modelB="/satellite.glb" />
                 <ContactShadows resolution={1024} scale={50} blur={3} opacity={0.2} far={30} color="#000000" />
             </Suspense>
 
-            <gridHelper args={[80, 24, '#1e293b', '#0f172a']} position={[0, -5, 0]} opacity={0.05} transparent />
+            {/* Removed artificial grid for true orbital realism */}
 
             <EffectComposer multibuffer>
-                <Bloom luminanceThreshold={0.5} luminanceSmoothing={0.9} height={300} intensity={1.5} />
-                <ChromaticAberration offset={[0.0005, 0.0005]} blendFunction={BlendFunction.NORMAL} />
-                <Vignette eskil={false} offset={0.1} darkness={1.1} />
+                <Bloom
+                    luminanceThreshold={0.4}
+                    luminanceSmoothing={1}
+                    height={400}
+                    intensity={2.5}
+                />
+                <ChromaticAberration offset={[0.0006, 0.0006]} blendFunction={BlendFunction.NORMAL} />
+                <Vignette eskil={false} offset={0.1} darkness={1.2} />
             </EffectComposer>
         </Canvas>
     );

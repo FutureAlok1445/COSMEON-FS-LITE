@@ -139,7 +139,7 @@ export default function SurvivabilityPanel({ messages }) {
                     {/* ZONE 1 - Hero Panel */}
                     <div className="bg-[#111827] border border-cyan-500/30 p-8 rounded-3xl shrink-0 flex flex-col items-center relative overflow-hidden shadow-[0_0_30px_rgba(6,182,212,0.1)] group">
 
-                        <div className="absolute top-4 left-6 flex items-center gap-2">
+                        <div className="absolute top-6 left-6 flex items-center gap-2">
                             <Satellite className="text-cyan-500 animate-pulse" size={20} />
                             <span className="font-mono text-xs uppercase tracking-widest text-cyan-500">Orbital Reliability Simulator</span>
                         </div>
@@ -147,19 +147,20 @@ export default function SurvivabilityPanel({ messages }) {
                         <button
                             disabled={isComputing}
                             onClick={handleManualRerun}
-                            className="absolute top-4 right-6 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-wide flex items-center gap-2 transition-all disabled:opacity-50"
+                            className="absolute top-5 right-6 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-wide flex items-center gap-2 transition-all disabled:opacity-50"
                         >
                             <RotateCcw size={14} className={isComputing ? 'animate-spin' : ''} />
                             {isComputing ? 'Computing... 10k runs' : 'Re-Run Model'}
                         </button>
 
-                        <div className="mt-8 mb-4 flex items-end gap-2 relative">
-                            {/* SVG Arc background (mock speedometer) */}
-                            <svg width="600" height="300" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-20">
-                                <path d="M 50 250 A 200 200 0 0 1 550 250" fill="transparent" stroke={arcColor} strokeWidth="4" strokeDasharray="5 5" />
-                            </svg>
-
-                            <h1 className={`text-[clamp(2.5rem, 6vw, 5.5rem)] font-bold tracking-tight leading-none drop-shadow-[0_0_15px_currentColor] transition-all duration-500 ${colorClass}`}>
+                        {/* Title and Badge Container */}
+                        <div className="mt-12 mb-4 flex flex-col items-center gap-4 relative">
+                            {isCritical && (
+                                <span className="bg-red-600/20 text-red-500 border border-red-500/50 px-3 py-1 rounded text-sm font-bold animate-pulse inline-flex items-center gap-2">
+                                    <AlertTriangle size={16} /> CRITICAL
+                                </span>
+                            )}
+                            <h1 className={`text-5xl lg:text-7xl font-bold tracking-tight leading-none drop-shadow-[0_0_15px_currentColor] transition-all duration-500 ${colorClass}`}>
                                 <CountUp
                                     end={survivalPct}
                                     decimals={5}
@@ -167,7 +168,6 @@ export default function SurvivabilityPanel({ messages }) {
                                     preserveValue
                                 />%
                             </h1>
-                            {isCritical && <span className="mb-4 bg-red-600/20 text-red-500 border border-red-500/50 px-2 py-0.5 rounded text-sm font-bold animate-pulse absolute -right-16 top-0">⚠ CRITICAL</span>}
                         </div>
 
                         <p className="text-gray-400 text-sm font-light tracking-wide mb-8 uppercase">Data Survival Probability • 24-Hour Mission Window</p>
@@ -186,18 +186,18 @@ export default function SurvivabilityPanel({ messages }) {
                                 <div className="absolute inset-0 bg-red-500/5 z-0" />
                                 <div className="relative z-10 text-center">
                                     <h3 className="text-xs text-red-400 font-bold tracking-widest uppercase mb-1 flex items-center justify-center gap-2"><AlertTriangle size={14} /> 3× Replication Base</h3>
-                                    <p className="text-2xl font-bold text-gray-300 my-1">{(data.baseline_replication_survival * 100).toFixed(2)}%</p>
-                                    <p className="text-xs text-gray-500 font-mono">Failures: {data.baseline_failures}/{data.total_simulations}</p>
+                                    <p className="text-2xl font-bold text-gray-300 my-1">{data.baseline_replication_survival !== undefined ? (data.baseline_replication_survival * 100).toFixed(2) : '---'}%</p>
+                                    <p className="text-xs text-gray-500 font-mono">Failures: {data.baseline_failures !== undefined ? data.baseline_failures : '---'}/{data.total_simulations}</p>
                                 </div>
                             </div>
                         </div>
 
                         <div className="mt-6 text-center">
                             <p className="text-cyan-400 text-sm font-bold tracking-widest uppercase bg-cyan-500/10 px-4 py-2 rounded-lg inline-flex items-center gap-2 border border-cyan-500/20">
-                                Risk Reduction Factor ▲ {(data.risk_reduction_factor === Infinity ? '> 1000' : data.risk_reduction_factor.toFixed(1))}×
+                                Risk Reduction Factor ▲ {(data.risk_reduction_factor === Infinity || data.risk_reduction_factor === undefined ? '> 1000' : data.risk_reduction_factor.toFixed(1))}×
                             </p>
                             <div className="text-[10px] text-gray-500 mt-3 font-mono">
-                                Last Trigger: {history.length > 0 ? history[history.length - 1].trigger : 'NONE'} &nbsp;•&nbsp; Computed in {data.simulation_duration_ms.toFixed(1)}ms
+                                Last Trigger: {history.length > 0 ? history[history.length - 1].trigger : 'NONE'} &nbsp;•&nbsp; Computed in {data.simulation_duration_ms?.toFixed(1) || '---'}ms
                             </div>
                         </div>
                     </div>
@@ -206,7 +206,7 @@ export default function SurvivabilityPanel({ messages }) {
                     <div className="grid grid-cols-4 gap-4 flex-1 min-h-[220px]">
 
                         {/* Card 1: Chunk Health */}
-                        <div className="bg-[#111827] border border-white/5 p-5 rounded-2xl flex flex-col relative group">
+                        <div className="bg-[#111827] border border-white/5 p-5 rounded-2xl flex flex-col relative group shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
                             <h3 className="text-xs text-gray-400 font-bold tracking-widest uppercase mb-3">Chunk Health</h3>
                             <div className="flex-1 flex flex-col justify-center gap-3">
                                 <div className="space-y-1">
@@ -237,24 +237,24 @@ export default function SurvivabilityPanel({ messages }) {
                                     </div>
                                 </div>
                             </div>
-                            <div className="mt-3 text-[10px] text-gray-500 border-t border-white/5 pt-2 font-mono">Avg Lost: {data.avg_chunks_lost.toFixed(2)} chunks</div>
+                            <div className="mt-3 text-[10px] text-gray-500 border-t border-white/5 pt-2 font-mono">Avg Lost: {data.avg_chunks_lost?.toFixed(2) || '---'} chunks</div>
                         </div>
 
                         {/* Card 2: Worst Case */}
-                        <div className={`bg-[#111827] border p-5 rounded-2xl flex flex-col items-center justify-center text-center ${data.worst_case_chunks_lost > (data.config.total_chunks - data.config.recovery_threshold) ? 'border-red-500/50 bg-red-500/5' : 'border-white/5'}`}>
+                        <div className={`bg-[#111827] border p-5 rounded-2xl flex flex-col items-center justify-center text-center relative shadow-[0_4px_20px_rgba(0,0,0,0.5)] ${data.worst_case_chunks_lost > (data.config.total_chunks - data.config.recovery_threshold) ? 'border-red-500/50 bg-red-500/5' : 'border-white/5'}`}>
                             <h3 className="text-xs text-gray-400 font-bold tracking-widest uppercase mb-4 absolute top-5">Worst Case</h3>
 
-                            <div className="mt-4">
-                                <span className={`text-4xl font-bold block mb-1 ${data.worst_case_chunks_lost > (10 - 4) ? 'text-red-500' : 'text-white'}`}>
+                            <div className="mt-6 font-mono">
+                                <span className={`text-4xl font-bold block mb-1 ${data.worst_case_chunks_lost > (data.config.total_chunks - data.config.recovery_threshold) ? 'text-red-500' : 'text-white'}`}>
                                     {data.worst_case_chunks_lost} <span className="text-xl text-gray-500">lost</span>
                                 </span>
-                                <span className="text-xs text-gray-400 font-mono">in worst observed mission</span>
+                                <span className="text-[10px] text-gray-400 font-sans tracking-wide">in worst observed mission</span>
                             </div>
 
                             {data.worst_case_chunks_lost > (data.config.total_chunks - data.config.recovery_threshold) ? (
-                                <p className="text-[10px] mt-4 text-red-500 bg-red-500/10 px-2 py-1 rounded inline-flex items-center gap-1"><AlertCircle size={10} /> Unrecoverable scenario hit</p>
+                                <p className="text-[10px] mt-4 text-red-500 bg-red-500/10 px-2 py-1 rounded inline-flex items-center gap-1 font-bold whitespace-nowrap"><AlertCircle size={10} /> Unrecoverable scenario hit</p>
                             ) : (
-                                <p className="text-[10px] mt-4 text-green-500 bg-green-500/10 px-2 py-1 rounded inline-flex items-center gap-1"><ShieldCheck size={10} /> File remained recoverable</p>
+                                <p className="text-[10px] mt-4 text-green-500 bg-green-500/10 px-2 py-1 rounded inline-flex items-center gap-1 font-bold whitespace-nowrap"><ShieldCheck size={10} /> File remained recoverable</p>
                             )}
                         </div>
 

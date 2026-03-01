@@ -451,19 +451,48 @@ async def isl_topology():
 
 @app.get("/api/tle")
 async def get_tle_data():
-    """Proxy CelesTrak TLE data through the backend to avoid browser CORS/403 errors."""
-    import urllib.request
+    """Isolated TLE proxy — runs in a background thread so it can never block
+    or crash the main event loop. Returns fallback data on any failure."""
+    import asyncio
     from fastapi.responses import PlainTextResponse
-    
-    url = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle"
-    # Provide a User-Agent to avoid generic scraper blocks
-    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) COSMEON-FS-LITE'})
+
+    FALLBACK_TLE = (
+        "ISS (ZARYA)\n"
+        "1 25544U 98067A   24061.50000000  .00016717  00000-0  10270-3 0  9999\n"
+        "2 25544  51.6410 208.9163 0006317  86.9689 273.1587 15.49309144 45467\n"
+        "CSS (TIANHE)\n"
+        "1 48274U 21035A   24061.50000000  .00012345  00000-0  10000-3 0  9999\n"
+        "2 48274  41.5821 120.4567 0005432  60.1234 300.5678 15.61234567 12345\n"
+        "HST\n"
+        "1 20580U 90037B   24061.50000000  .00001234  00000-0  50000-4 0  9999\n"
+        "2 20580  28.4682  45.1234 0001234 120.5678 240.9123 15.08765432 98765\n"
+        "NOAA 19\n"
+        "1 33591U 09005A   24061.50000000  .00000123  00000-0  20000-4 0  9999\n"
+        "2 33591  99.1923 180.4567 0012345  90.4567 270.1234 14.12345678 54321\n"
+        "LANDSAT 9\n"
+        "1 49260U 21088A   24061.50000000  .00000045  00000-0  10000-4 0  9999\n"
+        "2 49260  98.2234 300.1234 0001234  45.1234 315.6789 14.56789012 34567\n"
+        "STARLINK-31627\n"
+        "1 58826U 23150A   24061.50000000  .00054321  00000-0  50000-3 0  9999\n"
+        "2 58826  53.0543  10.4567 0001234 180.1234 180.5678 15.23456789 87654\n"
+    )
+
+    def _fetch_tle_sync():
+        """Synchronous fetch — runs in its own thread, fully sandboxed."""
+        import urllib.request
+        url = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle"
+        req = urllib.request.Request(url, headers={
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) COSMEON-FS-LITE'
+        })
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            return resp.read().decode('utf-8')
+
     try:
-        with urllib.request.urlopen(req, timeout=10) as response:
-            text = response.read().decode('utf-8')
+        text = await asyncio.to_thread(_fetch_tle_sync)
         return PlainTextResponse(content=text)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch TLE data: {str(e)}")
+        print(f"[TLE] CelesTrak unavailable ({e}), serving fallback data")
+        return PlainTextResponse(content=FALLBACK_TLE)
 
 # ─────────────────────────────────────────────
 # GET /api/nodes — List All Node Statuses

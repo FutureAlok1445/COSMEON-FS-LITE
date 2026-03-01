@@ -18,7 +18,7 @@ import {
     ChevronRight, Eye, Binary, Hash, Layers, Zap, Lock
 } from 'lucide-react';
 
-const API_URL = `http://${window.location.hostname}:8000/api`;
+const API_URL = `http://${window.location.hostname}:9000/api`;
 
 // ── Phase Constants ──
 const PHASE = {

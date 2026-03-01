@@ -22,6 +22,27 @@ export default function ChaosOps({ messages }) {
         setLogs(prev => [...prev, { id: Date.now() + Math.random(), msg, type }].slice(-50));
     };
 
+    // Fetch real node statuses on mount so the matrix always matches the backend
+    useEffect(() => {
+        const fetchNodeStatuses = async () => {
+            try {
+                const res = await fetch(`http://${window.location.hostname}:9000/api/nodes`);
+                if (!res.ok) return;
+                const nodes = await res.json();
+                const offline = [];
+                const partitioned = [];
+                for (const n of nodes) {
+                    if (n.status === 'OFFLINE') offline.push(n.node_id);
+                    else if (n.status === 'PARTITIONED') partitioned.push(n.node_id);
+                }
+                setSystemState(prev => ({ ...prev, offlineNodes: offline, partitionedNodes: partitioned }));
+            } catch (e) {
+                console.error('Failed to fetch node statuses:', e);
+            }
+        };
+        fetchNodeStatuses();
+    }, []);
+
     useEffect(() => {
         if (logsEndRef.current) {
             logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -39,16 +60,26 @@ export default function ChaosOps({ messages }) {
             case 'NODE_OFFLINE':
                 setSystemState(prev => ({
                     ...prev,
-                    offlineNodes: [...new Set([...prev.offlineNodes, lastMsg.data.node_id])]
+                    offlineNodes: [...new Set([...prev.offlineNodes, lastMsg.data.node_id])],
+                    partitionedNodes: prev.partitionedNodes.filter(id => id !== lastMsg.data.node_id)
                 }));
                 pushLog(lastMsg.data.message, 'error');
                 break;
             case 'NODE_PARTITIONED':
                 setSystemState(prev => ({
                     ...prev,
-                    partitionedNodes: [...new Set([...prev.partitionedNodes, lastMsg.data.node_id])]
+                    partitionedNodes: [...new Set([...prev.partitionedNodes, lastMsg.data.node_id])],
+                    offlineNodes: prev.offlineNodes.filter(id => id !== lastMsg.data.node_id)
                 }));
                 pushLog(lastMsg.data.message, 'warning');
+                break;
+            case 'NODE_ONLINE':
+                setSystemState(prev => ({
+                    ...prev,
+                    offlineNodes: prev.offlineNodes.filter(id => id !== lastMsg.data.node_id),
+                    partitionedNodes: prev.partitionedNodes.filter(id => id !== lastMsg.data.node_id)
+                }));
+                if (lastMsg.data.message) pushLog(lastMsg.data.message, 'success');
                 break;
             case 'CHUNK_CORRUPTED':
                 setSystemState(prev => ({

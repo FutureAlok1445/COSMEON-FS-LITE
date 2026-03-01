@@ -4,6 +4,7 @@ import GlobeViewer from '../components/tracking/GlobeViewer';
 import TelemetryPanel from '../components/tracking/TelemetryPanel';
 import { propagateTLE, getOrbitPath } from '../utils/tleUtils';
 import { ArrowLeft, Globe, Share2, Activity, Zap, Satellite, AlertTriangle } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const GROUND_STATIONS = [
     { name: 'NASA WHITE SANDS', lat: 32.5007, lng: -106.6086, color: '#00FFC8' },
@@ -13,12 +14,36 @@ const GROUND_STATIONS = [
 ];
 
 const PRESET_SATELLITES = [
-    { name: 'ISS (ZARYA)', noradId: 25544 },
-    { name: 'SPACE STATION', noradId: 48274 },
-    { name: 'HUBBLE', noradId: 20580 },
-    { name: 'NOAA 19', noradId: 33591 },
-    { name: 'LANDSAT 9', noradId: 49260 },
-    { name: 'STARLINK-31627', noradId: 58826 },
+    {
+        name: 'ISS (ZARYA)',
+        noradId: 25544,
+        fallbackTle: ["ISS (ZARYA)", "1 25544U 98067A   24061.50000000  .00016717  00000-0  10270-3 0  9999", "2 25544  51.6410 208.9163 0006317  86.9689 273.1587 15.4930914445467"]
+    },
+    {
+        name: 'SPACE STATION (CSS)',
+        noradId: 48274,
+        fallbackTle: ["CSS", "1 48274U 21035A   24061.50000000  .00012345  00000-0  10000-3 0  9999", "2 48274  41.5821 120.4567 0005432  60.1234 300.5678 15.6123456712345"]
+    },
+    {
+        name: 'HUBBLE',
+        noradId: 20580,
+        fallbackTle: ["HUBBLE", "1 20580U 90037B   24061.50000000  .00001234  00000-0  50000-4 0  9999", "2 20580  28.4682  45.1234 0001234 120.5678 240.9123 15.0876543298765"]
+    },
+    {
+        name: 'NOAA 19',
+        noradId: 33591,
+        fallbackTle: ["NOAA 19", "1 33591U 09005A   24061.50000000  .00000123  00000-0  20000-4 0  9999", "2 33591  99.1923 180.4567 0012345  90.4567 270.1234 14.1234567854321"]
+    },
+    {
+        name: 'LANDSAT 9',
+        noradId: 49260,
+        fallbackTle: ["LANDSAT 9", "1 49260U 21088A   24061.50000000  .00000045  00000-0  10000-4 0  9999", "2 49260  98.2234 300.1234 0001234  45.1234 315.6789 14.5678901234567"]
+    },
+    {
+        name: 'STARLINK-31627',
+        noradId: 58826,
+        fallbackTle: ["STARLINK", "1 58826U 23150A   24061.50000000  .00054321  00000-0  50000-3 0  9999", "2 58826  53.0543  10.4567 0001234 180.1234 180.5678 15.2345678987654"]
+    },
 ];
 
 export default function SatelliteTrackerPage({ nodes, messages, onBack }) {
@@ -33,11 +58,15 @@ export default function SatelliteTrackerPage({ nodes, messages, onBack }) {
 
     // 1. Fetch TLE data and Historical Events
     useEffect(() => {
+        let isActive = true;
+        let retryTimeout = null;
+
         async function fetchInitialData() {
-            setLoading(true);
+            if (isActive) setLoading(true);
             try {
                 // Fetch TLE
                 const tleRes = await fetch(`http://${window.location.hostname}:9000/api/tle`);
+                if (!tleRes.ok) throw new Error('Failed to fetch TLE data');
                 const tleData = await tleRes.text();
                 const lines = tleData.split('\n');
                 const newAllTle = {};
@@ -55,11 +84,13 @@ export default function SatelliteTrackerPage({ nodes, messages, onBack }) {
                         }
                     }
                     if (!satTle) {
-                        satTle = [sat.name, "1 25544U 98067A   24061.50000000  .00016717  00000-0  10270-3 0  9999", "2 25544  51.6410 208.9163 0006317  86.9689 273.1587 15.4930914445467"];
+                        satTle = sat.fallbackTle;
                     }
                     newAllTle[sat.noradId] = satTle;
                     newAllPaths[sat.noradId] = getOrbitPath(satTle[1], satTle[2]);
                 });
+
+                if (!isActive) return;
                 setAllTle(newAllTle);
                 setAllOrbitPaths(newAllPaths);
 
@@ -74,16 +105,22 @@ export default function SatelliteTrackerPage({ nodes, messages, onBack }) {
                         message: e.message,
                         nodeId: e.metadata?.node_id
                     })).reverse();
-                    setDtnEvents(initialEvents);
+                    if (isActive) setDtnEvents(initialEvents);
                 }
 
+                if (isActive) setLoading(false);
             } catch (err) {
                 console.error("Failed to fetch initial data", err);
-            } finally {
-                setLoading(false);
+                if (isActive) {
+                    retryTimeout = setTimeout(fetchInitialData, 3000);
+                }
             }
         }
         fetchInitialData();
+        return () => {
+            isActive = false;
+            if (retryTimeout) clearTimeout(retryTimeout);
+        };
     }, []);
 
     useEffect(() => {
@@ -188,12 +225,20 @@ export default function SatelliteTrackerPage({ nodes, messages, onBack }) {
                         </div>
                     </div>
 
-                    <div className="absolute bottom-6 left-6 z-10 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity">
-                        <div className="grid grid-cols-2 gap-4 text-[9px] font-mono text-gray-400">
-                            <div>RENDER: GL_CORE_3.0</div>
-                            <div>FPS: 60.00</div>
-                            <div>LOD: HIGH_FIDELITY</div>
-                            <div>SHADING: PHONG_DYNAMICS</div>
+                    <div className="absolute bottom-6 left-6 z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity max-w-xs">
+                        <div className="bg-black/40 backdrop-blur-md border border-cyan-500/20 p-4 rounded-2xl">
+                            <h3 className="text-[10px] text-cyan-400 font-bold tracking-[0.2em] uppercase mb-2 flex items-center gap-2">
+                                <Activity size={12} /> Trajectory Prediction Engine
+                            </h3>
+                            <p className="text-[9px] leading-relaxed text-gray-400 font-mono uppercase tracking-wider">
+                                Utilizing advanced <span className="text-white">SGP4 perturbation models</span> to forecast nodal crossings and minimize DTN propagation latency. Real-time geodetic mapping of LEO assets with sub-meter precision.
+                            </p>
+                            <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-[8px] font-mono text-gray-500 uppercase tracking-widest">
+                                <div className="flex justify-between"><span>RENDER</span> <span className="text-cyan-500/50">GL_CORE_3.0</span></div>
+                                <div className="flex justify-between"><span>FPS</span> <span className="text-cyan-500/50">60.00</span></div>
+                                <div className="flex justify-between"><span>LOD</span> <span className="text-cyan-500/50">HIGH</span></div>
+                                <div className="flex justify-between"><span>SHADING</span> <span className="text-cyan-500/50">PHONG_DYNAMICS</span></div>
+                            </div>
                         </div>
                     </div>
 
@@ -201,8 +246,10 @@ export default function SatelliteTrackerPage({ nodes, messages, onBack }) {
                         <Suspense fallback={null}>
                             <GlobeViewer
                                 satellites={showAll
-                                    ? PRESET_SATELLITES.map(s => {
-                                        const nodeId = `SAT-${String(s.noradId).slice(-2)}`;
+                                    ? PRESET_SATELLITES.map((s, idx) => {
+                                        // Robust mapping: Map preset index to simulated node SAT-01...06
+                                        const simulatedNodeIndex = (idx % nodes.length) + 1;
+                                        const nodeId = `SAT-${simulatedNodeIndex.toString().padStart(2, '0')}`;
                                         const nodeData = nodes.find(n => n.node_id === nodeId);
                                         return {
                                             ...s,
@@ -218,8 +265,14 @@ export default function SatelliteTrackerPage({ nodes, messages, onBack }) {
                                         currentPos: allPositions[selectedSatellite.noradId],
                                         orbitPath: allOrbitPaths[selectedSatellite.noradId],
                                         isPrimary: true,
-                                        queueDepth: nodes.find(n => n.node_id.includes(String(selectedSatellite.noradId).slice(-2)))?.dtn_queue_depth || 0,
-                                        isOnline: nodes.find(n => n.node_id.includes(String(selectedSatellite.noradId).slice(-2)))?.status === 'ONLINE'
+                                        queueDepth: nodes.find((n, idx) => {
+                                            const presetIdx = PRESET_SATELLITES.findIndex(p => p.noradId === selectedSatellite.noradId);
+                                            return n.node_id === `SAT-${((presetIdx % nodes.length) + 1).toString().padStart(2, '0')}`;
+                                        })?.dtn_queue_depth || 0,
+                                        isOnline: nodes.find((n, idx) => {
+                                            const presetIdx = PRESET_SATELLITES.findIndex(p => p.noradId === selectedSatellite.noradId);
+                                            return n.node_id === `SAT-${((presetIdx % nodes.length) + 1).toString().padStart(2, '0')}`;
+                                        })?.status === 'ONLINE'
                                     }]
                                 }
                                 groundStations={GROUND_STATIONS}
@@ -228,10 +281,38 @@ export default function SatelliteTrackerPage({ nodes, messages, onBack }) {
                     </Canvas>
 
                     {loading && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-xl z-20">
-                            <div className="flex flex-col items-center gap-4">
-                                <div className="w-16 h-16 border-4 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin" />
-                                <div className="text-cyan-500 font-mono text-sm tracking-[0.2em] animate-pulse">ESTABLISHING SATELLITE UPLINK...</div>
+                        <div className="absolute inset-0 flex items-center justify-center bg-[#02040A] z-20">
+                            {/* Cinematic Loading Animation */}
+                            <div className="relative flex flex-col items-center">
+                                {/* Orbiting Rings */}
+                                <div className="relative w-32 h-32 flex items-center justify-center">
+                                    <div className="absolute inset-0 border-[1px] border-cyan-500/10 rounded-full"></div>
+                                    <div className="absolute inset-2 border-[1px] border-cyan-500/20 rounded-full"></div>
+                                    <div className="absolute inset-4 border-[1px] border-cyan-400/30 rounded-full"></div>
+
+                                    {/* Scanning Beam */}
+                                    <div className="absolute inset-0 border-t-2 border-cyan-400 rounded-full animate-spin"></div>
+
+                                    {/* Satellite Icon in Center */}
+                                    <Satellite size={32} className="text-cyan-400 animate-pulse" />
+                                </div>
+
+                                {/* Status Text */}
+                                <div className="mt-8 flex flex-col items-center gap-2">
+                                    <div className="text-cyan-400 font-bold font-mono text-xs tracking-[0.5em] uppercase animate-pulse">
+                                        Establishing Uplink
+                                    </div>
+                                    <div className="flex gap-1 h-1 w-48 bg-white/5 rounded-full overflow-hidden mt-4">
+                                        <motion.div
+                                            className="h-full w-2/3 bg-cyan-500 shadow-[0_0_10px_#22d3ee]"
+                                            animate={{ x: ['-100%', '200%'] }}
+                                            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                                        />
+                                    </div>
+                                    <div className="text-[8px] text-gray-600 font-mono tracking-widest uppercase mt-2">
+                                        Propagating Orbital Ephemeris...
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}

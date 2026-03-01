@@ -189,72 +189,95 @@ export default function StorageMap() {
 
             {/* Background Effects */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-0 right-1/4 w-[800px] h-[800px] bg-cyan-900/10 rounded-full blur-[120px] mix-blend-screen"></div>
-                <div className="absolute bottom-1/4 left-1/4 w-[600px] h-[600px] bg-blue-900/10 rounded-full blur-[100px] mix-blend-screen"></div>
+                <div className="absolute inset-0 bg-[#02060F]"></div>
+                {/* Tactical Tactical Grid */}
+                <div
+                    className="absolute inset-0 opacity-[0.03]"
+                    style={{
+                        backgroundImage: `linear-gradient(#4facfe 1px, transparent 1px), linear-gradient(90deg, #4facfe 1px, transparent 1px)`,
+                        backgroundSize: '40px 40px'
+                    }}
+                ></div>
+                <div className="absolute top-0 right-1/4 w-[800px] h-[800px] bg-blue-600/10 rounded-full blur-[120px] mix-blend-screen animate-pulse"></div>
+                <div className="absolute bottom-1/4 left-1/4 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[100px] mix-blend-screen"></div>
             </div>
 
             {/* Left Panel: Mission Control */}
-            <div className="w-[350px] flex flex-col gap-6 z-10 shrink-0 pointer-events-auto">
-                {/* Upload Section */}
-                <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-2xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex flex-col gap-4">
-                    <div className="flex items-center gap-2 border-b border-white/5 pb-3">
-                        <UploadCloud className="text-cyan-400" size={18} />
-                        <h2 className="text-white font-bold tracking-widest text-xs uppercase">Orbital Uplink</h2>
-                    </div>
+            <div className="w-[380px] flex flex-col gap-6 z-10 shrink-0 pointer-events-auto">
+                {/* Enhanced File Inventory */}
+                <div className="bg-[#0A0F1D]/60 backdrop-blur-3xl border border-white/10 rounded-2xl p-6 shadow-[0_8px_40px_rgba(0,0,0,0.6)] flex-1 flex flex-col overflow-hidden relative group/inventory">
+                    {/* Decorative Corner */}
+                    <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-blue-500/10 to-transparent pointer-events-none"></div>
 
-                    <button
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={uploading}
-                        className={`w-full py-8 border-2 border-dashed border-cyan-500/30 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-cyan-400 hover:bg-cyan-500/5 transition-colors ${uploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                    >
-                        <UploadCloud size={32} className="text-cyan-500/50" />
-                        <span className="text-xs uppercase tracking-widest text-cyan-400 font-bold">
-                            {uploading ? 'Transmitting Data...' : 'Select Payload to Upload'}
-                        </span>
-                    </button>
-                    <input type="file" ref={fileInputRef} onChange={handleUpload} className="hidden" />
-                </div>
-
-                {/* File Inventory */}
-                <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-2xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex-1 flex flex-col overflow-hidden">
-                    <div className="flex items-center justify-between border-b border-white/5 pb-3 mb-4">
-                        <div className="flex items-center gap-2">
-                            <HardDrive className="text-blue-400" size={18} />
-                            <h2 className="text-white font-bold tracking-widest text-xs uppercase">Distributed Files</h2>
+                    <div className="flex items-center justify-between border-b border-white/5 pb-4 mb-5">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                                <HardDrive className="text-blue-400" size={18} />
+                            </div>
+                            <div>
+                                <h2 className="text-white font-bold tracking-[0.15em] text-xs uppercase">Orbital Assets</h2>
+                                <p className="text-[9px] text-slate-500 uppercase tracking-widest mt-0.5">Distributed File Registry</p>
+                            </div>
                         </div>
-                        <span className="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded text-[10px] font-bold">{state.files.length}</span>
+                        <div className="flex flex-col items-end">
+                            <span className="text-[10px] font-mono text-blue-400 font-bold">{state.files.length} ITEMS</span>
+                            <div className="w-12 h-0.5 bg-blue-500/20 rounded-full mt-1">
+                                <motion.div
+                                    className="h-full bg-blue-500"
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${Math.min(100, (state.files.length / 20) * 100)}%` }}
+                                />
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto pr-2 space-y-4 custom-scrollbar">
                         {state.files.length === 0 ? (
-                            <div className="text-center text-slate-600 text-[10px] uppercase tracking-widest py-8">
-                                No files stored in mesh
+                            <div className="flex flex-col items-center justify-center h-full opacity-30 py-12">
+                                <FileIcon size={40} className="mb-4 text-slate-400" />
+                                <div className="text-center text-slate-400 text-[10px] uppercase tracking-[0.3em]">
+                                    Grid Storage Empty
+                                </div>
                             </div>
                         ) : (
                             state.files.map(file => (
-                                <div key={file.file_id} className="bg-white/5 border border-white/10 rounded-xl p-3 group hover:border-blue-500/30 transition-colors">
-                                    <div className="flex items-start justify-between mb-2">
-                                        <div className="flex items-center gap-2 overflow-hidden">
-                                            <FileIcon size={14} className="text-slate-400 shrink-0" />
-                                            <span className="text-white font-bold text-xs truncate" title={file.filename}>{file.filename}</span>
+                                <motion.div
+                                    key={file.file_id}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="bg-white/[0.03] border border-white/5 rounded-xl p-4 group/item hover:bg-white/[0.06] hover:border-blue-500/30 transition-all duration-300"
+                                >
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div className="flex items-center gap-3 overflow-hidden">
+                                            <div className="w-8 h-8 rounded-lg bg-blue-500/5 flex items-center justify-center border border-white/5 shrink-0 group-hover/item:bg-blue-500/20 transition-colors">
+                                                <FileIcon size={16} className="text-blue-400" />
+                                            </div>
+                                            <div className="overflow-hidden">
+                                                <span className="text-white font-bold text-xs truncate block" title={file.filename}>{file.filename}</span>
+                                                <div className="flex items-center gap-2 mt-0.5">
+                                                    <span className="text-[9px] text-slate-500 font-mono">{(file.size / 1024).toFixed(1)} KB</span>
+                                                    <span className="w-1 h-1 rounded-full bg-white/10"></span>
+                                                    <span className="text-[9px] text-cyan-400/80 font-bold uppercase tracking-wider">{file.chunk_count} Chunks</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="flex items-center justify-between mb-3 text-[10px] text-slate-400">
-                                        <span>{(file.size / 1024).toFixed(1)} KB</span>
-                                        <span className="bg-cyan-500/10 text-cyan-400 px-1.5 py-0.5 rounded uppercase tracking-wider">{file.chunk_count} Chunks</span>
                                     </div>
 
                                     {harvestingStates[file.file_id] && harvestingStates[file.file_id].status !== 'none' && (
-                                        <div className="mb-3">
-                                            <div className="flex justify-between text-[9px] uppercase tracking-widest text-emerald-400 mb-1">
-                                                <span>Harvesting...</span>
-                                                <span>{harvestingStates[file.file_id].collected_shards.length} / {file.chunk_count}</span>
+                                        <div className="mb-4 p-2 bg-emerald-500/5 rounded-lg border border-emerald-500/10">
+                                            <div className="flex justify-between text-[9px] uppercase tracking-[0.1em] text-emerald-400 mb-1.5 font-bold">
+                                                <span className="flex items-center gap-1.5">
+                                                    <RefreshCw size={10} className="animate-spin" />
+                                                    Reconstructing...
+                                                </span>
+                                                <span>{Math.round((harvestingStates[file.file_id].collected_shards.length / file.chunk_count) * 100)}%</span>
                                             </div>
                                             <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                                                <div
-                                                    className="h-full bg-emerald-500 transition-all duration-500"
-                                                    style={{ width: `${(harvestingStates[file.file_id].collected_shards.length / file.chunk_count) * 100}%` }}
-                                                ></div>
+                                                <motion.div
+                                                    className="h-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                                                    initial={{ width: 0 }}
+                                                    animate={{ width: `${(harvestingStates[file.file_id].collected_shards.length / file.chunk_count) * 100}%` }}
+                                                />
                                             </div>
                                         </div>
                                     )}
@@ -262,31 +285,32 @@ export default function StorageMap() {
                                     <div className="flex items-center gap-2">
                                         <button
                                             onClick={() => handleDownload(file.file_id, file.filename)}
-                                            className="flex-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border border-blue-500/30 rounded py-1.5 text-[10px] font-bold uppercase tracking-wider transition-colors flex justify-center items-center gap-1"
+                                            className="flex-1 bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 border border-blue-500/20 rounded-lg py-2 text-[10px] font-bold uppercase tracking-widest transition-all hover:border-blue-500/40 flex justify-center items-center gap-2"
                                         >
-                                            <Download size={12} /> Fetch
+                                            <Download size={12} /> Access
                                         </button>
                                         {!harvestingStates[file.file_id] || harvestingStates[file.file_id].status === 'none' ? (
                                             <button
                                                 onClick={() => handleHarvest(file.file_id)}
-                                                className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded p-1.5 transition-colors"
+                                                className="bg-emerald-500/5 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/10 rounded-lg p-2 transition-all hover:border-emerald-500/30"
                                                 title="Initiate Ground Harvest"
                                             >
-                                                <RefreshCw size={12} />
+                                                <RefreshCw size={14} />
                                             </button>
                                         ) : null}
                                         <button
                                             onClick={() => handleDelete(file.file_id)}
-                                            className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded p-1.5 transition-colors"
+                                            className="bg-red-500/5 hover:bg-red-500/20 text-red-400 border border-red-500/10 rounded-lg p-2 transition-all hover:border-red-500/30"
                                         >
-                                            <Trash2 size={12} />
+                                            <Trash2 size={14} />
                                         </button>
                                     </div>
-                                </div>
+                                </motion.div>
                             ))
                         )}
                     </div>
                 </div>
+
 
                 {/* Ground Cache Stats */}
                 <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-2xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
@@ -335,18 +359,22 @@ export default function StorageMap() {
 
             {/* Right Panel: The Orbital Mesh Grid */}
             <div className="flex-1 flex flex-col z-10 w-full overflow-hidden">
-                <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-2xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex-1 flex flex-col overflow-hidden">
-                    <div className="flex items-center justify-between border-b border-white/5 pb-4 mb-6 shrink-0">
+                <div className="bg-[#0A0F1D]/40 backdrop-blur-3xl border border-white/10 rounded-2xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex-1 flex flex-col overflow-hidden">
+                    <div className="flex items-center justify-between border-b border-white/5 pb-4 mb-8 shrink-0">
                         <div>
-                            <h2 className="text-white font-bold tracking-widest text-sm uppercase">Storage Node Topology</h2>
-                            <p className="text-[10px] text-cyan-500 mt-1 uppercase tracking-widest">Live Representation of File Chunks across 3 Orbital Planes</p>
+                            <div className="flex items-center gap-2">
+                                <Satellite className="text-cyan-400" size={16} />
+                                <h2 className="text-white font-bold tracking-[0.2em] text-sm uppercase">Distributed Storage Topology</h2>
+                            </div>
+                            <p className="text-[10px] text-cyan-500/60 mt-1 uppercase tracking-[0.15em]">Live synchronization across logical orbital planes</p>
                         </div>
-                        <div className="flex gap-4 items-center text-[10px] uppercase tracking-widest font-bold">
-                            <span className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-cyan-500 shadow-[0_0_8px_#06b6d4]"></div> Data Chunk</span>
-                            <span className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-purple-500 shadow-[0_0_8px_#a855f7]"></div> RS Parity</span>
-                            <span className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-amber-500 shadow-[0_0_8px_#f59e0b]"></div> ISL Link</span>
+                        <div className="flex gap-6 items-center text-[9px] uppercase tracking-[0.2em] font-bold text-slate-400">
+                            <span className="flex items-center gap-2 bg-cyan-500/5 px-2 py-1 rounded border border-cyan-500/10"><div className="w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_#06b6d4]"></div> Data Chunk</span>
+                            <span className="flex items-center gap-2 bg-purple-500/5 px-2 py-1 rounded border border-purple-500/10"><div className="w-1.5 h-1.5 rounded-full bg-purple-500 shadow-[0_0_8px_#a855f7]"></div> RS Parity</span>
+                            <span className="flex items-center gap-2 bg-amber-500/5 px-2 py-1 rounded border border-amber-500/10"><div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b]"></div> ISL Link</span>
                         </div>
                     </div>
+
 
                     <div className="grid grid-cols-3 gap-6 overflow-y-auto custom-scrollbar pr-2 pb-4">
                         {state.nodes.map(node => {
@@ -371,19 +399,19 @@ export default function StorageMap() {
 
                             return (
                                 <div key={node.node_id} className={`relative rounded-2xl border transition-colors flex flex-col overflow-hidden ${isOnline ? 'bg-black/40 border-cyan-500/20 shadow-[0_0_30px_rgba(6,182,212,0.05)]'
-                                        : isPartitioned ? 'bg-amber-950/20 border-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.05)]'
-                                            : 'bg-red-950/20 border-red-500/30'
+                                    : isPartitioned ? 'bg-amber-950/20 border-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.05)]'
+                                        : 'bg-red-950/20 border-red-500/30'
                                     }`}>
                                     {/* Plane Header */}
                                     <div className={`p-3 border-b flex justify-between items-center ${isOnline ? 'bg-cyan-950/30 border-cyan-500/10'
-                                            : isPartitioned ? 'bg-amber-900/30 border-amber-500/20'
-                                                : 'bg-red-900/30 border-red-500/20'
+                                        : isPartitioned ? 'bg-amber-900/30 border-amber-500/20'
+                                            : 'bg-red-900/30 border-red-500/20'
                                         }`}>
                                         <div>
                                             <p className="font-bold text-white text-sm">{node.node_id}</p>
                                             <p className={`text-[9px] uppercase tracking-widest ${isOnline ? 'text-cyan-500'
-                                                    : isPartitioned ? 'text-amber-400'
-                                                        : 'text-red-400'
+                                                : isPartitioned ? 'text-amber-400'
+                                                    : 'text-red-400'
                                                 }`}>
                                                 {isPartitioned ? `Plane ${node.plane} • ISL ${hasISL ? 'RELAY' : 'DOWN'}` : `Plane ${node.plane}`}
                                             </p>
@@ -449,29 +477,44 @@ export default function StorageMap() {
                                             )}
                                         </AnimatePresence>
 
-                                        <div className="flex flex-wrap gap-2">
+                                        <div className="flex flex-wrap gap-2.5">
                                             {myChunks.length === 0 ? (
-                                                <div className="w-full text-center text-[10px] text-slate-600 uppercase tracking-widest mt-10">Empty Buffer</div>
+                                                <div className="w-full flex flex-col items-center justify-center py-12 opacity-20">
+                                                    <HardDrive size={32} className="mb-2" />
+                                                    <div className="text-[10px] uppercase tracking-[0.3em]">No Active Segments</div>
+                                                </div>
                                             ) : (
                                                 myChunks.map((chunk, i) => (
                                                     <motion.div
                                                         layout
                                                         key={`${chunk.chunk_id}-${i}`}
-                                                        className={`w-[calc(50%-4px)] p-2 rounded border flex flex-col justify-center ${chunk.is_parity
-                                                            ? 'bg-purple-500/10 border-purple-500/30 text-purple-200 shadow-[0_0_15px_rgba(168,85,247,0.15)]'
-                                                            : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.15)]'
+                                                        whileHover={{ scale: 1.05, translateY: -2 }}
+                                                        className={`w-[calc(50%-5px)] p-2.5 rounded-lg border flex flex-col justify-center relative overflow-hidden group/chunk ${chunk.is_parity
+                                                            ? 'bg-purple-500/5 border-purple-500/20 text-purple-200'
+                                                            : 'bg-cyan-500/5 border-cyan-500/20 text-cyan-200'
                                                             }`}
                                                         title={`Chunk of ${chunk.filename}\nSeq: ${chunk.sequence_number}`}
                                                     >
-                                                        <p className="text-[9px] truncate w-full font-bold opacity-80">{chunk.filename}</p>
-                                                        <div className="flex justify-between items-center mt-1">
-                                                            <p className="text-[8px] uppercase tracking-wider opacity-60">Seq {chunk.sequence_number}</p>
-                                                            {chunk.is_parity && <span className="text-[8px] font-bold text-purple-400">PRTY</span>}
+                                                        {/* Animated highlight overlay */}
+                                                        <div className={`absolute inset-0 opacity-0 group-hover/chunk:opacity-10 transition-opacity ${chunk.is_parity ? 'bg-purple-400' : 'bg-cyan-400'}`} />
+
+                                                        <div className="flex items-center gap-1.5 mb-1.5">
+                                                            <div className={`w-1.5 h-1.5 rounded-full ${chunk.is_parity ? 'bg-purple-500 shadow-[0_0_6px_#a855f7]' : 'bg-cyan-500 shadow-[0_0_6px_#06b6d4]'}`} />
+                                                            <p className="text-[9px] truncate w-full font-bold tracking-tight opacity-90">{chunk.filename}</p>
+                                                        </div>
+                                                        <div className="flex justify-between items-center bg-white/5 rounded px-1.5 py-0.5 mt-auto">
+                                                            <p className="text-[8px] uppercase tracking-[0.1em] font-mono opacity-50">IDX {chunk.sequence_number}</p>
+                                                            {chunk.is_parity ? (
+                                                                <span className="text-[7px] font-bold text-purple-400 bg-purple-500/10 px-1 rounded">PARITY</span>
+                                                            ) : (
+                                                                <span className="text-[7px] font-bold text-cyan-400 bg-cyan-500/10 px-1 rounded">DATA</span>
+                                                            )}
                                                         </div>
                                                     </motion.div>
                                                 ))
                                             )}
                                         </div>
+
                                     </div>
 
                                     <div className="bg-black/50 p-2 text-center text-[9px] uppercase tracking-widest text-slate-500 border-t border-white/5 relative overflow-hidden">

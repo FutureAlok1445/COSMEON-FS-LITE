@@ -17,12 +17,13 @@ function Earth() {
             <sphereGeometry args={[EARTH_RADIUS_KM * SCALE_FACTOR, 64, 64]} />
             <meshStandardMaterial
                 color="#0a192f"
-                emissive="#020c1b"
-                roughness={0.7}
-                metalness={0.1}
+                emissive="#3b82f6"
+                emissiveIntensity={1.5}
+                roughness={0.5}
+                metalness={0.2}
                 wireframe={true}
                 transparent={true}
-                opacity={0.3}
+                opacity={0.55}
             />
         </mesh>
     );
@@ -32,11 +33,11 @@ function Earth() {
 function Atmosphere() {
     return (
         <mesh>
-            <sphereGeometry args={[(EARTH_RADIUS_KM + 100) * SCALE_FACTOR, 64, 64]} />
+            <sphereGeometry args={[(EARTH_RADIUS_KM + 150) * SCALE_FACTOR, 64, 64]} />
             <meshBasicMaterial
                 color="#3b82f6"
                 transparent={true}
-                opacity={0.1}
+                opacity={0.18}
                 side={THREE.BackSide}
             />
         </mesh>
@@ -131,7 +132,11 @@ export default function NetworkMap3D({ messages }) {
     }, [messages]);
 
     useEffect(() => {
+        let isActive = true;
+        let retryTimeout = null;
+
         async function fetchTLEs() {
+            if (!isActive) return;
             try {
                 // Fetch Starlink TLEs via our local backend proxy to bypass CelesTrak CORS blocks
                 const response = await fetch(`http://${window.location.hostname}:9000/api/tle`);
@@ -179,18 +184,27 @@ export default function NetworkMap3D({ messages }) {
                     }
                 }
 
+                if (!isActive) return;
                 // For performance, let's limit to tracking 5000 sats if the file is massive
                 setAnalytics(stats);
                 setSatrecs(parsedSats.slice(0, 5000));
                 setLoading(false);
+                setError(null); // Clear errors upon success
             } catch (err) {
                 console.error("Error loading satellite data:", err);
-                setError(err.message);
-                setLoading(false);
+                if (!isActive) return;
+                setError(err.message + " (Retrying in 3s...)");
+                // Retry loop every 3 seconds
+                retryTimeout = setTimeout(fetchTLEs, 3000);
             }
         }
 
         fetchTLEs();
+
+        return () => {
+            isActive = false;
+            if (retryTimeout) clearTimeout(retryTimeout);
+        };
     }, []);
 
     const filteredSatrecs = useMemo(() => {
@@ -245,7 +259,15 @@ export default function NetworkMap3D({ messages }) {
                 <ambientLight intensity={0.5} color="#4facfe" />
                 <directionalLight position={[10, 10, 5]} intensity={2} color="#ffffff" />
 
-                <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+                <Stars
+                    radius={200}
+                    depth={100}
+                    count={12000}
+                    factor={5}
+                    saturation={1}
+                    fade
+                    speed={0.5}
+                />
 
                 <Earth />
                 <Atmosphere />
