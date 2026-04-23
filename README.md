@@ -93,4 +93,4 @@ docker-compose down
 
 ## 📜 License
 
-This is a Hackathon project — **HACKX 4.0**.
+This is a Hackathon project — **HACKX 4.0**
